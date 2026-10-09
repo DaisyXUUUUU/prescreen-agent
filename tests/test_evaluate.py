@@ -114,7 +114,7 @@ def test_just_below_threshold_is_not_met(tmp_path):
 def test_mmol_converted_before_comparison(tmp_path):
     v = store_with_ldl(tmp_path, (4.2, "mmol/L", "2026-09-01"))()  # 4.2 * 38.67 = 162.41
     assert v.status == "met"
-    assert any(t["tool"] == "rule:units" and "converted" in t["result"] for t in v.trace)
+    assert any(t["tool"] == "rule:unit_convert" and "converted" in t["result"] for t in v.trace)
 
 
 def test_conversion_landing_on_boundary_is_stable(tmp_path):

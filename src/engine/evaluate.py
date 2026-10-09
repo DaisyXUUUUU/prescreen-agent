@@ -22,6 +22,7 @@ from pathlib import Path
 from statistics import mean
 
 from src.adapters import fhir_store
+from src.agent import trace
 from src.adapters.fhir_store import LOINC, RXNORM, SNOMED, ATC, QueryResult, norm_system
 from src.engine.units import normalize_unit, to_unit
 
@@ -51,10 +52,11 @@ class Verdict:
     blocking: bool = True
     needs_recovery: bool = False  # empty query: T7 agent may retry codes / notes
     conflict: bool = False  # structured data vs note disagree (T7 decision 4) -> needs review
+    recovery: str = ""  # one-line summary of what the recovery agent did (shown in the log)
     trace: list[dict] = field(default_factory=list)
 
-    def log(self, step: str, tool: str, result: str, decision: str) -> None:
-        self.trace.append({"step": step, "tool": tool, "result": result, "decision": decision})
+    def log(self, tool: str, result: str, decision: str = "") -> None:
+        trace.add(self.trace, tool, result, decision)
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -71,7 +73,11 @@ def _resource(pred: dict) -> str:
 
 
 def _evidence(records: list[dict], value_key: str = "value") -> list[dict]:
-    return [{"resource_id": r["resource_id"], "value": r.get(value_key), "date": r.get("date")} for r in records[:MAX_EVIDENCE]]
+    """As recorded, with the unit, so the CRC can check the raw value against the source."""
+    def shown(r):
+        value = r.get(value_key)
+        return f"{_fmt(value)} {r['unit']}" if value_key == "value" and r.get("unit") else value
+    return [{"resource_id": r["resource_id"], "value": shown(r), "date": r.get("date")} for r in records[:MAX_EVIDENCE]]
 
 
 def _age(birth: str, on: str) -> int:
@@ -89,22 +95,22 @@ def evaluate(predicate: dict, patient_id: str, screening_date: str) -> Verdict:
 
     if predicate.get("computable") is False or predicate.get("grade") == "N":
         v.note = "not computable from structured data; left to CRC"
-        v.log("screen", "rule:not_computable", f"computable={predicate.get('computable')} grade={predicate.get('grade')}", "unknown")
+        v.log("rule:not_computable", f"computable={predicate.get('computable')} grade={predicate.get('grade')}", "unknown")
         return v
     if (predicate.get("anchor") or {}).get("event") == "index_event":
         v.note = "index-event anchor not implemented yet (trial G)"
-        v.log("anchor", "rule:anchor", "index_event", "unknown")
+        v.log("rule:anchor", "index_event", "unknown")
         return v
     if op not in SUPPORTED_OPERATORS:
         v.note = f"operator {op!r} not implemented yet"
-        v.log("screen", "rule:operator", str(op), "unknown")
+        v.log("rule:operator", str(op), "unknown")
         return v
 
     resource = _resource(predicate)
     q = fhir_store.fhir_query(patient_id, resource, predicate.get("codes") or [],
                               window_days=predicate.get("window_days"), anchor_date=screening_date)
     codes = ",".join(str(c.get("code")) for c in predicate.get("codes") or []) or "-"
-    v.log("query", "fhir_query", f"{resource} [{codes}] window={predicate.get('window_days')} -> {q.status} ({len(q.records)})", "")
+    v.log("fhir_query", f"{resource} [{codes}] window={predicate.get('window_days')} -> {q.status} ({len(q.records)})", "")
     return judge(predicate, q, v, screening_date, resource)
 
 
@@ -115,7 +121,7 @@ def judge(predicate: dict, q: QueryResult, v: Verdict, screening_date: str, reso
 
     if q.status in ("timeout", "malformed"):
         v.status, v.note = "unknown", f"data query {q.status}: {q.detail}"
-        v.log("decide", f"rule:{q.status}", q.detail, "unknown")
+        v.log(f"rule:{q.status}", q.detail, "unknown")
         return v
 
     records = q.records
@@ -123,7 +129,7 @@ def judge(predicate: dict, q: QueryResult, v: Verdict, screening_date: str, reso
         # only current orders count as "taking"
         records = [r for r in records if r.get("status") == "active"]
         if len(records) < len(q.records):
-            v.log("filter", "rule:active_medication", f"{len(q.records) - len(records)} non-active orders ignored", "")
+            v.log("rule:active_medication", f"{len(q.records) - len(records)} non-active orders ignored", "")
 
     if resource == "Patient":
         return _judge_age(predicate, records, v, screening_date)
@@ -132,13 +138,13 @@ def judge(predicate: dict, q: QueryResult, v: Verdict, screening_date: str, reso
         absence = predicate.get("absence_means") or DEFAULT_ABSENCE.get(resource, "unknown")
         v.status, v.needs_recovery = absence, True
         v.note = f"no {resource} record found; absence means {absence}"
-        v.log("decide", "rule:absence_means", q.detail or "empty", absence)
+        v.log("rule:absence_means", q.detail or "empty", absence)
         return v
 
     if op == "exists":
         v.status, v.evidence = "met", _evidence(records)
         v.note = f"{len(records)} matching {resource} record(s); most recent {records[0].get('date', '')[:10]}"
-        v.log("decide", "rule:exists", f"{len(records)} records", "met")
+        v.log("rule:exists", f"{len(records)} records", "met")
         return v
 
     if predicate.get("aggregation") == "count_distinct_active_ingredients":
@@ -163,11 +169,11 @@ def _judge_numeric(predicate: dict, records: list[dict], v: Verdict) -> Verdict:
         else:
             values.append(c.value)
             if c.reason:
-                v.log("normalize", "rule:units", f"{r['resource_id']}: {c.reason}", "")
+                v.log("rule:unit_convert", f"{r['resource_id']}: {c.reason}", "")
     if problems:
         # Never fall back to an older value silently: the CRC sees why.
         v.status, v.note = "unknown", "; ".join(problems)
-        v.log("normalize", "rule:units", v.note, "unknown")
+        v.log("rule:unit_check", v.note, "unknown")
         return v
 
     if agg == "mean_of_last_3":
@@ -183,7 +189,7 @@ def _judge_age(predicate: dict, records: list[dict], v: Verdict, screening_date:
     birth = next((r["value"] for r in records if r.get("code") == "birthDate"), None)
     if not birth:
         v.status, v.note = "unknown", "no birth date"
-        v.log("decide", "rule:absence_means", "no birthDate", "unknown")
+        v.log("rule:absence_means", "no birthDate", "unknown")
         return v
     unit = normalize_unit(predicate.get("unit")) or "years"
     if unit != "years":
@@ -201,14 +207,14 @@ def _compare(predicate: dict, v: Verdict, value: float, label: str, evidence: li
         threshold = float(predicate["value"])
     except (KeyError, TypeError, ValueError):
         v.status, v.note = "unknown", f"predicate has no numeric threshold ({predicate.get('value')!r})"
-        v.log("decide", "rule:predicate", v.note, "unknown")
+        v.log("rule:predicate", v.note, "unknown")
         return v
     held = COMPARE[op](value, threshold)
     v.status = "met" if held else "not_met"
     v.evidence = evidence
     unit = predicate.get("unit") or ""
     v.note = f"{label}; {_fmt(value)} {op} {_fmt(threshold)} {unit}".rstrip() + f" -> {v.status}"
-    v.log("decide", f"rule:compare{op}", f"{_fmt(value)} vs {_fmt(threshold)}", v.status)
+    v.log(f"rule:compare{op}", f"{_fmt(value)} vs {_fmt(threshold)}", v.status)
     return v
 
 

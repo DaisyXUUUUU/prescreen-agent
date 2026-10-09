@@ -21,6 +21,7 @@ CACHE_DIR = ROOT / "cache"
 AWS_PROFILE = os.getenv("AWS_PROFILE") or None
 AWS_REGION = os.getenv("AWS_REGION", "us-west-2")
 S3_BUCKET = os.getenv("S3_BUCKET", "")
+BEDROCK_MODEL_ID = os.getenv("BEDROCK_MODEL_ID", "")
 
 # Real NCT IDs come from Ming (see CLAUDE.md "Waiting on Ming").
 TRIALS: dict[str, str | None] = {

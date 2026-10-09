@@ -32,6 +32,8 @@ python run.py --trial B --fail ctgov_timeout   # criteria served from cache, log
 
 Writes `out/prescreen_log_{trial}_{date}.md` (for the CRC: likely eligible / pending / excluded / needs review, with evidence and trace per patient) and a `.csv` with one row per patient and criterion (for evaluation). Uploads both to `s3://$S3_BUCKET/logs/{trial}/{date}/` when `S3_BUCKET` is set. If the criteria cannot be fetched and the cache is older than 14 days, no log is written.
 
+Queries that come back empty and leave a criterion `unknown` go to a recovery agent (Strands Agents + Amazon Nova 2 Lite on Bedrock): it tries equivalent codes, then searches clinical notes, then abstains with an explanation. Records it finds go back to the deterministic engine, which makes every comparison; note text is never treated as a lab value. Every step is traced in the log and in `out/trace_{trial}_{date}.jsonl`. Use `--no-agent` for a rules-only run.
+
 Until trial B's data arrives, run on the fixtures:
 
 ```bash
@@ -76,7 +78,8 @@ tests/
 - [x] T3 FHIR file adapter (tested on 3 hand-written fixture bundles; real Synthea data pending)
 - [x] T5 engine (tested on fixtures and sample predicates; trial B predicates pending)
 - [x] T6 aggregation and log (end to end on fixtures)
-- [ ] T7–T9 agent/trace/failures · T10 amendments · T11 eval
+- [x] T7 recovery agent, T8 trace (live-tested on fixtures)
+- [ ] T9 failures · T10 amendments · T11 eval
 
 ## License
 

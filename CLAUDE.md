@@ -87,7 +87,7 @@ Work proceeds on placeholders; every item below must be swapped in and **re-veri
 | Confirm extension fields (`grade, resource, anchor, aggregation, absence_means, assumption`) | T5 scope | Fri | assume all enabled | — |
 | Synthea patients in `data/patients/` (5 first is fine) | T3 | Fri night | 3 hand-written minimal bundles in `tests/fixtures/` (eligible / excluded / missing lab) | T3 loads real bundles; trust real structure over fixtures |
 | Injected-case list | T5 tests, T9 | Sat AM | — | — |
-| ATC→RxNorm map, local code map | medication / code matching | Sat AM | — | — |
+| ATC→RxNorm map, local code map | medication / code matching; agent equivalents | Sat AM | placeholder table in `src/agent/agent.py` | agent `lookup_equivalent_codes` reports source = Ming's file |
 | v2 snapshot + v2 predicates | T10 | Sat PM | — | — |
 | Ground truth (≥20 patients) | T11 | Sat night | — | — |
 
@@ -102,7 +102,8 @@ Open questions for Ming:
   4. `mean_of_last_3` uses however many values exist (1–3) inside the window.
   5. If the value chosen by aggregation is unconvertible or implausible → `unknown`; never fall back to an older value.
   6. Values are rounded to 2 decimals after unit conversion before comparing (boundary stability).
-  7. Every empty query sets `needs_recovery`; T7 decides which ones are worth an agent call.
+  7. Every empty query sets `needs_recovery`; T7 sends only those still `unknown` (labs, allergies) to the agent. Missing diagnoses/medications stay `not_met` by rule and are not sent (saves model calls). Confirm.
+  8. Recovery agent uses a placeholder equivalent-code table (LDL 18262-1/13457-7/2089-1, TG 2571-8/3043-7, hypercholesterolemia 13644009/55822004) until `data/mappings/local_code_map.json` exists; expected shape `{"groups": [{"concept", "codes": [{system, code, display}]}]}`.
 
 ## Bedrock access (resolved 2026-10-09)
 
@@ -112,4 +113,4 @@ If Daisy's account is ever needed (e.g. for S3 ownership), recheck its quotas fi
 
 ## Current status
 
-T1 done (pending: Ming clones and pushes). T4 done on placeholder NCT. T3 done on fixtures. T5 done on fixtures + `tests/fixtures/sample_predicates.json` (NOT trial B). T6 done: `run.py` runs end to end on fixtures. Real acceptance (50 patients, trial B) waits for Ming's data. Next: T7 (agent) + T8 (trace).
+T1 done (pending: Ming clones and pushes). T4 done on placeholder NCT. T3 done on fixtures. T5 done on fixtures + `tests/fixtures/sample_predicates.json` (NOT trial B). T6 done: `run.py` runs end to end on fixtures. T7+T8 done: recovery agent (Strands + Nova 2 Lite) live-tested on fixtures; trace JSONL. Real acceptance (50 patients, trial B, Ming's wrong-code cases) waits for Ming's data. Next: T9 (failure switches).

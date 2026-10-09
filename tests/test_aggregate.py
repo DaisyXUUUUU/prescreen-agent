@@ -97,7 +97,7 @@ def run_cli(monkeypatch, tmp_path, *extra, fetch_status="ok"):
     monkeypatch.setattr(config, "S3_BUCKET", "")
     argv = ["run.py", "--trial", "SAMPLE", "--nct", "NCT02178098", "--date", "2026-10-09",
             "--predicates", str(FIX / "sample_predicates.json"), "--patients", str(FIX / "patients"),
-            "--out", str(tmp_path), *extra]
+            "--out", str(tmp_path), "--no-agent", *extra]
     monkeypatch.setattr(sys, "argv", argv)
     return run.main()
 
@@ -105,13 +105,14 @@ def run_cli(monkeypatch, tmp_path, *extra, fetch_status="ok"):
 def test_every_patient_lands_in_exactly_one_section(monkeypatch, tmp_path):
     assert run_cli(monkeypatch, tmp_path) == 0
     md = (tmp_path / "prescreen_log_SAMPLE_2026-10-09.md").read_text()
-    for pid in ["fixture-complete", "fixture-missing-ldl", "fixture-over-age"]:
+    for pid in ["fixture-alt-code", "fixture-complete", "fixture-missing-ldl", "fixture-over-age"]:
         summary_rows = [l for l in md.splitlines() if l.startswith(f"| `{pid}` |")]
         assert len(summary_rows) == 1, pid
     rows = list(csv.DictReader((tmp_path / "prescreen_log_SAMPLE_2026-10-09.csv").open()))
-    assert len(rows) == 3 * 9
+    assert len(rows) == 4 * 9
     assert {r["patient_id"]: r["patient_category"] for r in rows} == {
-        "fixture-complete": "likely_eligible", "fixture-missing-ldl": "pending", "fixture-over-age": "pending"}
+        "fixture-alt-code": "pending", "fixture-complete": "likely_eligible",
+        "fixture-missing-ldl": "pending", "fixture-over-age": "pending"}
 
 
 def test_excluded_rows_trace_to_criterion_and_record(monkeypatch, tmp_path):

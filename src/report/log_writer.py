@@ -36,6 +36,7 @@ def _notes(r: PatientResult) -> str:
         parts.append("Confirm at visit: " + ", ".join(r.confirm_at_visit))
     if r.crc_checks:
         parts.append("CRC to check: " + ", ".join(r.crc_checks))
+    parts += [f"↳ {v.criterion_id} agent: {v.recovery}" for v in r.verdicts if v.recovery]
     return "<br>".join(_cell(p) for p in parts)
 
 
@@ -79,10 +80,11 @@ def render_markdown(trial: str, nct: str, fetch, screening_date: str, results: l
             p = preds[v.criterion_id]
             flag = " (non-blocking)" if v.status == "unknown" and not v.blocking else ""
             out.append(f"| {v.criterion_id} {_cell(p.get('concept'))} | {p['type']} | {v.status}{flag} | {_ev(v)} | {_cell(v.note)} |")
-        out += ["", "Trace:", "", "```"]
+        out += [f"\n↳ **{v.criterion_id}** agent: {_cell(v.recovery)}" for v in r.verdicts if v.recovery]
+        out += ["", "Trace (`rule:*` = fixed rule, `fhir_query` = engine query, anything else = agent tool call):", "", "```"]
         for v in r.verdicts:
             for t in v.trace:
-                out.append(f"{v.criterion_id:<8} {t['step']:<9} {t['tool']:<24} {t['result']}" + (f" => {t['decision']}" if t["decision"] else ""))
+                out.append(f"{v.criterion_id:<8} {t['step']:>2}. {t['tool']:<24} {t['result']}" + (f" => {t['decision']}" if t["decision"] else ""))
         out += ["```", "", "</details>", ""]
     return "\n".join(out)
 

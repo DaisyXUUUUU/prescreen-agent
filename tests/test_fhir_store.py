@@ -16,7 +16,7 @@ def store():
 
 
 def test_loads_all_fixture_patients(store):
-    assert store.list_patients() == ["fixture-complete", "fixture-missing-ldl", "fixture-over-age"]
+    assert store.list_patients() == ["fixture-alt-code", "fixture-complete", "fixture-missing-ldl", "fixture-over-age"]
     assert store.load_errors == []
 
 
@@ -113,10 +113,10 @@ def test_non_patient_bundles_are_skipped(tmp_path):
 
 
 def test_list_patients_since(store):
-    assert store.list_patients(since_date="2026-08-01") == ["fixture-complete", "fixture-missing-ldl"]
+    assert store.list_patients(since_date="2026-08-01") == ["fixture-alt-code", "fixture-complete", "fixture-missing-ldl"]
 
 
 def test_module_api_wraps_store(store):
     fhir_store.set_store(store)
     assert fhir_store.fhir_query("fixture-complete", "Observation", LDL).status == "ok"
-    assert fhir_store.list_patients()[0] == "fixture-complete"
+    assert fhir_store.list_patients()[0] == "fixture-alt-code"
