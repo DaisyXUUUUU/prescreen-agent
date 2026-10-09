@@ -94,6 +94,14 @@ Work proceeds on placeholders; every item below must be swapped in and **re-veri
 Open questions for Ming:
 - Aggregation order: a patient with an inclusion criterion clearly `not_met` AND a blocking `unknown` elsewhere — "excluded" or "pending"? Current draft says pending; to confirm.
 - Unit conversion factors and plausible ranges in `units.py` need Ming's review.
+- Engine assumptions made in T5 (confirm or correct):
+  1. `exists` on Condition counts any clinical status, including resolved (history counts).
+  2. MedicationRequest counts only `status == "active"` orders; no active order → default `absence_means` = `not_met`.
+  3. `count_distinct_active_ingredients` counts distinct RxNorm codes; true ingredient-level counting needs the ATC→RxNorm map.
+  4. `mean_of_last_3` uses however many values exist (1–3) inside the window.
+  5. If the value chosen by aggregation is unconvertible or implausible → `unknown`; never fall back to an older value.
+  6. Values are rounded to 2 decimals after unit conversion before comparing (boundary stability).
+  7. Every empty query sets `needs_recovery`; T7 decides which ones are worth an agent call.
 
 ## Bedrock access (resolved 2026-10-09)
 
@@ -103,4 +111,4 @@ If Daisy's account is ever needed (e.g. for S3 ownership), recheck its quotas fi
 
 ## Current status
 
-T1 done (pending: Ming clones and pushes). T4 done on placeholder NCT. T3 done on fixtures in `tests/fixtures/patients/`. Next: T5.
+T1 done (pending: Ming clones and pushes). T4 done on placeholder NCT. T3 done on fixtures. T5 done on fixtures + `tests/fixtures/sample_predicates.json` (NOT trial B); real acceptance waits for `trial_B.json` and Ming's injected cases. Next: T6.
