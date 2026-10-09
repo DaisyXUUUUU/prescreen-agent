@@ -1,0 +1,7 @@
+# Preserve byte-exact evidence and frozen manifests across Windows/Linux clones.
+t6_sad_demo/** -text whitespace=cr-at-eol
+t2_backup/** -text whitespace=cr-at-eol
+docs/data_inventory.json -text whitespace=cr-at-eol
+PROJECT_BRIEF.md -text whitespace=cr-at-eol
+MING_DEMO.md -text whitespace=cr-at-eol
+demo_scope.json -text whitespace=cr-at-eol

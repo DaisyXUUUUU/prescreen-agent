@@ -1,0 +1,135 @@
+[
+  {
+    "case_id": "SAD01",
+    "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab",
+    "criterion_id": "I5",
+    "type": "inclusion",
+    "manual": true,
+    "status": "unknown",
+    "reason": "Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient",
+    "evidence": [],
+    "conflict": false
+  },
+  {
+    "case_id": "SAD02",
+    "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4",
+    "criterion_id": "I5",
+    "type": "inclusion",
+    "manual": true,
+    "status": "unknown",
+    "reason": "Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient",
+    "evidence": [],
+    "conflict": false
+  },
+  {
+    "case_id": "SAD03",
+    "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6",
+    "criterion_id": "I5",
+    "type": "inclusion",
+    "manual": true,
+    "status": "unknown",
+    "reason": "Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient",
+    "evidence": [],
+    "conflict": false
+  },
+  {
+    "case_id": "SAD04",
+    "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc",
+    "criterion_id": "I5",
+    "type": "inclusion",
+    "manual": true,
+    "status": "unknown",
+    "reason": "Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient",
+    "evidence": [],
+    "conflict": false
+  },
+  {
+    "case_id": "SAD05",
+    "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c",
+    "criterion_id": "I5",
+    "type": "inclusion",
+    "manual": true,
+    "status": "unknown",
+    "reason": "Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient",
+    "evidence": [],
+    "conflict": false
+  },
+  {
+    "case_id": "SAD06",
+    "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286",
+    "criterion_id": "I3",
+    "type": "inclusion",
+    "manual": false,
+    "status": "unknown",
+    "reason": "No matching screening observation; no negative inference",
+    "evidence": [],
+    "conflict": false
+  },
+  {
+    "case_id": "SAD06",
+    "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286",
+    "criterion_id": "I5",
+    "type": "inclusion",
+    "manual": true,
+    "status": "unknown",
+    "reason": "Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient",
+    "evidence": [],
+    "conflict": false
+  },
+  {
+    "case_id": "SAD07",
+    "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526",
+    "criterion_id": "I2",
+    "type": "inclusion",
+    "manual": false,
+    "status": "unknown",
+    "reason": "Multiple candidate results; selection unresolved",
+    "evidence": [
+      {
+        "resource_ref": "Observation/84a36d2d-7e57-5cd3-82e2-fc304ab363f7",
+        "field": "valueQuantity",
+        "value": {
+          "value": 90,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+      },
+      {
+        "resource_ref": "Observation/22bd12a5-6b4d-5fd6-a49d-caddfd928e14",
+        "field": "valueQuantity",
+        "value": {
+          "value": 110,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+      }
+    ],
+    "conflict": true
+  },
+  {
+    "case_id": "SAD07",
+    "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526",
+    "criterion_id": "I5",
+    "type": "inclusion",
+    "manual": true,
+    "status": "unknown",
+    "reason": "Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient",
+    "evidence": [],
+    "conflict": false
+  },
+  {
+    "case_id": "SAD08",
+    "patient_id": "329bcd54-d577-b679-2232-96d50f40a302",
+    "criterion_id": "I5",
+    "type": "inclusion",
+    "manual": true,
+    "status": "unknown",
+    "reason": "Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient",
+    "evidence": [],
+    "conflict": false
+  }
+]

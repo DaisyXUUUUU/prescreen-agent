@@ -2,6 +2,12 @@
 
 AWS Community Day Bay Area 2026 hackathon — "Hand it off" challenge.
 
+## Ming's T6 SAD materials
+
+Data handoff: [delivery locations and integration gaps](docs/DATA_DELIVERY.md), [file inventory](docs/data_inventory.json). These describe local materials; they do not indicate an upload or completed T6 integration.
+
+The local T6 / NCT07347678 SAD demonstration and T2 reference materials are described in [MING_DEMO.md](MING_DEMO.md). See [Ming handoff status](docs/MING_HANDOFF.md) for the confirmed rule review and integration boundary. These materials currently run with `python t6_sad_demo/run.py`; they have not yet been adapted to the `src/` engine or the root `run.py` command below. The local trial labels T6/T2 are distinct from engineering task numbers T1–T12.
+
 Takes over a clinical research coordinator's weekly clinical-trial pre-screening: reads synthetic patients (Synthea FHIR R4) and trial eligibility criteria (ClinicalTrials.gov), and writes the same pre-screening log the CRC writes by hand: likely eligible / pending / excluded / needs review, with evidence for every verdict. A deterministic engine makes every comparison; an agent on Amazon Bedrock (Strands Agents + Amazon Nova 2 Lite) handles only the exceptions (empty queries, changed criteria). No patient is ever contacted. **Synthetic data only.**
 
 ## Quick start

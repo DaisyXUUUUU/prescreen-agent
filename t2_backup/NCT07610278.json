@@ -1,0 +1,988 @@
+{
+  "protocolSection": {
+    "identificationModule": {
+      "nctId": "NCT07610278",
+      "orgStudyIdInfo": {
+        "id": "CHDY015A12201"
+      },
+      "organization": {
+        "fullName": "Novartis",
+        "class": "INDUSTRY"
+      },
+      "briefTitle": "A Study to Evaluate the Pharmacodynamics of a Combination of QCZ484 and Inclisiran in Participants With Hypertension and Concomitant Hypercholesterolemia",
+      "officialTitle": "A Multicenter, Randomized, Double-blind, Factorial Design Phase 2 Study to Evaluate the Pharmacodynamics, Safety and Tolerability of HDY015 Administered as a Free Combination of QCZ484 and Inclisiran Compared to QCZ484, Inclisiran, and Placebo in Participants With Hypertension and Concomitant Hypercholesterolemia"
+    },
+    "statusModule": {
+      "statusVerifiedDate": "2026-07",
+      "overallStatus": "RECRUITING",
+      "expandedAccessInfo": {
+        "hasExpandedAccess": false
+      },
+      "startDateStruct": {
+        "date": "2026-05-29",
+        "type": "ACTUAL"
+      },
+      "primaryCompletionDateStruct": {
+        "date": "2027-04-28",
+        "type": "ESTIMATED"
+      },
+      "completionDateStruct": {
+        "date": "2028-02-03",
+        "type": "ESTIMATED"
+      },
+      "studyFirstSubmitDate": "2026-05-20",
+      "studyFirstSubmitQcDate": "2026-05-20",
+      "studyFirstPostDateStruct": {
+        "date": "2026-05-27",
+        "type": "ACTUAL"
+      },
+      "lastUpdateSubmitDate": "2026-07-29",
+      "lastUpdatePostDateStruct": {
+        "date": "2026-07-30",
+        "type": "ACTUAL"
+      }
+    },
+    "sponsorCollaboratorsModule": {
+      "responsibleParty": {
+        "type": "SPONSOR"
+      },
+      "leadSponsor": {
+        "name": "Novartis Pharmaceuticals",
+        "class": "INDUSTRY"
+      }
+    },
+    "oversightModule": {
+      "oversightHasDmc": true,
+      "isFdaRegulatedDrug": true,
+      "isFdaRegulatedDevice": false
+    },
+    "descriptionModule": {
+      "briefSummary": "This is a multicenter, randomized, double-blind, factorial design Phase 2 study to evaluate the pharmacodynamics, safety and tolerability of a combination of QCZ484 and inclisiran compared to QCZ484, inclisiran, and placebo in participants with hypertension and concomitant hypercholesterolemia.",
+      "detailedDescription": "The study will last up to 12 months and has three periods:\n\n* Eligibility will be assessed during the screening period including 2 screening visits. Some eligibility criteria will be confirmed at the Baseline/Randomization visit.\n* Eligible participants will be randomized to receive a combination of QCZ484 and inclisiran, QCZ484, inclisiran or placebo once on Day 1 at the Baseline/Randomization visit.\n* Afterwards, participants will enter the safety follow-up period. Eligible participants who complete the treatment period have the option to participate in an open-label extension study instead of entering the safety follow-up period."
+    },
+    "conditionsModule": {
+      "conditions": [
+        "Hypercholesterolaemia"
+      ],
+      "keywords": [
+        "Hypertension",
+        "hypercholesterolemia",
+        "siRNA",
+        "inclisiran",
+        "QCZ484",
+        "randomized",
+        "double-blind",
+        "Phase 2",
+        "pharmacodynamics",
+        "AGT",
+        "PCSK9"
+      ]
+    },
+    "designModule": {
+      "studyType": "INTERVENTIONAL",
+      "phases": [
+        "PHASE2"
+      ],
+      "designInfo": {
+        "allocation": "RANDOMIZED",
+        "interventionModel": "PARALLEL",
+        "primaryPurpose": "TREATMENT",
+        "maskingInfo": {
+          "masking": "DOUBLE",
+          "whoMasked": [
+            "PARTICIPANT",
+            "INVESTIGATOR"
+          ]
+        }
+      },
+      "enrollmentInfo": {
+        "count": 120,
+        "type": "ESTIMATED"
+      }
+    },
+    "armsInterventionsModule": {
+      "armGroups": [
+        {
+          "label": "QCZ484 + Inclisiran",
+          "type": "EXPERIMENTAL",
+          "description": "QCZ484 + inclisiran, once on Day 1",
+          "interventionNames": [
+            "Drug: QCZ484",
+            "Drug: Inclisiran"
+          ]
+        },
+        {
+          "label": "QCZ484",
+          "type": "ACTIVE_COMPARATOR",
+          "description": "QCZ484 + inclisiran placebo, once on Day 1",
+          "interventionNames": [
+            "Drug: QCZ484"
+          ]
+        },
+        {
+          "label": "Inclisiran",
+          "type": "ACTIVE_COMPARATOR",
+          "description": "Inclisiran + QCZ484 placebo, once on Day 1",
+          "interventionNames": [
+            "Drug: Inclisiran"
+          ]
+        },
+        {
+          "label": "Placebo",
+          "type": "PLACEBO_COMPARATOR",
+          "description": "QCZ484 placebo + inclisiran placebo, once on Day 1",
+          "interventionNames": [
+            "Drug: QCZ484 placebo",
+            "Drug: Inclisiran placebo"
+          ]
+        }
+      ],
+      "interventions": [
+        {
+          "type": "DRUG",
+          "name": "QCZ484",
+          "description": "QCZ484 once on Day 1",
+          "armGroupLabels": [
+            "QCZ484",
+            "QCZ484 + Inclisiran"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "Inclisiran",
+          "description": "Inclisiran once on Day 1",
+          "armGroupLabels": [
+            "Inclisiran",
+            "QCZ484 + Inclisiran"
+          ],
+          "otherNames": [
+            "KJX839",
+            "Leqvio"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "QCZ484 placebo",
+          "description": "QCZ484 placebo once on Day 1",
+          "armGroupLabels": [
+            "Placebo"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "Inclisiran placebo",
+          "description": "Inclisiran placebo once on Day 1",
+          "armGroupLabels": [
+            "Placebo"
+          ]
+        }
+      ]
+    },
+    "outcomesModule": {
+      "primaryOutcomes": [
+        {
+          "measure": "Percent change from baseline of PCSK9 levels",
+          "description": "Percent (%) change from baseline of PCSK9 levels for QCZ484 + Inclisiran at Month 3",
+          "timeFrame": "Baseline and Month 3"
+        },
+        {
+          "measure": "Percent change from baseline of AGT levels",
+          "description": "Percent (%) change from baseline of AGT levels for QCZ484 + Inclisiran at Month 3",
+          "timeFrame": "Baseline and Month 3"
+        }
+      ],
+      "secondaryOutcomes": [
+        {
+          "measure": "Change from baseline of systolic blood pressure",
+          "description": "Change from baseline of systolic blood pressure for QCZ484 + Inclisiran at Month 3 and 6.",
+          "timeFrame": "Baseline, Month 3 and Month 6"
+        },
+        {
+          "measure": "Change from baseline of LDL-C levels",
+          "description": "Change from baseline of LDL-C levels for QCZ484 + Inclisiran at Month 3 and 6.",
+          "timeFrame": "Baseline, Month 3 and Month 6"
+        },
+        {
+          "measure": "Number of participants with Treatment-emergent adverse event and abnormal changes in laboratory parameters, vital signs and other safety assessments",
+          "description": "Number of participants with treatment-emergent adverse event, abnormal changes in laboratory parameters, vital signs and other safety assessments up to Month 12.",
+          "timeFrame": "Up to month 12"
+        }
+      ]
+    },
+    "eligibilityModule": {
+      "eligibilityCriteria": "Inclusion Criteria:\n\n* Males or females aged 18 to 75 years.\n* Diagnosis of primary hypertension.\n* Treatment with either no, or up to 2 antihypertensive medications at a stable dose for at least 4 weeks preceding screening.\n* Systolic blood pressure ≥140 and \\<165 mmHg based on the mean of 3 sitting measurements based on office blood pressure monitoring.\n* Diagnosis of hypercholesterolemia including heterozygous familial hypercholesterolemia unable to reach LDL-C goals with a stable dose of statin treatment for at least 4 weeks prior to screening as per Investigator judgement, guidelines and local practice (if tolerated and not contraindicated) with or without bempedoic acid and with or without ezetimibe prescribed according to local guidance, at a stable dose for at least 4 weeks preceding Screening Visit 1.\n\nThe following parameters must be confirmed at Screening Visit 2:\n\n* Fasting serum LDL-C ≥70 mg/dL and \\<190 mg/dL using Friedewald equation.\n* Fasting triglyceride \\<400 mg/dL.\n\nExclusion Criteria:\n\n* Symptomatic orthostatic hypotension.\n* Treatment with certain medications and/or unable to comply with prohibited medications requirements.\n\nOther protocol inclusion/exclusion criteria may apply",
+      "healthyVolunteers": false,
+      "sex": "ALL",
+      "minimumAge": "18 Years",
+      "maximumAge": "75 Years",
+      "stdAges": [
+        "ADULT",
+        "OLDER_ADULT"
+      ]
+    },
+    "contactsLocationsModule": {
+      "centralContacts": [
+        {
+          "name": "Novartis Pharmaceuticals",
+          "role": "CONTACT",
+          "phone": "1-888-669-6682",
+          "email": "novartis.email@novartis.com"
+        },
+        {
+          "name": "Novartis Pharmaceuticals",
+          "role": "CONTACT"
+        }
+      ],
+      "overallOfficials": [
+        {
+          "name": "Novartis Pharmaceuticals",
+          "affiliation": "Novartis Pharmaceuticals",
+          "role": "STUDY_DIRECTOR"
+        }
+      ],
+      "locations": [
+        {
+          "facility": "G and L Research LLC",
+          "status": "RECRUITING",
+          "city": "Foley",
+          "state": "Alabama",
+          "zip": "36535",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Christine S Fuller",
+              "role": "CONTACT",
+              "email": "glresearch5@gmail.com"
+            },
+            {
+              "name": "Nidal Morrar",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 30.40659,
+            "lon": -87.6836
+          }
+        },
+        {
+          "facility": "The Center for Clinical Trials",
+          "status": "RECRUITING",
+          "city": "Saraland",
+          "state": "Alabama",
+          "zip": "36571",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "JoAnn Ladner",
+              "role": "CONTACT",
+              "email": "joann@thecenterforclinicaltrials.com"
+            },
+            {
+              "name": "Howard Rubenstein",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 30.82074,
+            "lon": -88.07056
+          }
+        },
+        {
+          "facility": "Clinical Trials Research",
+          "status": "RECRUITING",
+          "city": "Lincoln",
+          "state": "California",
+          "zip": "95648",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Stacy Woodward",
+              "role": "CONTACT",
+              "phone": "+1 916 434 8230",
+              "email": "stacy@ctrsites.com"
+            },
+            {
+              "name": "Jeffrey D Wayne",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 38.89156,
+            "lon": -121.29301
+          }
+        },
+        {
+          "facility": "Downtown L A Research Center Inc",
+          "status": "RECRUITING",
+          "city": "Los Angeles",
+          "state": "California",
+          "zip": "90017",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Claudia Cisneros",
+              "role": "CONTACT",
+              "phone": "+1 213 261 3680",
+              "email": "ccisneros@dtlaresearch.com"
+            },
+            {
+              "name": "Salil U Nadkarni",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 34.05223,
+            "lon": -118.24368
+          }
+        },
+        {
+          "facility": "Valley Clinical Trials",
+          "status": "RECRUITING",
+          "city": "Northridge",
+          "state": "California",
+          "zip": "91325",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Haydee Gutierrez",
+              "role": "CONTACT",
+              "email": "hgutierrez@flourishresearch.com"
+            },
+            {
+              "name": "Mehrdad Ariani",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 34.22834,
+            "lon": -118.53675
+          }
+        },
+        {
+          "facility": "Flourish Medical Clinical Trials",
+          "status": "RECRUITING",
+          "city": "Boca Raton",
+          "state": "Florida",
+          "zip": "33434",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Cassandra Duff",
+              "role": "CONTACT",
+              "email": "cduff@flourishresearch.com"
+            },
+            {
+              "name": "Rasha Youssef",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 26.35869,
+            "lon": -80.0831
+          }
+        },
+        {
+          "facility": "Clinical Research of Brandon LLC",
+          "status": "RECRUITING",
+          "city": "Brandon",
+          "state": "Florida",
+          "zip": "33511",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Erika Santos",
+              "role": "CONTACT",
+              "email": "esantos@crofb.com"
+            },
+            {
+              "name": "German Alvarez",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 27.9378,
+            "lon": -82.28592
+          }
+        },
+        {
+          "facility": "ALL Medical Research LLC",
+          "status": "RECRUITING",
+          "city": "Cooper City",
+          "state": "Florida",
+          "zip": "33024",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Alejandro Marin",
+              "role": "CONTACT",
+              "phone": "+1 754 263 2001",
+              "email": "amarin@allmedicalresearch.com"
+            },
+            {
+              "name": "Lorena Lewy-Alterbaum",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 26.05731,
+            "lon": -80.27172
+          }
+        },
+        {
+          "facility": "AMR Miami",
+          "status": "RECRUITING",
+          "city": "Coral Gables",
+          "state": "Florida",
+          "zip": "33134",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Odalys Fundora",
+              "role": "CONTACT",
+              "email": "odalys.fundora@amr-clinical.com"
+            },
+            {
+              "name": "Abid Chaudhry",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 25.72149,
+            "lon": -80.26838
+          }
+        },
+        {
+          "facility": "Universal Axon Clinical Research",
+          "status": "RECRUITING",
+          "city": "Doral",
+          "state": "Florida",
+          "zip": "33166",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Glenda Padron",
+              "role": "CONTACT",
+              "email": "glenda.padron@roviaclinical.com"
+            },
+            {
+              "name": "Luis Martinez",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 25.81954,
+            "lon": -80.35533
+          }
+        },
+        {
+          "facility": "East Coast Institute for Research",
+          "status": "RECRUITING",
+          "city": "Jacksonville",
+          "state": "Florida",
+          "zip": "32216",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Carol Tunsil",
+              "role": "CONTACT",
+              "phone": "+1 386 868 5625",
+              "email": "carol.tunsil@roviaclinical.com"
+            },
+            {
+              "name": "Minesh Patel",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 30.33218,
+            "lon": -81.65565
+          }
+        },
+        {
+          "facility": "Entrust Clinical Research",
+          "status": "RECRUITING",
+          "city": "Miami",
+          "state": "Florida",
+          "zip": "33176",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Daimelys Garcia",
+              "role": "CONTACT",
+              "email": "Dgarcia@entrustclinicalresearch.com"
+            },
+            {
+              "name": "Adolfo Cueli",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 25.77427,
+            "lon": -80.19366
+          }
+        },
+        {
+          "facility": "Inpatient Research Clinical LLC",
+          "status": "RECRUITING",
+          "city": "Miami Lakes",
+          "state": "Florida",
+          "zip": "33014",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Ilianys Marino",
+              "role": "CONTACT",
+              "phone": "+1 786 502 4303",
+              "email": "imarino@inpatientresearch.com"
+            },
+            {
+              "name": "Alexis Gutierrez",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 25.90871,
+            "lon": -80.30866
+          }
+        },
+        {
+          "facility": "Inpatient Research Clinical LLC",
+          "status": "RECRUITING",
+          "city": "Miami Lakes",
+          "state": "Florida",
+          "zip": "33014",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Enrique Pacheco",
+              "role": "CONTACT",
+              "email": "epacheco@inpatientresearch.com"
+            },
+            {
+              "name": "Jose Contreras",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 25.90871,
+            "lon": -80.30866
+          }
+        },
+        {
+          "facility": "American Research Centers of FL",
+          "status": "RECRUITING",
+          "city": "Pembroke Pines",
+          "state": "Florida",
+          "zip": "33027",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Liliana Portal",
+              "role": "CONTACT",
+              "email": "lportal@americanresearchcenters.com"
+            },
+            {
+              "name": "Luis Del Prado Rodriguez",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 26.00315,
+            "lon": -80.22394
+          }
+        },
+        {
+          "facility": "East Coast Inst for Research LLC",
+          "status": "RECRUITING",
+          "city": "Saint Augustine",
+          "state": "Florida",
+          "zip": "32086",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Rebecca Fink",
+              "role": "CONTACT",
+              "phone": "+1 904 824 1776#116",
+              "email": "becca.fink@roviaclinical.com"
+            },
+            {
+              "name": "Ferris George",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 29.89469,
+            "lon": -81.31452
+          }
+        },
+        {
+          "facility": "East Coast Research",
+          "status": "RECRUITING",
+          "city": "Canton",
+          "state": "Georgia",
+          "zip": "30114",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Marvelyn Brentum",
+              "role": "CONTACT",
+              "email": "marvelyn.brentum@roviaclinical.com"
+            },
+            {
+              "name": "Jason Berner",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 34.23676,
+            "lon": -84.49076
+          }
+        },
+        {
+          "facility": "Great Lakes Clinical Trials",
+          "status": "RECRUITING",
+          "city": "Chicago",
+          "state": "Illinois",
+          "zip": "60640",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Megi Stafa",
+              "role": "CONTACT",
+              "phone": "+1 773 275 3500",
+              "email": "mstafa@flourishresearch.com"
+            },
+            {
+              "name": "Manish Jain",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 41.85003,
+            "lon": -87.65005
+          }
+        },
+        {
+          "facility": "AMR Chicago",
+          "status": "RECRUITING",
+          "city": "Niles",
+          "state": "Illinois",
+          "zip": "60714",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Unnathi Nagelli",
+              "role": "CONTACT",
+              "phone": "+1 630 491 1901",
+              "email": "unnathi.nagelli@amr-clinical.com"
+            },
+            {
+              "name": "Manohar Jethani",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 42.01892,
+            "lon": -87.80284
+          }
+        },
+        {
+          "facility": "Alliance for Multispecialty Research",
+          "status": "RECRUITING",
+          "city": "Wichita",
+          "state": "Kansas",
+          "zip": "67207",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Shaunacie Mc Callum",
+              "role": "CONTACT",
+              "email": "shaunacie.mccallum@amr-clinical.com"
+            },
+            {
+              "name": "Jerry Punch",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 37.69224,
+            "lon": -97.33754
+          }
+        },
+        {
+          "facility": "Monroe Research Llc",
+          "status": "RECRUITING",
+          "city": "West Monroe",
+          "state": "Louisiana",
+          "zip": "71291",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Nina Parrott",
+              "role": "CONTACT",
+              "email": "ninaparrottlpncrc@monroeresearch.net"
+            },
+            {
+              "name": "Assad Mouhaffel",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 32.51848,
+            "lon": -92.14764
+          }
+        },
+        {
+          "facility": "Anderson Medical Research",
+          "status": "RECRUITING",
+          "city": "Ft. Washington",
+          "state": "Maryland",
+          "zip": "20744",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Ann-Marie Cobb",
+              "role": "CONTACT",
+              "email": "andersonmedicalresearch@gmail.com"
+            },
+            {
+              "name": "Felton Anderson",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 38.70734,
+            "lon": -77.02303
+          }
+        },
+        {
+          "facility": "Capitol Cardiology Associates",
+          "status": "RECRUITING",
+          "city": "Lanham",
+          "state": "Maryland",
+          "zip": "20706",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Iluyomade Adeusi",
+              "role": "CONTACT",
+              "phone": "+1 301 312 0575",
+              "email": "iluyomade@capitolcardiology.com"
+            },
+            {
+              "name": "Vineet Venugopal",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 38.96875,
+            "lon": -76.8634
+          }
+        },
+        {
+          "facility": "Monroe Biomedical Research",
+          "status": "RECRUITING",
+          "city": "Monroe",
+          "state": "North Carolina",
+          "zip": "28112",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Avrie Torres",
+              "role": "CONTACT",
+              "phone": "+1 704 283 7359",
+              "email": "atorres@onsiteclinical.com"
+            },
+            {
+              "name": "Awawu Igbinadolor",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 34.98543,
+            "lon": -80.54951
+          }
+        },
+        {
+          "facility": "Walker Family Care",
+          "status": "RECRUITING",
+          "city": "Little River",
+          "state": "South Carolina",
+          "zip": "29566",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Madelyn Poore",
+              "role": "CONTACT",
+              "email": "mpoore@littlerivercr.com"
+            },
+            {
+              "name": "Stephen D Grubb",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 33.87323,
+            "lon": -78.61418
+          }
+        },
+        {
+          "facility": "Synergy Group Medical LLC",
+          "status": "RECRUITING",
+          "city": "Houston",
+          "state": "Texas",
+          "zip": "77061",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Graciela Lopez",
+              "role": "CONTACT",
+              "phone": "+1 281 206 0068",
+              "email": "glopez@synergygroupus.com"
+            },
+            {
+              "name": "Deirdre McMullen",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 29.76328,
+            "lon": -95.36327
+          }
+        },
+        {
+          "facility": "Synergy Group Medical LLC",
+          "status": "RECRUITING",
+          "city": "Houston",
+          "state": "Texas",
+          "zip": "77061",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Reina Romero",
+              "role": "CONTACT",
+              "phone": "+1 832 532 4210",
+              "email": "rromero@synergygroupus.com"
+            },
+            {
+              "name": "Caroline N Mbogua",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 29.76328,
+            "lon": -95.36327
+          }
+        },
+        {
+          "facility": "Manassas Clinical Research Center",
+          "status": "RECRUITING",
+          "city": "Manassas",
+          "state": "Virginia",
+          "zip": "20110",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Arleth Lopez",
+              "role": "CONTACT",
+              "phone": "+1 703 330 1112",
+              "email": "arleth@manassasclinic.com"
+            },
+            {
+              "name": "Nabil Andrawis",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 38.75095,
+            "lon": -77.47527
+          }
+        },
+        {
+          "facility": "Dominion Medical Associates",
+          "status": "RECRUITING",
+          "city": "Richmond",
+          "state": "Virginia",
+          "zip": "23219",
+          "country": "United States",
+          "contacts": [
+            {
+              "name": "Tara Snead",
+              "role": "CONTACT",
+              "phone": "+1 804 836 6540",
+              "email": "tara@dominionmedicalinc.com"
+            },
+            {
+              "name": "Richard A Jackson",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": 37.55376,
+            "lon": -77.46026
+          }
+        }
+      ]
+    },
+    "ipdSharingStatementModule": {
+      "ipdSharing": "YES",
+      "description": "Novartis is committed to sharing with qualified external researchers, access to patient-level data and supporting clinical documents from eligible studies. These requests are reviewed and approved by an independent review panel on the basis of scientific merit. All data provided is anonymized to respect the privacy of patients who have participated in the trial in line with applicable laws and regulations.\n\nThis trial data availability is according to the criteria and process described on https://www.clinicalstudydatarequest.com/."
+    }
+  },
+  "derivedSection": {
+    "miscInfoModule": {
+      "versionHolder": "2026-10-08"
+    },
+    "conditionBrowseModule": {
+      "meshes": [
+        {
+          "id": "D006937",
+          "term": "Hypercholesterolemia"
+        },
+        {
+          "id": "D006973",
+          "term": "Hypertension"
+        }
+      ],
+      "ancestors": [
+        {
+          "id": "D006949",
+          "term": "Hyperlipidemias"
+        },
+        {
+          "id": "D050171",
+          "term": "Dyslipidemias"
+        },
+        {
+          "id": "D052439",
+          "term": "Lipid Metabolism Disorders"
+        },
+        {
+          "id": "D008659",
+          "term": "Metabolic Diseases"
+        },
+        {
+          "id": "D009750",
+          "term": "Nutritional and Metabolic Diseases"
+        },
+        {
+          "id": "D014652",
+          "term": "Vascular Diseases"
+        },
+        {
+          "id": "D002318",
+          "term": "Cardiovascular Diseases"
+        }
+      ]
+    },
+    "interventionBrowseModule": {
+      "meshes": [
+        {
+          "id": "C585830",
+          "term": "ALN-PCS"
+        }
+      ]
+    }
+  },
+  "hasResults": false
+}

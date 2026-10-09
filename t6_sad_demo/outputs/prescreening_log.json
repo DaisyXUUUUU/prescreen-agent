@@ -1,0 +1,3687 @@
+[
+  {
+    "case_id": "SAD01",
+    "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab",
+    "trial_id": "NCT07347678",
+    "cohort": "SAD",
+    "rule_version": "1.0.0",
+    "decision": "passes_evaluated_criteria",
+    "failed_criteria": [],
+    "manual_review_required": true,
+    "complete_eligibility": "not_determined",
+    "conflict": false,
+    "criteria": [
+      {
+        "criterion_id": "AGE",
+        "type": "metadata",
+        "manual": false,
+        "status": "met",
+        "reason": "Age at screening=46",
+        "evidence": [
+          {
+            "resource_ref": "Patient/fb59ce1d-c14e-05e7-719d-47eb6e65a9ab",
+            "field": "birthDate",
+            "value": "1980-03-15",
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I1",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "39156-5=22 kg/m2; predicate from 1.0.0/I1",
+        "evidence": [
+          {
+            "resource_ref": "Observation/43d80a5c-52c2-5dbb-ab4f-236cbb8c4e44",
+            "field": "valueQuantity",
+            "value": {
+              "value": 22,
+              "unit": "kg/m2",
+              "system": "http://unitsofmeasure.org",
+              "code": "kg/m2"
+            },
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "Observation/43d80a5c-52c2-5dbb-ab4f-236cbb8c4e44",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I2",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "18262-6=90 mg/dL; predicate from 1.0.0/I2",
+        "evidence": [
+          {
+            "resource_ref": "Observation/d844d949-dd1c-5ce5-ab58-459800e02d6f",
+            "field": "valueQuantity",
+            "value": {
+              "value": 90,
+              "unit": "mg/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg/dL"
+            },
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "Observation/d844d949-dd1c-5ce5-ab58-459800e02d6f",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "Specimen/b649f11e-8516-5d0a-a90c-b5cc3d8dfdbb",
+            "field": "collection.fastingStatusDuration",
+            "value": {
+              "value": 10,
+              "unit": "hours",
+              "system": "http://unitsofmeasure.org",
+              "code": "h"
+            },
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I3",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "43583-4=40 nmol/L; predicate from 1.0.0/I3",
+        "evidence": [
+          {
+            "resource_ref": "Observation/e5689dbe-040e-5244-824e-cdf7a07c8f26",
+            "field": "valueQuantity",
+            "value": {
+              "value": 40,
+              "unit": "nmol/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "nmol/L"
+            },
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "Observation/e5689dbe-040e-5244-824e-cdf7a07c8f26",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I4",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "2571-8=150 mg/dL; predicate from 1.0.0/I4",
+        "evidence": [
+          {
+            "resource_ref": "Observation/fd7128ab-9881-5661-b658-0b273a141902",
+            "field": "valueQuantity",
+            "value": {
+              "value": 150,
+              "unit": "mg/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg/dL"
+            },
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "Observation/fd7128ab-9881-5661-b658-0b273a141902",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "Specimen/b649f11e-8516-5d0a-a90c-b5cc3d8dfdbb",
+            "field": "collection.fastingStatusDuration",
+            "value": {
+              "value": 10,
+              "unit": "hours",
+              "system": "http://unitsofmeasure.org",
+              "code": "h"
+            },
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I5",
+        "type": "inclusion",
+        "manual": true,
+        "status": "unknown",
+        "reason": "Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient",
+        "evidence": [],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E1",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Both ALT and AST at or below 1.5×ULN",
+        "evidence": [
+          {
+            "resource_ref": "Observation/cbec5089-7035-5476-8a2c-17dbadf221b9",
+            "field": "valueQuantity",
+            "value": {
+              "value": 25,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "Observation/cbec5089-7035-5476-8a2c-17dbadf221b9",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "Observation/cbec5089-7035-5476-8a2c-17dbadf221b9",
+            "field": "referenceRange[0].high",
+            "value": {
+              "value": 40,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "Observation/30755cff-9a9e-5579-aaae-6f678a5a4c21",
+            "field": "valueQuantity",
+            "value": {
+              "value": 25,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "Observation/30755cff-9a9e-5579-aaae-6f678a5a4c21",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "Observation/30755cff-9a9e-5579-aaae-6f678a5a4c21",
+            "field": "referenceRange[0].high",
+            "value": {
+              "value": 35,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E2",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "4548-4=5.4 %; predicate from 1.0.0/E2",
+        "evidence": [
+          {
+            "resource_ref": "Observation/653f06f3-841c-524d-9bf3-177ad9cbfa9c",
+            "field": "valueQuantity",
+            "value": {
+              "value": 5.4,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "Observation/653f06f3-841c-524d-9bf3-177ad9cbfa9c",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E3",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit report of no smoking throughout three-calendar-month window",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367",
+            "field": "item.smoking_complete",
+            "value": true,
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367",
+            "field": "item.smoking_window_start",
+            "value": "2026-07-09",
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367",
+            "field": "item.smoking_window_end",
+            "value": "2026-10-09",
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367",
+            "field": "item.current_smoker",
+            "value": false,
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367",
+            "field": "item.smoking_pattern",
+            "value": "none_in_window",
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367",
+            "field": "item.cigarettes_day",
+            "value": 0,
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367",
+            "field": "item.cigarettes_week",
+            "value": 0,
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E4",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit negative synthetic interview covering entire window; self-report limitation retained",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367",
+            "field": "item.advanced_complete",
+            "value": true,
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367",
+            "field": "item.advanced_window_start",
+            "value": "2025-10-09",
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367",
+            "field": "item.advanced_window_end",
+            "value": "2026-10-09",
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367",
+            "field": "item.advanced_exposure",
+            "value": false,
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E5",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit negative synthetic interview covering entire window; self-report limitation retained",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367",
+            "field": "item.lipid_complete",
+            "value": true,
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367",
+            "field": "item.lipid_window_start",
+            "value": "2026-09-09",
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367",
+            "field": "item.lipid_window_end",
+            "value": "2026-10-09",
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367",
+            "field": "item.lipid_exposure",
+            "value": false,
+            "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+          }
+        ],
+        "conflict": false
+      }
+    ],
+    "tool_trace": [
+      {
+        "tool": "local_fhir_query",
+        "type": "Patient",
+        "id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "39156-5",
+        "patient": "urn:uuid:fb59ce1d-c14e-05e7-719d-47eb6e65a9ab",
+        "encounter": "urn:uuid:6da6ed09-6af4-5153-8416-91f48fb8b814",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "18262-6",
+        "patient": "urn:uuid:fb59ce1d-c14e-05e7-719d-47eb6e65a9ab",
+        "encounter": "urn:uuid:6da6ed09-6af4-5153-8416-91f48fb8b814",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "43583-4",
+        "patient": "urn:uuid:fb59ce1d-c14e-05e7-719d-47eb6e65a9ab",
+        "encounter": "urn:uuid:6da6ed09-6af4-5153-8416-91f48fb8b814",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "2571-8",
+        "patient": "urn:uuid:fb59ce1d-c14e-05e7-719d-47eb6e65a9ab",
+        "encounter": "urn:uuid:6da6ed09-6af4-5153-8416-91f48fb8b814",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "1742-6",
+        "patient": "urn:uuid:fb59ce1d-c14e-05e7-719d-47eb6e65a9ab",
+        "encounter": "urn:uuid:6da6ed09-6af4-5153-8416-91f48fb8b814",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "1920-8",
+        "patient": "urn:uuid:fb59ce1d-c14e-05e7-719d-47eb6e65a9ab",
+        "encounter": "urn:uuid:6da6ed09-6af4-5153-8416-91f48fb8b814",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "4548-4",
+        "patient": "urn:uuid:fb59ce1d-c14e-05e7-719d-47eb6e65a9ab",
+        "encounter": "urn:uuid:6da6ed09-6af4-5153-8416-91f48fb8b814",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "876769b9-5310-5d45-a798-e209e2b05367"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "876769b9-5310-5d45-a798-e209e2b05367"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "876769b9-5310-5d45-a798-e209e2b05367"
+      }
+    ],
+    "scope_note": "Designed synthetic study records only; no full-chart or clinical eligibility claim."
+  },
+  {
+    "case_id": "SAD02",
+    "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4",
+    "trial_id": "NCT07347678",
+    "cohort": "SAD",
+    "rule_version": "1.0.0",
+    "decision": "fails_evaluated_criteria",
+    "failed_criteria": [
+      "I2"
+    ],
+    "manual_review_required": true,
+    "complete_eligibility": "not_determined",
+    "conflict": false,
+    "criteria": [
+      {
+        "criterion_id": "AGE",
+        "type": "metadata",
+        "manual": false,
+        "status": "met",
+        "reason": "Age at screening=54",
+        "evidence": [
+          {
+            "resource_ref": "Patient/717a30c9-adba-2d70-f1ba-28dcf0c048c4",
+            "field": "birthDate",
+            "value": "1972-02-13",
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I1",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "39156-5=22 kg/m2; predicate from 1.0.0/I1",
+        "evidence": [
+          {
+            "resource_ref": "Observation/81b33a61-b849-5000-8589-8e11b3b5f10b",
+            "field": "valueQuantity",
+            "value": {
+              "value": 22,
+              "unit": "kg/m2",
+              "system": "http://unitsofmeasure.org",
+              "code": "kg/m2"
+            },
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "Observation/81b33a61-b849-5000-8589-8e11b3b5f10b",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I2",
+        "type": "inclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "18262-6=69 mg/dL; predicate from 1.0.0/I2",
+        "evidence": [
+          {
+            "resource_ref": "Observation/cae029bc-18ee-5e56-a57f-01ae5808a401",
+            "field": "valueQuantity",
+            "value": {
+              "value": 69,
+              "unit": "mg/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg/dL"
+            },
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "Observation/cae029bc-18ee-5e56-a57f-01ae5808a401",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "Specimen/23011085-9669-501e-a19b-f32734b664f4",
+            "field": "collection.fastingStatusDuration",
+            "value": {
+              "value": 10,
+              "unit": "hours",
+              "system": "http://unitsofmeasure.org",
+              "code": "h"
+            },
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I3",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "43583-4=40 nmol/L; predicate from 1.0.0/I3",
+        "evidence": [
+          {
+            "resource_ref": "Observation/46aeb9d2-640c-50cc-9539-49f14f1ea067",
+            "field": "valueQuantity",
+            "value": {
+              "value": 40,
+              "unit": "nmol/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "nmol/L"
+            },
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "Observation/46aeb9d2-640c-50cc-9539-49f14f1ea067",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I4",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "2571-8=150 mg/dL; predicate from 1.0.0/I4",
+        "evidence": [
+          {
+            "resource_ref": "Observation/040c7345-45ce-5b98-815d-fbc0d4889e44",
+            "field": "valueQuantity",
+            "value": {
+              "value": 150,
+              "unit": "mg/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg/dL"
+            },
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "Observation/040c7345-45ce-5b98-815d-fbc0d4889e44",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "Specimen/23011085-9669-501e-a19b-f32734b664f4",
+            "field": "collection.fastingStatusDuration",
+            "value": {
+              "value": 10,
+              "unit": "hours",
+              "system": "http://unitsofmeasure.org",
+              "code": "h"
+            },
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I5",
+        "type": "inclusion",
+        "manual": true,
+        "status": "unknown",
+        "reason": "Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient",
+        "evidence": [],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E1",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Both ALT and AST at or below 1.5×ULN",
+        "evidence": [
+          {
+            "resource_ref": "Observation/aa8a0658-ba77-5831-9ea8-a19419f00c64",
+            "field": "valueQuantity",
+            "value": {
+              "value": 25,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "Observation/aa8a0658-ba77-5831-9ea8-a19419f00c64",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "Observation/aa8a0658-ba77-5831-9ea8-a19419f00c64",
+            "field": "referenceRange[0].high",
+            "value": {
+              "value": 40,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "Observation/2442978e-63f3-59c4-85b1-c8ed9aa9eca6",
+            "field": "valueQuantity",
+            "value": {
+              "value": 25,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "Observation/2442978e-63f3-59c4-85b1-c8ed9aa9eca6",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "Observation/2442978e-63f3-59c4-85b1-c8ed9aa9eca6",
+            "field": "referenceRange[0].high",
+            "value": {
+              "value": 35,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E2",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "4548-4=5.4 %; predicate from 1.0.0/E2",
+        "evidence": [
+          {
+            "resource_ref": "Observation/b9e091b6-6233-5062-ad5f-4595f308c881",
+            "field": "valueQuantity",
+            "value": {
+              "value": 5.4,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "Observation/b9e091b6-6233-5062-ad5f-4595f308c881",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E3",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit report of no smoking throughout three-calendar-month window",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1",
+            "field": "item.smoking_complete",
+            "value": true,
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1",
+            "field": "item.smoking_window_start",
+            "value": "2026-07-09",
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1",
+            "field": "item.smoking_window_end",
+            "value": "2026-10-09",
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1",
+            "field": "item.current_smoker",
+            "value": false,
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1",
+            "field": "item.smoking_pattern",
+            "value": "none_in_window",
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1",
+            "field": "item.cigarettes_day",
+            "value": 0,
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1",
+            "field": "item.cigarettes_week",
+            "value": 0,
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E4",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit negative synthetic interview covering entire window; self-report limitation retained",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1",
+            "field": "item.advanced_complete",
+            "value": true,
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1",
+            "field": "item.advanced_window_start",
+            "value": "2025-10-09",
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1",
+            "field": "item.advanced_window_end",
+            "value": "2026-10-09",
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1",
+            "field": "item.advanced_exposure",
+            "value": false,
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E5",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit negative synthetic interview covering entire window; self-report limitation retained",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1",
+            "field": "item.lipid_complete",
+            "value": true,
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1",
+            "field": "item.lipid_window_start",
+            "value": "2026-09-09",
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1",
+            "field": "item.lipid_window_end",
+            "value": "2026-10-09",
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1",
+            "field": "item.lipid_exposure",
+            "value": false,
+            "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+          }
+        ],
+        "conflict": false
+      }
+    ],
+    "tool_trace": [
+      {
+        "tool": "local_fhir_query",
+        "type": "Patient",
+        "id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "39156-5",
+        "patient": "urn:uuid:717a30c9-adba-2d70-f1ba-28dcf0c048c4",
+        "encounter": "urn:uuid:571c7fea-2e3e-5c2b-913a-e4e76135c2fb",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "18262-6",
+        "patient": "urn:uuid:717a30c9-adba-2d70-f1ba-28dcf0c048c4",
+        "encounter": "urn:uuid:571c7fea-2e3e-5c2b-913a-e4e76135c2fb",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "43583-4",
+        "patient": "urn:uuid:717a30c9-adba-2d70-f1ba-28dcf0c048c4",
+        "encounter": "urn:uuid:571c7fea-2e3e-5c2b-913a-e4e76135c2fb",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "2571-8",
+        "patient": "urn:uuid:717a30c9-adba-2d70-f1ba-28dcf0c048c4",
+        "encounter": "urn:uuid:571c7fea-2e3e-5c2b-913a-e4e76135c2fb",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "1742-6",
+        "patient": "urn:uuid:717a30c9-adba-2d70-f1ba-28dcf0c048c4",
+        "encounter": "urn:uuid:571c7fea-2e3e-5c2b-913a-e4e76135c2fb",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "1920-8",
+        "patient": "urn:uuid:717a30c9-adba-2d70-f1ba-28dcf0c048c4",
+        "encounter": "urn:uuid:571c7fea-2e3e-5c2b-913a-e4e76135c2fb",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "4548-4",
+        "patient": "urn:uuid:717a30c9-adba-2d70-f1ba-28dcf0c048c4",
+        "encounter": "urn:uuid:571c7fea-2e3e-5c2b-913a-e4e76135c2fb",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "9521170a-19b7-50a3-9cae-c6e570eacfe1"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "9521170a-19b7-50a3-9cae-c6e570eacfe1"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "9521170a-19b7-50a3-9cae-c6e570eacfe1"
+      }
+    ],
+    "scope_note": "Designed synthetic study records only; no full-chart or clinical eligibility claim."
+  },
+  {
+    "case_id": "SAD03",
+    "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6",
+    "trial_id": "NCT07347678",
+    "cohort": "SAD",
+    "rule_version": "1.0.0",
+    "decision": "fails_evaluated_criteria",
+    "failed_criteria": [
+      "I3"
+    ],
+    "manual_review_required": true,
+    "complete_eligibility": "not_determined",
+    "conflict": false,
+    "criteria": [
+      {
+        "criterion_id": "AGE",
+        "type": "metadata",
+        "manual": false,
+        "status": "met",
+        "reason": "Age at screening=60",
+        "evidence": [
+          {
+            "resource_ref": "Patient/9b4ac753-3eaa-f373-a25d-4e0faf584cb6",
+            "field": "birthDate",
+            "value": "1965-12-01",
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I1",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "39156-5=22 kg/m2; predicate from 1.0.0/I1",
+        "evidence": [
+          {
+            "resource_ref": "Observation/c2c81581-f51e-54b8-a793-311b3e0c68ba",
+            "field": "valueQuantity",
+            "value": {
+              "value": 22,
+              "unit": "kg/m2",
+              "system": "http://unitsofmeasure.org",
+              "code": "kg/m2"
+            },
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "Observation/c2c81581-f51e-54b8-a793-311b3e0c68ba",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I2",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "18262-6=90 mg/dL; predicate from 1.0.0/I2",
+        "evidence": [
+          {
+            "resource_ref": "Observation/9e15c2a1-93c9-54ed-a94a-f84a649edef6",
+            "field": "valueQuantity",
+            "value": {
+              "value": 90,
+              "unit": "mg/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg/dL"
+            },
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "Observation/9e15c2a1-93c9-54ed-a94a-f84a649edef6",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "Specimen/7857102b-79ff-562d-a15e-9b46c566d096",
+            "field": "collection.fastingStatusDuration",
+            "value": {
+              "value": 10,
+              "unit": "hours",
+              "system": "http://unitsofmeasure.org",
+              "code": "h"
+            },
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I3",
+        "type": "inclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "43583-4=24 nmol/L; predicate from 1.0.0/I3",
+        "evidence": [
+          {
+            "resource_ref": "Observation/49400d10-06c7-5350-b32d-b994a1c93e77",
+            "field": "valueQuantity",
+            "value": {
+              "value": 24,
+              "unit": "nmol/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "nmol/L"
+            },
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "Observation/49400d10-06c7-5350-b32d-b994a1c93e77",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I4",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "2571-8=150 mg/dL; predicate from 1.0.0/I4",
+        "evidence": [
+          {
+            "resource_ref": "Observation/7487330c-5c80-5b78-8e86-706ead7bf743",
+            "field": "valueQuantity",
+            "value": {
+              "value": 150,
+              "unit": "mg/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg/dL"
+            },
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "Observation/7487330c-5c80-5b78-8e86-706ead7bf743",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "Specimen/7857102b-79ff-562d-a15e-9b46c566d096",
+            "field": "collection.fastingStatusDuration",
+            "value": {
+              "value": 10,
+              "unit": "hours",
+              "system": "http://unitsofmeasure.org",
+              "code": "h"
+            },
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I5",
+        "type": "inclusion",
+        "manual": true,
+        "status": "unknown",
+        "reason": "Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient",
+        "evidence": [],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E1",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Both ALT and AST at or below 1.5×ULN",
+        "evidence": [
+          {
+            "resource_ref": "Observation/46e52167-5b94-5494-900b-794615a05607",
+            "field": "valueQuantity",
+            "value": {
+              "value": 25,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "Observation/46e52167-5b94-5494-900b-794615a05607",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "Observation/46e52167-5b94-5494-900b-794615a05607",
+            "field": "referenceRange[0].high",
+            "value": {
+              "value": 40,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "Observation/c60c9398-c0ea-5383-bbbe-e08555d7c168",
+            "field": "valueQuantity",
+            "value": {
+              "value": 25,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "Observation/c60c9398-c0ea-5383-bbbe-e08555d7c168",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "Observation/c60c9398-c0ea-5383-bbbe-e08555d7c168",
+            "field": "referenceRange[0].high",
+            "value": {
+              "value": 35,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E2",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "4548-4=5.4 %; predicate from 1.0.0/E2",
+        "evidence": [
+          {
+            "resource_ref": "Observation/4312b594-7c73-59db-b8c4-a7d0020cb257",
+            "field": "valueQuantity",
+            "value": {
+              "value": 5.4,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "Observation/4312b594-7c73-59db-b8c4-a7d0020cb257",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E3",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit report of no smoking throughout three-calendar-month window",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437",
+            "field": "item.smoking_complete",
+            "value": true,
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437",
+            "field": "item.smoking_window_start",
+            "value": "2026-07-09",
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437",
+            "field": "item.smoking_window_end",
+            "value": "2026-10-09",
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437",
+            "field": "item.current_smoker",
+            "value": false,
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437",
+            "field": "item.smoking_pattern",
+            "value": "none_in_window",
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437",
+            "field": "item.cigarettes_day",
+            "value": 0,
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437",
+            "field": "item.cigarettes_week",
+            "value": 0,
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E4",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit negative synthetic interview covering entire window; self-report limitation retained",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437",
+            "field": "item.advanced_complete",
+            "value": true,
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437",
+            "field": "item.advanced_window_start",
+            "value": "2025-10-09",
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437",
+            "field": "item.advanced_window_end",
+            "value": "2026-10-09",
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437",
+            "field": "item.advanced_exposure",
+            "value": false,
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E5",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit negative synthetic interview covering entire window; self-report limitation retained",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437",
+            "field": "item.lipid_complete",
+            "value": true,
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437",
+            "field": "item.lipid_window_start",
+            "value": "2026-09-09",
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437",
+            "field": "item.lipid_window_end",
+            "value": "2026-10-09",
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437",
+            "field": "item.lipid_exposure",
+            "value": false,
+            "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+          }
+        ],
+        "conflict": false
+      }
+    ],
+    "tool_trace": [
+      {
+        "tool": "local_fhir_query",
+        "type": "Patient",
+        "id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "39156-5",
+        "patient": "urn:uuid:9b4ac753-3eaa-f373-a25d-4e0faf584cb6",
+        "encounter": "urn:uuid:12d365e1-7c35-5e2e-8e2d-47f8c50aded8",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "18262-6",
+        "patient": "urn:uuid:9b4ac753-3eaa-f373-a25d-4e0faf584cb6",
+        "encounter": "urn:uuid:12d365e1-7c35-5e2e-8e2d-47f8c50aded8",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "43583-4",
+        "patient": "urn:uuid:9b4ac753-3eaa-f373-a25d-4e0faf584cb6",
+        "encounter": "urn:uuid:12d365e1-7c35-5e2e-8e2d-47f8c50aded8",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "2571-8",
+        "patient": "urn:uuid:9b4ac753-3eaa-f373-a25d-4e0faf584cb6",
+        "encounter": "urn:uuid:12d365e1-7c35-5e2e-8e2d-47f8c50aded8",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "1742-6",
+        "patient": "urn:uuid:9b4ac753-3eaa-f373-a25d-4e0faf584cb6",
+        "encounter": "urn:uuid:12d365e1-7c35-5e2e-8e2d-47f8c50aded8",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "1920-8",
+        "patient": "urn:uuid:9b4ac753-3eaa-f373-a25d-4e0faf584cb6",
+        "encounter": "urn:uuid:12d365e1-7c35-5e2e-8e2d-47f8c50aded8",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "4548-4",
+        "patient": "urn:uuid:9b4ac753-3eaa-f373-a25d-4e0faf584cb6",
+        "encounter": "urn:uuid:12d365e1-7c35-5e2e-8e2d-47f8c50aded8",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "d7687e23-a7c0-516c-ace4-eb3e99596437"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "d7687e23-a7c0-516c-ace4-eb3e99596437"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "d7687e23-a7c0-516c-ace4-eb3e99596437"
+      }
+    ],
+    "scope_note": "Designed synthetic study records only; no full-chart or clinical eligibility claim."
+  },
+  {
+    "case_id": "SAD04",
+    "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc",
+    "trial_id": "NCT07347678",
+    "cohort": "SAD",
+    "rule_version": "1.0.0",
+    "decision": "passes_evaluated_criteria",
+    "failed_criteria": [],
+    "manual_review_required": true,
+    "complete_eligibility": "not_determined",
+    "conflict": false,
+    "criteria": [
+      {
+        "criterion_id": "AGE",
+        "type": "metadata",
+        "manual": false,
+        "status": "met",
+        "reason": "Age at screening=56",
+        "evidence": [
+          {
+            "resource_ref": "Patient/8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc",
+            "field": "birthDate",
+            "value": "1970-03-27",
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I1",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "39156-5=18 kg/m2; predicate from 1.0.0/I1",
+        "evidence": [
+          {
+            "resource_ref": "Observation/b0c987ad-4fb1-52ea-9465-c77dbb4bc646",
+            "field": "valueQuantity",
+            "value": {
+              "value": 18,
+              "unit": "kg/m2",
+              "system": "http://unitsofmeasure.org",
+              "code": "kg/m2"
+            },
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "Observation/b0c987ad-4fb1-52ea-9465-c77dbb4bc646",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I2",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "18262-6=70 mg/dL; predicate from 1.0.0/I2",
+        "evidence": [
+          {
+            "resource_ref": "Observation/7d9fd1ac-b275-5b6a-93b3-543a96d0fc8f",
+            "field": "valueQuantity",
+            "value": {
+              "value": 70,
+              "unit": "mg/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg/dL"
+            },
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "Observation/7d9fd1ac-b275-5b6a-93b3-543a96d0fc8f",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "Specimen/ffec01c1-9d0f-52db-b1cd-5d5ad454cad3",
+            "field": "collection.fastingStatusDuration",
+            "value": {
+              "value": 10,
+              "unit": "hours",
+              "system": "http://unitsofmeasure.org",
+              "code": "h"
+            },
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I3",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "43583-4=25 nmol/L; predicate from 1.0.0/I3",
+        "evidence": [
+          {
+            "resource_ref": "Observation/c4948193-d3c4-566d-afed-4a45b9152fc7",
+            "field": "valueQuantity",
+            "value": {
+              "value": 25,
+              "unit": "nmol/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "nmol/L"
+            },
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "Observation/c4948193-d3c4-566d-afed-4a45b9152fc7",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I4",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "2571-8=399.9 mg/dL; predicate from 1.0.0/I4",
+        "evidence": [
+          {
+            "resource_ref": "Observation/370291b5-9f21-5a6c-9176-90e79d7182e3",
+            "field": "valueQuantity",
+            "value": {
+              "value": 399.9,
+              "unit": "mg/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg/dL"
+            },
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "Observation/370291b5-9f21-5a6c-9176-90e79d7182e3",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "Specimen/ffec01c1-9d0f-52db-b1cd-5d5ad454cad3",
+            "field": "collection.fastingStatusDuration",
+            "value": {
+              "value": 10,
+              "unit": "hours",
+              "system": "http://unitsofmeasure.org",
+              "code": "h"
+            },
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I5",
+        "type": "inclusion",
+        "manual": true,
+        "status": "unknown",
+        "reason": "Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient",
+        "evidence": [],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E1",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Both ALT and AST at or below 1.5×ULN",
+        "evidence": [
+          {
+            "resource_ref": "Observation/152f83f8-5785-5865-a43f-25dce8d6a723",
+            "field": "valueQuantity",
+            "value": {
+              "value": 60,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "Observation/152f83f8-5785-5865-a43f-25dce8d6a723",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "Observation/152f83f8-5785-5865-a43f-25dce8d6a723",
+            "field": "referenceRange[0].high",
+            "value": {
+              "value": 40,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "Observation/bcfe6234-024b-5a31-b5d1-91d5545835e4",
+            "field": "valueQuantity",
+            "value": {
+              "value": 52.5,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "Observation/bcfe6234-024b-5a31-b5d1-91d5545835e4",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "Observation/bcfe6234-024b-5a31-b5d1-91d5545835e4",
+            "field": "referenceRange[0].high",
+            "value": {
+              "value": 35,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E2",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "4548-4=6.4 %; predicate from 1.0.0/E2",
+        "evidence": [
+          {
+            "resource_ref": "Observation/51a98d78-9439-5360-97f4-0c28ba68c24d",
+            "field": "valueQuantity",
+            "value": {
+              "value": 6.4,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "Observation/51a98d78-9439-5360-97f4-0c28ba68c24d",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E3",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit report of no smoking throughout three-calendar-month window",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda",
+            "field": "item.smoking_complete",
+            "value": true,
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda",
+            "field": "item.smoking_window_start",
+            "value": "2026-07-09",
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda",
+            "field": "item.smoking_window_end",
+            "value": "2026-10-09",
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda",
+            "field": "item.current_smoker",
+            "value": false,
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda",
+            "field": "item.smoking_pattern",
+            "value": "none_in_window",
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda",
+            "field": "item.cigarettes_day",
+            "value": 0,
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda",
+            "field": "item.cigarettes_week",
+            "value": 0,
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E4",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit negative synthetic interview covering entire window; self-report limitation retained",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda",
+            "field": "item.advanced_complete",
+            "value": true,
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda",
+            "field": "item.advanced_window_start",
+            "value": "2025-10-09",
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda",
+            "field": "item.advanced_window_end",
+            "value": "2026-10-09",
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda",
+            "field": "item.advanced_exposure",
+            "value": false,
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E5",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit negative synthetic interview covering entire window; self-report limitation retained",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda",
+            "field": "item.lipid_complete",
+            "value": true,
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda",
+            "field": "item.lipid_window_start",
+            "value": "2026-09-09",
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda",
+            "field": "item.lipid_window_end",
+            "value": "2026-10-09",
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda",
+            "field": "item.lipid_exposure",
+            "value": false,
+            "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+          }
+        ],
+        "conflict": false
+      }
+    ],
+    "tool_trace": [
+      {
+        "tool": "local_fhir_query",
+        "type": "Patient",
+        "id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "39156-5",
+        "patient": "urn:uuid:8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc",
+        "encounter": "urn:uuid:0833d5e4-99fb-5a07-b3df-14d82fdf8178",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "18262-6",
+        "patient": "urn:uuid:8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc",
+        "encounter": "urn:uuid:0833d5e4-99fb-5a07-b3df-14d82fdf8178",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "43583-4",
+        "patient": "urn:uuid:8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc",
+        "encounter": "urn:uuid:0833d5e4-99fb-5a07-b3df-14d82fdf8178",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "2571-8",
+        "patient": "urn:uuid:8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc",
+        "encounter": "urn:uuid:0833d5e4-99fb-5a07-b3df-14d82fdf8178",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "1742-6",
+        "patient": "urn:uuid:8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc",
+        "encounter": "urn:uuid:0833d5e4-99fb-5a07-b3df-14d82fdf8178",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "1920-8",
+        "patient": "urn:uuid:8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc",
+        "encounter": "urn:uuid:0833d5e4-99fb-5a07-b3df-14d82fdf8178",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "4548-4",
+        "patient": "urn:uuid:8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc",
+        "encounter": "urn:uuid:0833d5e4-99fb-5a07-b3df-14d82fdf8178",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "425a6978-8a1f-5cc1-8b68-863ed5ccffda"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "425a6978-8a1f-5cc1-8b68-863ed5ccffda"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "425a6978-8a1f-5cc1-8b68-863ed5ccffda"
+      }
+    ],
+    "scope_note": "Designed synthetic study records only; no full-chart or clinical eligibility claim."
+  },
+  {
+    "case_id": "SAD05",
+    "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c",
+    "trial_id": "NCT07347678",
+    "cohort": "SAD",
+    "rule_version": "1.0.0",
+    "decision": "fails_evaluated_criteria",
+    "failed_criteria": [
+      "E2"
+    ],
+    "manual_review_required": true,
+    "complete_eligibility": "not_determined",
+    "conflict": false,
+    "criteria": [
+      {
+        "criterion_id": "AGE",
+        "type": "metadata",
+        "manual": false,
+        "status": "met",
+        "reason": "Age at screening=28",
+        "evidence": [
+          {
+            "resource_ref": "Patient/cdf2fa34-57a1-ef59-6317-5db0d888d02c",
+            "field": "birthDate",
+            "value": "1998-06-24",
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I1",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "39156-5=22 kg/m2; predicate from 1.0.0/I1",
+        "evidence": [
+          {
+            "resource_ref": "Observation/987028b9-c38c-5690-aab0-040761f9a468",
+            "field": "valueQuantity",
+            "value": {
+              "value": 22,
+              "unit": "kg/m2",
+              "system": "http://unitsofmeasure.org",
+              "code": "kg/m2"
+            },
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "Observation/987028b9-c38c-5690-aab0-040761f9a468",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I2",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "18262-6=90 mg/dL; predicate from 1.0.0/I2",
+        "evidence": [
+          {
+            "resource_ref": "Observation/057d5db7-8273-583c-8f4b-8848f2b51202",
+            "field": "valueQuantity",
+            "value": {
+              "value": 90,
+              "unit": "mg/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg/dL"
+            },
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "Observation/057d5db7-8273-583c-8f4b-8848f2b51202",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "Specimen/c75ad098-0aaf-5b25-a1ed-ebbddd77e40d",
+            "field": "collection.fastingStatusDuration",
+            "value": {
+              "value": 10,
+              "unit": "hours",
+              "system": "http://unitsofmeasure.org",
+              "code": "h"
+            },
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I3",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "43583-4=40 nmol/L; predicate from 1.0.0/I3",
+        "evidence": [
+          {
+            "resource_ref": "Observation/f92eaa6c-2d59-567c-bbe1-0b6dc6e6d18f",
+            "field": "valueQuantity",
+            "value": {
+              "value": 40,
+              "unit": "nmol/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "nmol/L"
+            },
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "Observation/f92eaa6c-2d59-567c-bbe1-0b6dc6e6d18f",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I4",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "2571-8=150 mg/dL; predicate from 1.0.0/I4",
+        "evidence": [
+          {
+            "resource_ref": "Observation/bec43419-3bf5-5897-977a-13490f00042e",
+            "field": "valueQuantity",
+            "value": {
+              "value": 150,
+              "unit": "mg/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg/dL"
+            },
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "Observation/bec43419-3bf5-5897-977a-13490f00042e",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "Specimen/c75ad098-0aaf-5b25-a1ed-ebbddd77e40d",
+            "field": "collection.fastingStatusDuration",
+            "value": {
+              "value": 10,
+              "unit": "hours",
+              "system": "http://unitsofmeasure.org",
+              "code": "h"
+            },
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I5",
+        "type": "inclusion",
+        "manual": true,
+        "status": "unknown",
+        "reason": "Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient",
+        "evidence": [],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E1",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Both ALT and AST at or below 1.5×ULN",
+        "evidence": [
+          {
+            "resource_ref": "Observation/182ffe4e-e862-5da8-a9dd-9c193ddf6fa7",
+            "field": "valueQuantity",
+            "value": {
+              "value": 25,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "Observation/182ffe4e-e862-5da8-a9dd-9c193ddf6fa7",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "Observation/182ffe4e-e862-5da8-a9dd-9c193ddf6fa7",
+            "field": "referenceRange[0].high",
+            "value": {
+              "value": 40,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "Observation/8ac4c2fc-319e-58cc-af69-55cf243425ea",
+            "field": "valueQuantity",
+            "value": {
+              "value": 25,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "Observation/8ac4c2fc-319e-58cc-af69-55cf243425ea",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "Observation/8ac4c2fc-319e-58cc-af69-55cf243425ea",
+            "field": "referenceRange[0].high",
+            "value": {
+              "value": 35,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E2",
+        "type": "exclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "4548-4=6.5 %; predicate from 1.0.0/E2",
+        "evidence": [
+          {
+            "resource_ref": "Observation/144d7b63-3657-5ec6-a6c7-d8d9b5e3316d",
+            "field": "valueQuantity",
+            "value": {
+              "value": 6.5,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "Observation/144d7b63-3657-5ec6-a6c7-d8d9b5e3316d",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E3",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit report of no smoking throughout three-calendar-month window",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820",
+            "field": "item.smoking_complete",
+            "value": true,
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820",
+            "field": "item.smoking_window_start",
+            "value": "2026-07-09",
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820",
+            "field": "item.smoking_window_end",
+            "value": "2026-10-09",
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820",
+            "field": "item.current_smoker",
+            "value": false,
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820",
+            "field": "item.smoking_pattern",
+            "value": "none_in_window",
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820",
+            "field": "item.cigarettes_day",
+            "value": 0,
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820",
+            "field": "item.cigarettes_week",
+            "value": 0,
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E4",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit negative synthetic interview covering entire window; self-report limitation retained",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820",
+            "field": "item.advanced_complete",
+            "value": true,
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820",
+            "field": "item.advanced_window_start",
+            "value": "2025-10-09",
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820",
+            "field": "item.advanced_window_end",
+            "value": "2026-10-09",
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820",
+            "field": "item.advanced_exposure",
+            "value": false,
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E5",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit negative synthetic interview covering entire window; self-report limitation retained",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820",
+            "field": "item.lipid_complete",
+            "value": true,
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820",
+            "field": "item.lipid_window_start",
+            "value": "2026-09-09",
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820",
+            "field": "item.lipid_window_end",
+            "value": "2026-10-09",
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820",
+            "field": "item.lipid_exposure",
+            "value": false,
+            "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+          }
+        ],
+        "conflict": false
+      }
+    ],
+    "tool_trace": [
+      {
+        "tool": "local_fhir_query",
+        "type": "Patient",
+        "id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "39156-5",
+        "patient": "urn:uuid:cdf2fa34-57a1-ef59-6317-5db0d888d02c",
+        "encounter": "urn:uuid:2bbd3d50-70fb-5d33-b0e0-7d476f73efff",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "18262-6",
+        "patient": "urn:uuid:cdf2fa34-57a1-ef59-6317-5db0d888d02c",
+        "encounter": "urn:uuid:2bbd3d50-70fb-5d33-b0e0-7d476f73efff",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "43583-4",
+        "patient": "urn:uuid:cdf2fa34-57a1-ef59-6317-5db0d888d02c",
+        "encounter": "urn:uuid:2bbd3d50-70fb-5d33-b0e0-7d476f73efff",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "2571-8",
+        "patient": "urn:uuid:cdf2fa34-57a1-ef59-6317-5db0d888d02c",
+        "encounter": "urn:uuid:2bbd3d50-70fb-5d33-b0e0-7d476f73efff",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "1742-6",
+        "patient": "urn:uuid:cdf2fa34-57a1-ef59-6317-5db0d888d02c",
+        "encounter": "urn:uuid:2bbd3d50-70fb-5d33-b0e0-7d476f73efff",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "1920-8",
+        "patient": "urn:uuid:cdf2fa34-57a1-ef59-6317-5db0d888d02c",
+        "encounter": "urn:uuid:2bbd3d50-70fb-5d33-b0e0-7d476f73efff",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "4548-4",
+        "patient": "urn:uuid:cdf2fa34-57a1-ef59-6317-5db0d888d02c",
+        "encounter": "urn:uuid:2bbd3d50-70fb-5d33-b0e0-7d476f73efff",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "9cdb0049-971b-5c4d-b7a8-0e742e9ff820"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "9cdb0049-971b-5c4d-b7a8-0e742e9ff820"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "9cdb0049-971b-5c4d-b7a8-0e742e9ff820"
+      }
+    ],
+    "scope_note": "Designed synthetic study records only; no full-chart or clinical eligibility claim."
+  },
+  {
+    "case_id": "SAD06",
+    "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286",
+    "trial_id": "NCT07347678",
+    "cohort": "SAD",
+    "rule_version": "1.0.0",
+    "decision": "pending",
+    "failed_criteria": [],
+    "manual_review_required": true,
+    "complete_eligibility": "not_determined",
+    "conflict": false,
+    "criteria": [
+      {
+        "criterion_id": "AGE",
+        "type": "metadata",
+        "manual": false,
+        "status": "met",
+        "reason": "Age at screening=30",
+        "evidence": [
+          {
+            "resource_ref": "Patient/b8af990e-6f30-ef84-202f-a020dcaa0286",
+            "field": "birthDate",
+            "value": "1996-07-21",
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I1",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "39156-5=22 kg/m2; predicate from 1.0.0/I1",
+        "evidence": [
+          {
+            "resource_ref": "Observation/5450ff99-481f-5065-bc8b-3c1d565ddbd7",
+            "field": "valueQuantity",
+            "value": {
+              "value": 22,
+              "unit": "kg/m2",
+              "system": "http://unitsofmeasure.org",
+              "code": "kg/m2"
+            },
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "Observation/5450ff99-481f-5065-bc8b-3c1d565ddbd7",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I2",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "18262-6=90 mg/dL; predicate from 1.0.0/I2",
+        "evidence": [
+          {
+            "resource_ref": "Observation/be4384c9-5197-5fbd-b2b8-c494b8d26689",
+            "field": "valueQuantity",
+            "value": {
+              "value": 90,
+              "unit": "mg/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg/dL"
+            },
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "Observation/be4384c9-5197-5fbd-b2b8-c494b8d26689",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "Specimen/676e7f34-d475-5285-920a-9cd32f8fb106",
+            "field": "collection.fastingStatusDuration",
+            "value": {
+              "value": 10,
+              "unit": "hours",
+              "system": "http://unitsofmeasure.org",
+              "code": "h"
+            },
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I3",
+        "type": "inclusion",
+        "manual": false,
+        "status": "unknown",
+        "reason": "No matching screening observation; no negative inference",
+        "evidence": [],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I4",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "2571-8=150 mg/dL; predicate from 1.0.0/I4",
+        "evidence": [
+          {
+            "resource_ref": "Observation/dedec623-e3d7-5222-a42e-f34591a8021b",
+            "field": "valueQuantity",
+            "value": {
+              "value": 150,
+              "unit": "mg/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg/dL"
+            },
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "Observation/dedec623-e3d7-5222-a42e-f34591a8021b",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "Specimen/676e7f34-d475-5285-920a-9cd32f8fb106",
+            "field": "collection.fastingStatusDuration",
+            "value": {
+              "value": 10,
+              "unit": "hours",
+              "system": "http://unitsofmeasure.org",
+              "code": "h"
+            },
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I5",
+        "type": "inclusion",
+        "manual": true,
+        "status": "unknown",
+        "reason": "Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient",
+        "evidence": [],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E1",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Both ALT and AST at or below 1.5×ULN",
+        "evidence": [
+          {
+            "resource_ref": "Observation/7e1129e5-4851-5fe1-85b2-0fe9517a7977",
+            "field": "valueQuantity",
+            "value": {
+              "value": 25,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "Observation/7e1129e5-4851-5fe1-85b2-0fe9517a7977",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "Observation/7e1129e5-4851-5fe1-85b2-0fe9517a7977",
+            "field": "referenceRange[0].high",
+            "value": {
+              "value": 40,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "Observation/76ba5d81-1bcc-598c-8822-32b1a035adcc",
+            "field": "valueQuantity",
+            "value": {
+              "value": 25,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "Observation/76ba5d81-1bcc-598c-8822-32b1a035adcc",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "Observation/76ba5d81-1bcc-598c-8822-32b1a035adcc",
+            "field": "referenceRange[0].high",
+            "value": {
+              "value": 35,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E2",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "4548-4=5.4 %; predicate from 1.0.0/E2",
+        "evidence": [
+          {
+            "resource_ref": "Observation/91ade2fb-a40f-5b86-9a96-6e9f108d643b",
+            "field": "valueQuantity",
+            "value": {
+              "value": 5.4,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "Observation/91ade2fb-a40f-5b86-9a96-6e9f108d643b",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E3",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit report of no smoking throughout three-calendar-month window",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263",
+            "field": "item.smoking_complete",
+            "value": true,
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263",
+            "field": "item.smoking_window_start",
+            "value": "2026-07-09",
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263",
+            "field": "item.smoking_window_end",
+            "value": "2026-10-09",
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263",
+            "field": "item.current_smoker",
+            "value": false,
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263",
+            "field": "item.smoking_pattern",
+            "value": "none_in_window",
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263",
+            "field": "item.cigarettes_day",
+            "value": 0,
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263",
+            "field": "item.cigarettes_week",
+            "value": 0,
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E4",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit negative synthetic interview covering entire window; self-report limitation retained",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263",
+            "field": "item.advanced_complete",
+            "value": true,
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263",
+            "field": "item.advanced_window_start",
+            "value": "2025-10-09",
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263",
+            "field": "item.advanced_window_end",
+            "value": "2026-10-09",
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263",
+            "field": "item.advanced_exposure",
+            "value": false,
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E5",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit negative synthetic interview covering entire window; self-report limitation retained",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263",
+            "field": "item.lipid_complete",
+            "value": true,
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263",
+            "field": "item.lipid_window_start",
+            "value": "2026-09-09",
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263",
+            "field": "item.lipid_window_end",
+            "value": "2026-10-09",
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263",
+            "field": "item.lipid_exposure",
+            "value": false,
+            "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+          }
+        ],
+        "conflict": false
+      }
+    ],
+    "tool_trace": [
+      {
+        "tool": "local_fhir_query",
+        "type": "Patient",
+        "id": "b8af990e-6f30-ef84-202f-a020dcaa0286"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "39156-5",
+        "patient": "urn:uuid:b8af990e-6f30-ef84-202f-a020dcaa0286",
+        "encounter": "urn:uuid:dc5fec2e-50b3-53c6-8570-c741c0b7e8db",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "18262-6",
+        "patient": "urn:uuid:b8af990e-6f30-ef84-202f-a020dcaa0286",
+        "encounter": "urn:uuid:dc5fec2e-50b3-53c6-8570-c741c0b7e8db",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "43583-4",
+        "patient": "urn:uuid:b8af990e-6f30-ef84-202f-a020dcaa0286",
+        "encounter": "urn:uuid:dc5fec2e-50b3-53c6-8570-c741c0b7e8db",
+        "count": 0
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "2571-8",
+        "patient": "urn:uuid:b8af990e-6f30-ef84-202f-a020dcaa0286",
+        "encounter": "urn:uuid:dc5fec2e-50b3-53c6-8570-c741c0b7e8db",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "1742-6",
+        "patient": "urn:uuid:b8af990e-6f30-ef84-202f-a020dcaa0286",
+        "encounter": "urn:uuid:dc5fec2e-50b3-53c6-8570-c741c0b7e8db",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "1920-8",
+        "patient": "urn:uuid:b8af990e-6f30-ef84-202f-a020dcaa0286",
+        "encounter": "urn:uuid:dc5fec2e-50b3-53c6-8570-c741c0b7e8db",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "4548-4",
+        "patient": "urn:uuid:b8af990e-6f30-ef84-202f-a020dcaa0286",
+        "encounter": "urn:uuid:dc5fec2e-50b3-53c6-8570-c741c0b7e8db",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "de3903ba-7e28-5bc4-ad3f-28801f729263"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "de3903ba-7e28-5bc4-ad3f-28801f729263"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "de3903ba-7e28-5bc4-ad3f-28801f729263"
+      }
+    ],
+    "scope_note": "Designed synthetic study records only; no full-chart or clinical eligibility claim."
+  },
+  {
+    "case_id": "SAD07",
+    "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526",
+    "trial_id": "NCT07347678",
+    "cohort": "SAD",
+    "rule_version": "1.0.0",
+    "decision": "review",
+    "failed_criteria": [],
+    "manual_review_required": true,
+    "complete_eligibility": "not_determined",
+    "conflict": true,
+    "criteria": [
+      {
+        "criterion_id": "AGE",
+        "type": "metadata",
+        "manual": false,
+        "status": "met",
+        "reason": "Age at screening=43",
+        "evidence": [
+          {
+            "resource_ref": "Patient/8a597cb9-8552-23cd-4024-69519d67f526",
+            "field": "birthDate",
+            "value": "1982-10-26",
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I1",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "39156-5=22 kg/m2; predicate from 1.0.0/I1",
+        "evidence": [
+          {
+            "resource_ref": "Observation/a8d240b9-82f3-5cd7-ba1a-4fa31df65b97",
+            "field": "valueQuantity",
+            "value": {
+              "value": 22,
+              "unit": "kg/m2",
+              "system": "http://unitsofmeasure.org",
+              "code": "kg/m2"
+            },
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "Observation/a8d240b9-82f3-5cd7-ba1a-4fa31df65b97",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I2",
+        "type": "inclusion",
+        "manual": false,
+        "status": "unknown",
+        "reason": "Multiple candidate results; selection unresolved",
+        "evidence": [
+          {
+            "resource_ref": "Observation/84a36d2d-7e57-5cd3-82e2-fc304ab363f7",
+            "field": "valueQuantity",
+            "value": {
+              "value": 90,
+              "unit": "mg/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg/dL"
+            },
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "Observation/22bd12a5-6b4d-5fd6-a49d-caddfd928e14",
+            "field": "valueQuantity",
+            "value": {
+              "value": 110,
+              "unit": "mg/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg/dL"
+            },
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          }
+        ],
+        "conflict": true
+      },
+      {
+        "criterion_id": "I3",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "43583-4=40 nmol/L; predicate from 1.0.0/I3",
+        "evidence": [
+          {
+            "resource_ref": "Observation/9e093084-34e6-53a1-a34c-ce0c8b8681d5",
+            "field": "valueQuantity",
+            "value": {
+              "value": 40,
+              "unit": "nmol/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "nmol/L"
+            },
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "Observation/9e093084-34e6-53a1-a34c-ce0c8b8681d5",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I4",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "2571-8=150 mg/dL; predicate from 1.0.0/I4",
+        "evidence": [
+          {
+            "resource_ref": "Observation/20ce6537-598b-5731-8d46-1f5a93f8b45f",
+            "field": "valueQuantity",
+            "value": {
+              "value": 150,
+              "unit": "mg/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg/dL"
+            },
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "Observation/20ce6537-598b-5731-8d46-1f5a93f8b45f",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "Specimen/fdaa071f-94b8-573e-b751-ae650c48611a",
+            "field": "collection.fastingStatusDuration",
+            "value": {
+              "value": 10,
+              "unit": "hours",
+              "system": "http://unitsofmeasure.org",
+              "code": "h"
+            },
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I5",
+        "type": "inclusion",
+        "manual": true,
+        "status": "unknown",
+        "reason": "Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient",
+        "evidence": [],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E1",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Both ALT and AST at or below 1.5×ULN",
+        "evidence": [
+          {
+            "resource_ref": "Observation/2c74b355-b506-56e0-9a21-df30f409c0e3",
+            "field": "valueQuantity",
+            "value": {
+              "value": 25,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "Observation/2c74b355-b506-56e0-9a21-df30f409c0e3",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "Observation/2c74b355-b506-56e0-9a21-df30f409c0e3",
+            "field": "referenceRange[0].high",
+            "value": {
+              "value": 40,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "Observation/447049d8-bd8d-535e-bfa6-4ec57f88dea2",
+            "field": "valueQuantity",
+            "value": {
+              "value": 25,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "Observation/447049d8-bd8d-535e-bfa6-4ec57f88dea2",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "Observation/447049d8-bd8d-535e-bfa6-4ec57f88dea2",
+            "field": "referenceRange[0].high",
+            "value": {
+              "value": 35,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E2",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "4548-4=5.4 %; predicate from 1.0.0/E2",
+        "evidence": [
+          {
+            "resource_ref": "Observation/e8a33389-a501-5936-8973-cc3c91f62a34",
+            "field": "valueQuantity",
+            "value": {
+              "value": 5.4,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "Observation/e8a33389-a501-5936-8973-cc3c91f62a34",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E3",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit report of no smoking throughout three-calendar-month window",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c",
+            "field": "item.smoking_complete",
+            "value": true,
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c",
+            "field": "item.smoking_window_start",
+            "value": "2026-07-09",
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c",
+            "field": "item.smoking_window_end",
+            "value": "2026-10-09",
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c",
+            "field": "item.current_smoker",
+            "value": false,
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c",
+            "field": "item.smoking_pattern",
+            "value": "none_in_window",
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c",
+            "field": "item.cigarettes_day",
+            "value": 0,
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c",
+            "field": "item.cigarettes_week",
+            "value": 0,
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E4",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit negative synthetic interview covering entire window; self-report limitation retained",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c",
+            "field": "item.advanced_complete",
+            "value": true,
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c",
+            "field": "item.advanced_window_start",
+            "value": "2025-10-09",
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c",
+            "field": "item.advanced_window_end",
+            "value": "2026-10-09",
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c",
+            "field": "item.advanced_exposure",
+            "value": false,
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E5",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit negative synthetic interview covering entire window; self-report limitation retained",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c",
+            "field": "item.lipid_complete",
+            "value": true,
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c",
+            "field": "item.lipid_window_start",
+            "value": "2026-09-09",
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c",
+            "field": "item.lipid_window_end",
+            "value": "2026-10-09",
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c",
+            "field": "item.lipid_exposure",
+            "value": false,
+            "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526"
+          }
+        ],
+        "conflict": false
+      }
+    ],
+    "tool_trace": [
+      {
+        "tool": "local_fhir_query",
+        "type": "Patient",
+        "id": "8a597cb9-8552-23cd-4024-69519d67f526"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "39156-5",
+        "patient": "urn:uuid:8a597cb9-8552-23cd-4024-69519d67f526",
+        "encounter": "urn:uuid:aa0d0907-c6dc-5f79-a0ba-f76bf3829c18",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "18262-6",
+        "patient": "urn:uuid:8a597cb9-8552-23cd-4024-69519d67f526",
+        "encounter": "urn:uuid:aa0d0907-c6dc-5f79-a0ba-f76bf3829c18",
+        "count": 2
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "43583-4",
+        "patient": "urn:uuid:8a597cb9-8552-23cd-4024-69519d67f526",
+        "encounter": "urn:uuid:aa0d0907-c6dc-5f79-a0ba-f76bf3829c18",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "2571-8",
+        "patient": "urn:uuid:8a597cb9-8552-23cd-4024-69519d67f526",
+        "encounter": "urn:uuid:aa0d0907-c6dc-5f79-a0ba-f76bf3829c18",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "1742-6",
+        "patient": "urn:uuid:8a597cb9-8552-23cd-4024-69519d67f526",
+        "encounter": "urn:uuid:aa0d0907-c6dc-5f79-a0ba-f76bf3829c18",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "1920-8",
+        "patient": "urn:uuid:8a597cb9-8552-23cd-4024-69519d67f526",
+        "encounter": "urn:uuid:aa0d0907-c6dc-5f79-a0ba-f76bf3829c18",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "4548-4",
+        "patient": "urn:uuid:8a597cb9-8552-23cd-4024-69519d67f526",
+        "encounter": "urn:uuid:aa0d0907-c6dc-5f79-a0ba-f76bf3829c18",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "b9d9ba11-148a-5159-be0c-cddcffee927c"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "b9d9ba11-148a-5159-be0c-cddcffee927c"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "b9d9ba11-148a-5159-be0c-cddcffee927c"
+      }
+    ],
+    "scope_note": "Designed synthetic study records only; no full-chart or clinical eligibility claim."
+  },
+  {
+    "case_id": "SAD08",
+    "patient_id": "329bcd54-d577-b679-2232-96d50f40a302",
+    "trial_id": "NCT07347678",
+    "cohort": "SAD",
+    "rule_version": "1.0.0",
+    "decision": "fails_evaluated_criteria",
+    "failed_criteria": [
+      "E3",
+      "E5"
+    ],
+    "manual_review_required": true,
+    "complete_eligibility": "not_determined",
+    "conflict": false,
+    "criteria": [
+      {
+        "criterion_id": "AGE",
+        "type": "metadata",
+        "manual": false,
+        "status": "met",
+        "reason": "Age at screening=49",
+        "evidence": [
+          {
+            "resource_ref": "Patient/329bcd54-d577-b679-2232-96d50f40a302",
+            "field": "birthDate",
+            "value": "1977-05-07",
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I1",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "39156-5=22 kg/m2; predicate from 1.0.0/I1",
+        "evidence": [
+          {
+            "resource_ref": "Observation/173944b8-96f6-54e5-abb5-63ccb78d7bf8",
+            "field": "valueQuantity",
+            "value": {
+              "value": 22,
+              "unit": "kg/m2",
+              "system": "http://unitsofmeasure.org",
+              "code": "kg/m2"
+            },
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "Observation/173944b8-96f6-54e5-abb5-63ccb78d7bf8",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I2",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "18262-6=90 mg/dL; predicate from 1.0.0/I2",
+        "evidence": [
+          {
+            "resource_ref": "Observation/c7c06477-8298-54f6-b971-8eb4b123a5a8",
+            "field": "valueQuantity",
+            "value": {
+              "value": 90,
+              "unit": "mg/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg/dL"
+            },
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "Observation/c7c06477-8298-54f6-b971-8eb4b123a5a8",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "Specimen/fe08ae21-9d40-5556-a42f-94d5f8476a09",
+            "field": "collection.fastingStatusDuration",
+            "value": {
+              "value": 10,
+              "unit": "hours",
+              "system": "http://unitsofmeasure.org",
+              "code": "h"
+            },
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I3",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "43583-4=40 nmol/L; predicate from 1.0.0/I3",
+        "evidence": [
+          {
+            "resource_ref": "Observation/43cf06d4-9126-5d7f-9bef-246ad632ea6c",
+            "field": "valueQuantity",
+            "value": {
+              "value": 40,
+              "unit": "nmol/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "nmol/L"
+            },
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "Observation/43cf06d4-9126-5d7f-9bef-246ad632ea6c",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I4",
+        "type": "inclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "2571-8=150 mg/dL; predicate from 1.0.0/I4",
+        "evidence": [
+          {
+            "resource_ref": "Observation/ae511a2f-3078-59de-baaa-914b0a372be4",
+            "field": "valueQuantity",
+            "value": {
+              "value": 150,
+              "unit": "mg/dL",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg/dL"
+            },
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "Observation/ae511a2f-3078-59de-baaa-914b0a372be4",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "Specimen/fe08ae21-9d40-5556-a42f-94d5f8476a09",
+            "field": "collection.fastingStatusDuration",
+            "value": {
+              "value": 10,
+              "unit": "hours",
+              "system": "http://unitsofmeasure.org",
+              "code": "h"
+            },
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "I5",
+        "type": "inclusion",
+        "manual": true,
+        "status": "unknown",
+        "reason": "Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient",
+        "evidence": [],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E1",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Both ALT and AST at or below 1.5×ULN",
+        "evidence": [
+          {
+            "resource_ref": "Observation/57d1c8f1-1ca5-51ee-9495-744182d0b08b",
+            "field": "valueQuantity",
+            "value": {
+              "value": 25,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "Observation/57d1c8f1-1ca5-51ee-9495-744182d0b08b",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "Observation/57d1c8f1-1ca5-51ee-9495-744182d0b08b",
+            "field": "referenceRange[0].high",
+            "value": {
+              "value": 40,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "Observation/a0649760-a820-5858-b8ab-012499fb48a8",
+            "field": "valueQuantity",
+            "value": {
+              "value": 25,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "Observation/a0649760-a820-5858-b8ab-012499fb48a8",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "Observation/a0649760-a820-5858-b8ab-012499fb48a8",
+            "field": "referenceRange[0].high",
+            "value": {
+              "value": 35,
+              "unit": "U/L",
+              "system": "http://unitsofmeasure.org",
+              "code": "U/L"
+            },
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E2",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "4548-4=5.4 %; predicate from 1.0.0/E2",
+        "evidence": [
+          {
+            "resource_ref": "Observation/4a4aacb7-deb0-5b2a-92aa-2186aaad794e",
+            "field": "valueQuantity",
+            "value": {
+              "value": 5.4,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "Observation/4a4aacb7-deb0-5b2a-92aa-2186aaad794e",
+            "field": "effectiveDateTime",
+            "value": "2026-10-09T09:00:00-04:00",
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E3",
+        "type": "exclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "Current continuous smoking; compare reported day/week amounts",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25",
+            "field": "item.smoking_complete",
+            "value": true,
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25",
+            "field": "item.smoking_window_start",
+            "value": "2026-07-09",
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25",
+            "field": "item.smoking_window_end",
+            "value": "2026-10-09",
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25",
+            "field": "item.current_smoker",
+            "value": true,
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25",
+            "field": "item.smoking_pattern",
+            "value": "current_continuous",
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25",
+            "field": "item.cigarettes_day",
+            "value": 3,
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25",
+            "field": "item.cigarettes_week",
+            "value": 21,
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E4",
+        "type": "exclusion",
+        "manual": false,
+        "status": "not_met",
+        "reason": "Explicit negative synthetic interview covering entire window; self-report limitation retained",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25",
+            "field": "item.advanced_complete",
+            "value": true,
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25",
+            "field": "item.advanced_window_start",
+            "value": "2025-10-09",
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25",
+            "field": "item.advanced_window_end",
+            "value": "2026-10-09",
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25",
+            "field": "item.advanced_exposure",
+            "value": false,
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          }
+        ],
+        "conflict": false
+      },
+      {
+        "criterion_id": "E5",
+        "type": "exclusion",
+        "manual": false,
+        "status": "met",
+        "reason": "Last reported class exposure compared to inclusive demo window",
+        "evidence": [
+          {
+            "resource_ref": "QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25",
+            "field": "item.lipid_complete",
+            "value": true,
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25",
+            "field": "item.lipid_window_start",
+            "value": "2026-09-09",
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25",
+            "field": "item.lipid_window_end",
+            "value": "2026-10-09",
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25",
+            "field": "item.lipid_exposure",
+            "value": true,
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25",
+            "field": "item.lipid_last_use",
+            "value": "2026-09-29",
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          },
+          {
+            "resource_ref": "QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25",
+            "field": "item.lipid_drug",
+            "value": "atorvastatin (reported prescription lipid-lowering use)",
+            "patient_id": "329bcd54-d577-b679-2232-96d50f40a302"
+          }
+        ],
+        "conflict": false
+      }
+    ],
+    "tool_trace": [
+      {
+        "tool": "local_fhir_query",
+        "type": "Patient",
+        "id": "329bcd54-d577-b679-2232-96d50f40a302"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "39156-5",
+        "patient": "urn:uuid:329bcd54-d577-b679-2232-96d50f40a302",
+        "encounter": "urn:uuid:0ef2f8d3-24bb-524f-9800-41827610b913",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "18262-6",
+        "patient": "urn:uuid:329bcd54-d577-b679-2232-96d50f40a302",
+        "encounter": "urn:uuid:0ef2f8d3-24bb-524f-9800-41827610b913",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "43583-4",
+        "patient": "urn:uuid:329bcd54-d577-b679-2232-96d50f40a302",
+        "encounter": "urn:uuid:0ef2f8d3-24bb-524f-9800-41827610b913",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "2571-8",
+        "patient": "urn:uuid:329bcd54-d577-b679-2232-96d50f40a302",
+        "encounter": "urn:uuid:0ef2f8d3-24bb-524f-9800-41827610b913",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "1742-6",
+        "patient": "urn:uuid:329bcd54-d577-b679-2232-96d50f40a302",
+        "encounter": "urn:uuid:0ef2f8d3-24bb-524f-9800-41827610b913",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "1920-8",
+        "patient": "urn:uuid:329bcd54-d577-b679-2232-96d50f40a302",
+        "encounter": "urn:uuid:0ef2f8d3-24bb-524f-9800-41827610b913",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "Observation",
+        "code": "4548-4",
+        "patient": "urn:uuid:329bcd54-d577-b679-2232-96d50f40a302",
+        "encounter": "urn:uuid:0ef2f8d3-24bb-524f-9800-41827610b913",
+        "count": 1
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "ce388a5f-48f8-57db-91e5-bbee4d384d25"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "ce388a5f-48f8-57db-91e5-bbee4d384d25"
+      },
+      {
+        "tool": "local_fhir_query",
+        "type": "QuestionnaireResponse",
+        "id": "ce388a5f-48f8-57db-91e5-bbee4d384d25"
+      }
+    ],
+    "scope_note": "Designed synthetic study records only; no full-chart or clinical eligibility claim."
+  }
+]

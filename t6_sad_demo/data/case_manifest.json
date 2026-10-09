@@ -1,0 +1,90 @@
+{
+  "seed": 20261009,
+  "clinician_seed": 20261009,
+  "synthea_version": "3.3.0",
+  "age_generation_range": "18–65",
+  "simulation_end_date": "2026-10-09",
+  "cases": [
+    {
+      "case_id": "SAD01",
+      "source_file": "data/raw/fhir/Cecil300_Graham902_fb59ce1d-c14e-05e7-719d-47eb6e65a9ab.json",
+      "source_sha256": "dbc0d8b3732457d4d687f940ce6cba9506fa7008798cb9a95e75d00495de2dc1",
+      "patient_id": "fb59ce1d-c14e-05e7-719d-47eb6e65a9ab",
+      "case_sha256": "c85cb085de4d7df93c50fab2aae7ff85f7c25ca7e31c2b1f366bdd53a3836956",
+      "patient_demographics_unchanged": true,
+      "full_history_included": false,
+      "context_sha256": "480ff4e532be6cbc37986cb28ef4681fab4add151649dab20e876c37c79f5249"
+    },
+    {
+      "case_id": "SAD02",
+      "source_file": "data/raw/fhir/Celsa248_Zemlak964_717a30c9-adba-2d70-f1ba-28dcf0c048c4.json",
+      "source_sha256": "983852613d587612ae580fa42d2035d1b937dba371c3605aeccc0f6bfc266c16",
+      "patient_id": "717a30c9-adba-2d70-f1ba-28dcf0c048c4",
+      "case_sha256": "a377eef6fc761ae8a9ce815ec0089ed0df1194a52837cb925f5145dede8792ce",
+      "patient_demographics_unchanged": true,
+      "full_history_included": false,
+      "context_sha256": "4eb5f32c83586be58abc781f3df90d3565bd7ee179e4a757bdc1ea402472a77b"
+    },
+    {
+      "case_id": "SAD03",
+      "source_file": "data/raw/fhir/Christian753_Satterfield305_9b4ac753-3eaa-f373-a25d-4e0faf584cb6.json",
+      "source_sha256": "3eb8c891769e7e2272d9e43118910469b339b1ee2225615b22fb7e0b5f6251f2",
+      "patient_id": "9b4ac753-3eaa-f373-a25d-4e0faf584cb6",
+      "case_sha256": "0225d8dfe2a3c1486181c73c589bc8cbb6cba9fd2a65c38854cbcb2371898f08",
+      "patient_demographics_unchanged": true,
+      "full_history_included": false,
+      "context_sha256": "73f2f0b2204430dabd48fd9acf03ff49fb4b2a61ce3da640d029843192823574"
+    },
+    {
+      "case_id": "SAD04",
+      "source_file": "data/raw/fhir/Diego848_Bayer639_8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc.json",
+      "source_sha256": "8455d10453d7ecdbff5086e8e2c62e6fb9ed4a6b5d5aeb14588fe27f3e54bb23",
+      "patient_id": "8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc",
+      "case_sha256": "f735805930eae9331762e1157a98f9f62e289a327e5bc8aff29234a662f595ea",
+      "patient_demographics_unchanged": true,
+      "full_history_included": false,
+      "context_sha256": "fc3dc9f2c4336ba5307ff899dfa51d6aa00d1e05f6f3a0aafb61efbb3ed67b0b"
+    },
+    {
+      "case_id": "SAD05",
+      "source_file": "data/raw/fhir/Ezequiel972_Stehr398_cdf2fa34-57a1-ef59-6317-5db0d888d02c.json",
+      "source_sha256": "4e66d55e60082b9256e29344281fc344e21919457cf06995f3c5516c1d2d0283",
+      "patient_id": "cdf2fa34-57a1-ef59-6317-5db0d888d02c",
+      "case_sha256": "472d836707928a3c8a31038ff7eb44e3acbd24b6c5c174d487445a5a1d760351",
+      "patient_demographics_unchanged": true,
+      "full_history_included": false,
+      "context_sha256": "62ef178a6e19504cae3488e8089dfde8b9916e0c56d120a1896b973c34e37c74"
+    },
+    {
+      "case_id": "SAD06",
+      "source_file": "data/raw/fhir/Leana211_Reita211_Wehner319_b8af990e-6f30-ef84-202f-a020dcaa0286.json",
+      "source_sha256": "3255fe8a101f82fb1950394aca492fd99597873c2e94ebd65f2a5e3cb4de8d1a",
+      "patient_id": "b8af990e-6f30-ef84-202f-a020dcaa0286",
+      "case_sha256": "2060864ce3b6a0aa52d0a48de31b267c60360e9097f5923957f49a1d99487424",
+      "patient_demographics_unchanged": true,
+      "full_history_included": false,
+      "context_sha256": "4fcbf3d3032fa68a634a81223b58a890c4997568f7b5dc53c51f981d03627001"
+    },
+    {
+      "case_id": "SAD07",
+      "source_file": "data/raw/fhir/Melany872_Margarette462_Denesik803_8a597cb9-8552-23cd-4024-69519d67f526.json",
+      "source_sha256": "40b883f5a4cb5a8110794fbeac964e5cf3c87b6e4d1d629d1536b3e5d11d4dfc",
+      "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526",
+      "case_sha256": "76379218245ba16c58d2fef5aadfd5f1c8b9c5eabd87ef89775239eb6c87ab56",
+      "patient_demographics_unchanged": true,
+      "full_history_included": false,
+      "context_sha256": "a63503c586675ee523e14ceabf7632737c8bbc5ad05da26c5e05f9fd60c3a2d8"
+    },
+    {
+      "case_id": "SAD08",
+      "source_file": "data/raw/fhir/Tawnya388_Schaefer657_329bcd54-d577-b679-2232-96d50f40a302.json",
+      "source_sha256": "9da203450aa5770431aa3dc7bb0257d314b16562db187df6e83263c6d7946a52",
+      "patient_id": "329bcd54-d577-b679-2232-96d50f40a302",
+      "case_sha256": "b04106121284a7c6be8932d8a3a8bb6b654b73b8cc7499bc9c46550066cfd98d",
+      "patient_demographics_unchanged": true,
+      "full_history_included": false,
+      "context_sha256": "4365642c880fd3ebca14d4912338cc2b308fd1f5f6a375d65dd331cc2e044ed8"
+    }
+  ],
+  "bias": "Cases deliberately cover boundaries/failures/missing/conflicting evidence; not a recruitment yield estimate."
+}

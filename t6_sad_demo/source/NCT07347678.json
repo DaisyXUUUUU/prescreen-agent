@@ -1,0 +1,264 @@
+{
+  "protocolSection": {
+    "identificationModule": {
+      "nctId": "NCT07347678",
+      "orgStudyIdInfo": {
+        "id": "RN5681-101"
+      },
+      "organization": {
+        "fullName": "Ikaria Bioscience Pty Ltd",
+        "class": "INDUSTRY"
+      },
+      "briefTitle": "Phase 1a Study to Evaluate the Safety, Tolerability, Pharmacokinetics, and Pharmacodynamics of RN5681 in Healthy Volunteers",
+      "officialTitle": "A Phase 1a, Randomized, Placebo-Controlled, Single Ascending Dose Study to Evaluate the Safety, Tolerability, Pharmacokinetics, and Pharmacodynamics of RN5681 in Healthy Volunteers"
+    },
+    "statusModule": {
+      "statusVerifiedDate": "2026-03",
+      "overallStatus": "RECRUITING",
+      "expandedAccessInfo": {
+        "hasExpandedAccess": false
+      },
+      "startDateStruct": {
+        "date": "2026-03-12",
+        "type": "ACTUAL"
+      },
+      "primaryCompletionDateStruct": {
+        "date": "2027-02",
+        "type": "ESTIMATED"
+      },
+      "completionDateStruct": {
+        "date": "2027-07",
+        "type": "ESTIMATED"
+      },
+      "studyFirstSubmitDate": "2026-01-09",
+      "studyFirstSubmitQcDate": "2026-01-09",
+      "studyFirstPostDateStruct": {
+        "date": "2026-01-16",
+        "type": "ACTUAL"
+      },
+      "lastUpdateSubmitDate": "2026-03-30",
+      "lastUpdatePostDateStruct": {
+        "date": "2026-04-03",
+        "type": "ACTUAL"
+      }
+    },
+    "sponsorCollaboratorsModule": {
+      "responsibleParty": {
+        "type": "SPONSOR"
+      },
+      "leadSponsor": {
+        "name": "Ikaria Bioscience Pty Ltd",
+        "class": "INDUSTRY"
+      },
+      "collaborators": [
+        {
+          "name": "Shanghai Rona Therapeutics Co., Ltd.",
+          "class": "INDUSTRY"
+        }
+      ]
+    },
+    "oversightModule": {
+      "oversightHasDmc": true,
+      "isFdaRegulatedDrug": false,
+      "isFdaRegulatedDevice": false,
+      "isUsExport": false
+    },
+    "descriptionModule": {
+      "briefSummary": "The purpose of this study is to evaluate the safety, tolerability, pharmacokinetics, pharmacodynamics and immunogenicity of single doses of RN5681 in Adult healthy subjects"
+    },
+    "conditionsModule": {
+      "conditions": [
+        "High Cholesterol"
+      ]
+    },
+    "designModule": {
+      "studyType": "INTERVENTIONAL",
+      "phases": [
+        "PHASE1"
+      ],
+      "designInfo": {
+        "allocation": "RANDOMIZED",
+        "interventionModel": "PARALLEL",
+        "primaryPurpose": "TREATMENT",
+        "maskingInfo": {
+          "masking": "SINGLE",
+          "whoMasked": [
+            "PARTICIPANT"
+          ]
+        }
+      },
+      "enrollmentInfo": {
+        "count": 60,
+        "type": "ESTIMATED"
+      }
+    },
+    "armsInterventionsModule": {
+      "armGroups": [
+        {
+          "label": "RN5681",
+          "type": "EXPERIMENTAL",
+          "description": "Drug: RN5681 Investigational product subcutaneous injections",
+          "interventionNames": [
+            "Drug: RN5681"
+          ]
+        },
+        {
+          "label": "Placebo",
+          "type": "PLACEBO_COMPARATOR",
+          "description": "Drug: Placebo control 0.9% normal saline subcutaneous injection",
+          "interventionNames": [
+            "Drug: Placebo control"
+          ]
+        }
+      ],
+      "interventions": [
+        {
+          "type": "DRUG",
+          "name": "RN5681",
+          "description": "Investigational Product",
+          "armGroupLabels": [
+            "RN5681"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "Placebo control",
+          "description": "0.9% normal saline SC injection",
+          "armGroupLabels": [
+            "Placebo"
+          ]
+        }
+      ]
+    },
+    "outcomesModule": {
+      "primaryOutcomes": [
+        {
+          "measure": "in SAD cohort, To assess the safety and tolerability of subcutaneously (SC) administered RN5681",
+          "description": "Incidence, severity, and causal relationship of adverse events (AEs) as reported by the Investigator, with severity determined according to National Cancer Institute Common Terminology Criteria for Adverse Events (NCI CTCAE) v6.0",
+          "timeFrame": "From the enrollment to the end of treatment at Day180"
+        },
+        {
+          "measure": "in POC cohort, To assess the metabolic markers of efficacy",
+          "description": "Percent change from Baseline in serum LDL-C and Lp(a) at Day 180",
+          "timeFrame": "From enrollment to the end of treatment at Day 180"
+        }
+      ]
+    },
+    "eligibilityModule": {
+      "eligibilityCriteria": "Inclusion Criteria:\n\n* Body mass index (BMI) 18 to 35 kg/m2\n* Fasting LDL-C ≥70 mg/dL (1.81 mmol/L) (all SAD cohorts); fasting LDL-C ≥100 mg/dL (2.59 mmol/L) (POC cohort only)\n* Lp(a) at Screening: SAD cohort: ≥25 nmol/L POC cohort: ≥100 nmol/L\n* Fasting triglycerides \\<400 mg/dL (4.51 mmol/L) at Screening\n* No clinically significant abnormalities of hepatic or renal function\n\nExclusion Criteria:\n\n* Alanine aminotransferase (ALT) or aspartate aminotransferase (AST) \\>1.5× the upper limit of normal at screening\n* Hemoglobin A1c (HbA1c) ≥6.5% at screening\n* Current regular smoker (defined as \\>2 cigarettes/day or \\>10 cigarettes/week) within 3 months prior to screening\n* Use of any siRNA, antisense oligonucleotide (ASO), cell and gene therapy, or clustered regularly interspaced short palindromic repeats (CRISPR) agent in the prior 12 months\n* Received any prescription lipid-lowering medication, including but not limited to statins, ezetimibe, and PCSK9 inhibitors to alter serum lipids within 30 days before screening",
+      "healthyVolunteers": true,
+      "sex": "ALL",
+      "minimumAge": "18 Years",
+      "maximumAge": "65 Years",
+      "stdAges": [
+        "ADULT",
+        "OLDER_ADULT"
+      ]
+    },
+    "contactsLocationsModule": {
+      "centralContacts": [
+        {
+          "name": "Dan Xiang",
+          "role": "CONTACT",
+          "phone": "+86 18516063568",
+          "email": "dan.xiang@ronatherapeutics.com"
+        },
+        {
+          "name": "Jie Zeng",
+          "role": "CONTACT",
+          "phone": "jie.zeng@ronatherapeutics.com",
+          "email": "jie.zeng@ronatherapeutics.com"
+        }
+      ],
+      "locations": [
+        {
+          "facility": "Q-Pharm Pty Ltd.",
+          "status": "RECRUITING",
+          "city": "Brisbane",
+          "state": "Queensland",
+          "zip": "4006",
+          "country": "Australia",
+          "contacts": [
+            {
+              "name": "Emma Trowbridge",
+              "role": "CONTACT",
+              "phone": "(07) 3707 2720",
+              "email": "e.trowbridge@nucleusnetwork.com.au"
+            },
+            {
+              "name": "Emma Trowbridge",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": -27.46794,
+            "lon": 153.02809
+          }
+        },
+        {
+          "facility": "Nucleus Network Pty Ltd.",
+          "status": "RECRUITING",
+          "city": "Melbourne",
+          "state": "Victoria",
+          "zip": "3004",
+          "country": "Australia",
+          "contacts": [
+            {
+              "name": "Philip Ryan, MD",
+              "role": "CONTACT",
+              "phone": "(03) 8593 9801",
+              "email": "p.ryan@nucleusnetwork.com.au"
+            },
+            {
+              "name": "Philip Ryan, MD",
+              "role": "PRINCIPAL_INVESTIGATOR"
+            }
+          ],
+          "geoPoint": {
+            "lat": -37.814,
+            "lon": 144.96332
+          }
+        }
+      ]
+    },
+    "ipdSharingStatementModule": {
+      "ipdSharing": "UNDECIDED"
+    }
+  },
+  "derivedSection": {
+    "miscInfoModule": {
+      "versionHolder": "2026-10-09"
+    },
+    "conditionBrowseModule": {
+      "meshes": [
+        {
+          "id": "D006937",
+          "term": "Hypercholesterolemia"
+        }
+      ],
+      "ancestors": [
+        {
+          "id": "D006949",
+          "term": "Hyperlipidemias"
+        },
+        {
+          "id": "D050171",
+          "term": "Dyslipidemias"
+        },
+        {
+          "id": "D052439",
+          "term": "Lipid Metabolism Disorders"
+        },
+        {
+          "id": "D008659",
+          "term": "Metabolic Diseases"
+        },
+        {
+          "id": "D009750",
+          "term": "Nutritional and Metabolic Diseases"
+        }
+      ]
+    }
+  },
+  "hasResults": false
+}

@@ -1,0 +1,11 @@
+{
+  "case_id": "SAD07",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "8a597cb9-8552-23cd-4024-69519d67f526",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "aa0d0907-c6dc-5f79-a0ba-f76bf3829c18",
+  "history_id": "b9d9ba11-148a-5159-be0c-cddcffee927c",
+  "FHIR_file": "cases/SAD07.json",
+  "data_scope": "Purpose-built study records using Synthea demographics; not the full longitudinal chart"
+}

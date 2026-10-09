@@ -1,0 +1,576 @@
+{
+  "status": "reference_specification_not_executed",
+  "origin": "archived T2/T7 frozen specification 1.0.0",
+  "trial_id": "NCT07610278",
+  "role": "secondary_demo",
+  "rules": [
+    {
+      "rule_id": "T2-I1",
+      "trial_id": "NCT07610278",
+      "type": "inclusion",
+      "source_text": "Males or females aged 18 to 75 years.",
+      "source_locator": {
+        "file": "sources/NCT07610278.json",
+        "json_path": "protocolSection.eligibilityModule.eligibilityCriteria",
+        "character_start": 23,
+        "character_end_exclusive": 60
+      },
+      "normalization": "Backslash-escaped comparison signs remain in source_text; expression stores normalized operators.",
+      "title": "年龄18–75岁",
+      "computability": "C",
+      "expression": {
+        "op": "age_range",
+        "birth_date": {
+          "field": "patient.birth_date"
+        },
+        "at": {
+          "field": "context.screening_at"
+        },
+        "lower": 18,
+        "upper": 75,
+        "lower_inclusive": true,
+        "upper_inclusive": true,
+        "unit": "completed_year"
+      },
+      "required_fields": [
+        "patient.birth_date",
+        "context.screening_at",
+        "evidence"
+      ],
+      "logic_zh": "18≤筛查时周岁≤75。",
+      "unresolved": [
+        "确认年龄判定的具体筛查时点；字段绑定和生日/日期精度处理待验证。"
+      ],
+      "stage": "screening",
+      "specification_status": "frozen_with_explicit_gaps",
+      "execution_status": "not_validated",
+      "clinical_review_status": "pending_Ming_review"
+    },
+    {
+      "rule_id": "T2-I2",
+      "trial_id": "NCT07610278",
+      "type": "inclusion",
+      "source_text": "Diagnosis of primary hypertension.",
+      "source_locator": {
+        "file": "sources/NCT07610278.json",
+        "json_path": "protocolSection.eligibilityModule.eligibilityCriteria",
+        "character_start": 63,
+        "character_end_exclusive": 97
+      },
+      "normalization": "Backslash-escaped comparison signs remain in source_text; expression stores normalized operators.",
+      "title": "原发性高血压",
+      "computability": "C",
+      "expression": {
+        "op": "confirmed_diagnosis",
+        "concept_set": "primary_hypertension",
+        "input": {
+          "field": "conditions"
+        },
+        "require_evidence": true
+      },
+      "required_fields": [
+        "conditions",
+        "evidence"
+      ],
+      "logic_zh": "需要原发性高血压的明确诊断证据；继发性诊断不能替代。",
+      "unresolved": [
+        "审核原发性高血压概念集、确认/活动状态及可接受证据。"
+      ],
+      "stage": "screening",
+      "specification_status": "frozen_with_explicit_gaps",
+      "execution_status": "not_validated",
+      "clinical_review_status": "pending_Ming_review"
+    },
+    {
+      "rule_id": "T2-I3",
+      "trial_id": "NCT07610278",
+      "type": "inclusion",
+      "source_text": "Treatment with either no, or up to 2 antihypertensive medications at a stable dose for at least 4 weeks preceding screening.",
+      "source_locator": {
+        "file": "sources/NCT07610278.json",
+        "json_path": "protocolSection.eligibilityModule.eligibilityCriteria",
+        "character_start": 100,
+        "character_end_exclusive": 224
+      },
+      "normalization": "Backslash-escaped comparison signs remain in source_text; expression stores normalized operators.",
+      "title": "无降压治疗，或至多2种且稳定至少4周",
+      "computability": "C",
+      "expression": {
+        "op": "or",
+        "args": [
+          {
+            "op": "confirmed_no_exposure",
+            "concept_set": "antihypertensives",
+            "input": {
+              "field": "medication_exposures"
+            },
+            "anchor": {
+              "field": "context.screening_at"
+            },
+            "absence_requires_explicit_evidence": true
+          },
+          {
+            "op": "and",
+            "args": [
+              {
+                "op": "medication_count",
+                "concept_set": "antihypertensives",
+                "input": {
+                  "field": "medication_exposures"
+                },
+                "comparator": "<=",
+                "value": 2,
+                "counting_policy": "pending_review"
+              },
+              {
+                "op": "stable_dose",
+                "concept_set": "antihypertensives",
+                "input": {
+                  "field": "medication_exposures"
+                },
+                "anchor": {
+                  "field": "context.screening_at"
+                },
+                "duration": {
+                  "value": 28,
+                  "unit": "day",
+                  "minimum_inclusive": true
+                },
+                "require_complete_interval": true,
+                "interruption_and_dose_change_policy": "pending_review"
+              }
+            ]
+          }
+        ]
+      },
+      "required_fields": [
+        "medication_exposures",
+        "context.screening_at",
+        "coverage",
+        "evidence"
+      ],
+      "logic_zh": "确认未治疗 OR（降压药数≤2 AND 所有对应药物剂量稳定≥28天）。",
+      "unresolved": [
+        "审核药物集合；组合制剂按成分/制剂计数；频次变化、停药、换药定义。",
+        "确认筛查访视锚点；药物无记录不是确认未用药。"
+      ],
+      "stage": "screening",
+      "specification_status": "frozen_with_explicit_gaps",
+      "execution_status": "not_validated",
+      "clinical_review_status": "pending_Ming_review"
+    },
+    {
+      "rule_id": "T2-I4",
+      "trial_id": "NCT07610278",
+      "type": "inclusion",
+      "source_text": "Systolic blood pressure ≥140 and \\<165 mmHg based on the mean of 3 sitting measurements based on office blood pressure monitoring.",
+      "source_locator": {
+        "file": "sources/NCT07610278.json",
+        "json_path": "protocolSection.eligibilityModule.eligibilityCriteria",
+        "character_start": 227,
+        "character_end_exclusive": 357
+      },
+      "normalization": "Backslash-escaped comparison signs remain in source_text; expression stores normalized operators.",
+      "title": "三次坐位诊室SBP均值",
+      "computability": "C",
+      "expression": {
+        "op": "measurement_mean_range",
+        "concept_set": "systolic_blood_pressure",
+        "input": {
+          "field": "observations"
+        },
+        "count": 3,
+        "same_visit": true,
+        "visit": {
+          "field": "context.bp_screening_visit_id"
+        },
+        "posture": "sitting",
+        "setting": "office",
+        "unit": "mmHg",
+        "lower": 140,
+        "lower_inclusive": true,
+        "upper": 165,
+        "upper_inclusive": false
+      },
+      "required_fields": [
+        "observations",
+        "context.bp_screening_visit_id",
+        "evidence"
+      ],
+      "logic_zh": "140≤规定访视的3次坐位诊室SBP算术平均值<165 mmHg；不得选任意最近3条。",
+      "unresolved": [
+        "确认筛查访视和读数选择规则（含超过3次时如何选）；术语及字段映射待审核。"
+      ],
+      "stage": "screening",
+      "specification_status": "frozen_with_explicit_gaps",
+      "execution_status": "not_validated",
+      "clinical_review_status": "pending_Ming_review"
+    },
+    {
+      "rule_id": "T2-I5",
+      "trial_id": "NCT07610278",
+      "type": "inclusion",
+      "source_text": "Diagnosis of hypercholesterolemia including heterozygous familial hypercholesterolemia unable to reach LDL-C goals with a stable dose of statin treatment for at least 4 weeks prior to screening as per Investigator judgement, guidelines and local practice (if tolerated and not contraindicated) with or without bempedoic acid and with or without ezetimibe prescribed according to local guidance, at a stable dose for at least 4 weeks preceding Screening Visit 1.",
+      "source_locator": {
+        "file": "sources/NCT07610278.json",
+        "json_path": "protocolSection.eligibilityModule.eligibilityCriteria",
+        "character_start": 360,
+        "character_end_exclusive": 821
+      },
+      "normalization": "Backslash-escaped comparison signs remain in source_text; expression stores normalized operators.",
+      "title": "高胆固醇、LDL未达目标及降脂治疗要求",
+      "computability": "P",
+      "expression": {
+        "op": "and",
+        "args": [
+          {
+            "op": "confirmed_diagnosis",
+            "concept_set": "hypercholesterolemia_including_HeFH",
+            "input": {
+              "field": "conditions"
+            },
+            "require_evidence": true
+          },
+          {
+            "op": "review_required",
+            "review_key": "LDL_goal_and_failure_per_investigator_local_guidance",
+            "default": "unknown"
+          },
+          {
+            "op": "conditional",
+            "condition": {
+              "op": "review_required",
+              "review_key": "statin_tolerated_and_not_contraindicated",
+              "default": "unknown"
+            },
+            "then": {
+              "op": "stable_dose",
+              "concept_set": "statins",
+              "input": {
+                "field": "medication_exposures"
+              },
+              "anchor": {
+                "field": "context.screening_at"
+              },
+              "duration": {
+                "value": 28,
+                "unit": "day",
+                "minimum_inclusive": true
+              },
+              "require_complete_interval": true,
+              "interruption_and_dose_change_policy": "pending_review"
+            },
+            "otherwise": {
+              "op": "review_required",
+              "review_key": "statin_exception_per_protocol",
+              "default": "unknown"
+            }
+          },
+          {
+            "op": "if_used",
+            "concept_set": "bempedoic_acid",
+            "input": {
+              "field": "medication_exposures"
+            },
+            "then": {
+              "op": "and",
+              "args": [
+                {
+                  "op": "stable_dose",
+                  "concept_set": "bempedoic_acid",
+                  "input": {
+                    "field": "medication_exposures"
+                  },
+                  "anchor": {
+                    "field": "context.screening_visit_1_at"
+                  },
+                  "duration": {
+                    "value": 28,
+                    "unit": "day",
+                    "minimum_inclusive": true
+                  },
+                  "require_complete_interval": true,
+                  "interruption_and_dose_change_policy": "pending_review"
+                },
+                {
+                  "op": "review_required",
+                  "review_key": "local_prescribing_guidance",
+                  "default": "unknown"
+                }
+              ]
+            }
+          },
+          {
+            "op": "if_used",
+            "concept_set": "ezetimibe",
+            "input": {
+              "field": "medication_exposures"
+            },
+            "then": {
+              "op": "and",
+              "args": [
+                {
+                  "op": "stable_dose",
+                  "concept_set": "ezetimibe",
+                  "input": {
+                    "field": "medication_exposures"
+                  },
+                  "anchor": {
+                    "field": "context.screening_visit_1_at"
+                  },
+                  "duration": {
+                    "value": 28,
+                    "unit": "day",
+                    "minimum_inclusive": true
+                  },
+                  "require_complete_interval": true,
+                  "interruption_and_dose_change_policy": "pending_review"
+                },
+                {
+                  "op": "review_required",
+                  "review_key": "local_prescribing_guidance",
+                  "default": "unknown"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "required_fields": [
+        "conditions",
+        "observations",
+        "medication_exposures",
+        "reviews",
+        "context.screening_at",
+        "context.screening_visit_1_at",
+        "evidence"
+      ],
+      "logic_zh": "疾病 AND LDL未达个体目标 AND 他汀/耐受例外要求 AND 可选合并药物要求；不能把可选药变成必需。",
+      "unresolved": [
+        "补风险分层LDL目标、指南/国家/版本、研究者判断、禁忌/耐受标准。",
+        "审核他汀例外和最后4周修饰范围的逻辑树；不能用I6的70当作治疗目标。"
+      ],
+      "stage": "screening",
+      "specification_status": "frozen_with_explicit_gaps",
+      "execution_status": "not_validated",
+      "clinical_review_status": "pending_Ming_review"
+    },
+    {
+      "rule_id": "T2-I6",
+      "trial_id": "NCT07610278",
+      "type": "inclusion",
+      "source_text": "Fasting serum LDL-C ≥70 mg/dL and \\<190 mg/dL using Friedewald equation.",
+      "source_locator": {
+        "file": "sources/NCT07610278.json",
+        "json_path": "protocolSection.eligibilityModule.eligibilityCriteria",
+        "character_start": 891,
+        "character_end_exclusive": 963
+      },
+      "normalization": "Backslash-escaped comparison signs remain in source_text; expression stores normalized operators.",
+      "title": "访视2空腹Friedewald LDL-C",
+      "computability": "C",
+      "expression": {
+        "op": "and",
+        "args": [
+          {
+            "op": "lab_threshold",
+            "concept_set": "LDL_C",
+            "input": {
+              "field": "observations"
+            },
+            "comparator": ">=",
+            "value": 70,
+            "unit": "mg/dL",
+            "visit": "screening_visit_2",
+            "require_fasting": true,
+            "method": "Friedewald",
+            "selection_policy": "unresolved_unless_explicitly_bound"
+          },
+          {
+            "op": "lab_threshold",
+            "concept_set": "LDL_C",
+            "input": {
+              "field": "observations"
+            },
+            "comparator": "<",
+            "value": 190,
+            "unit": "mg/dL",
+            "visit": "screening_visit_2",
+            "require_fasting": true,
+            "method": "Friedewald",
+            "selection_policy": "unresolved_unless_explicitly_bound"
+          }
+        ]
+      },
+      "required_fields": [
+        "observations",
+        "context.screening_visit_2_id",
+        "evidence"
+      ],
+      "logic_zh": "同一份有效访视2空腹Friedewald LDL结果满足70≤LDL<190 mg/dL；两个比较不可用不同标本。",
+      "unresolved": [
+        "绑定同一specimen/result；审核检测方法代码、空腹标记及多结果选择。"
+      ],
+      "stage": "screening",
+      "specification_status": "frozen_with_explicit_gaps",
+      "execution_status": "not_validated",
+      "clinical_review_status": "pending_Ming_review",
+      "result_binding": "All lab and temporal clauses refer to one selected result/specimen."
+    },
+    {
+      "rule_id": "T2-I7",
+      "trial_id": "NCT07610278",
+      "type": "inclusion",
+      "source_text": "Fasting triglyceride \\<400 mg/dL.",
+      "source_locator": {
+        "file": "sources/NCT07610278.json",
+        "json_path": "protocolSection.eligibilityModule.eligibilityCriteria",
+        "character_start": 966,
+        "character_end_exclusive": 999
+      },
+      "normalization": "Backslash-escaped comparison signs remain in source_text; expression stores normalized operators.",
+      "title": "访视2空腹TG",
+      "computability": "C",
+      "expression": {
+        "op": "lab_threshold",
+        "concept_set": "triglycerides",
+        "input": {
+          "field": "observations"
+        },
+        "comparator": "<",
+        "value": 400,
+        "unit": "mg/dL",
+        "visit": "screening_visit_2",
+        "require_fasting": true,
+        "method": null,
+        "selection_policy": "unresolved_unless_explicitly_bound"
+      },
+      "required_fields": [
+        "observations",
+        "context.screening_visit_2_id",
+        "evidence"
+      ],
+      "logic_zh": "访视2空腹TG<400 mg/dL；400不通过。",
+      "unresolved": [
+        "审核概念/单位和多结果选择；缺空腹标记为unknown。"
+      ],
+      "stage": "screening",
+      "specification_status": "frozen_with_explicit_gaps",
+      "execution_status": "not_validated",
+      "clinical_review_status": "pending_Ming_review"
+    },
+    {
+      "rule_id": "T2-E1",
+      "trial_id": "NCT07610278",
+      "type": "exclusion",
+      "source_text": "Symptomatic orthostatic hypotension.",
+      "source_locator": {
+        "file": "sources/NCT07610278.json",
+        "json_path": "protocolSection.eligibilityModule.eligibilityCriteria",
+        "character_start": 1024,
+        "character_end_exclusive": 1060
+      },
+      "normalization": "Backslash-escaped comparison signs remain in source_text; expression stores normalized operators.",
+      "title": "有症状的体位性低血压",
+      "computability": "P",
+      "expression": {
+        "op": "and",
+        "args": [
+          {
+            "op": "confirmed_diagnosis",
+            "concept_set": "orthostatic_hypotension",
+            "input": {
+              "field": "conditions"
+            },
+            "require_evidence": true
+          },
+          {
+            "op": "review_required",
+            "review_key": "symptoms_and_orthostatic_diagnosis_link",
+            "default": "unknown"
+          }
+        ]
+      },
+      "required_fields": [
+        "conditions",
+        "observations",
+        "reviews",
+        "evidence"
+      ],
+      "logic_zh": "体位性低血压 AND 相关症状；完整确认诊断可供CRC审阅。",
+      "unresolved": [
+        "补体位测量标准、间隔、变化阈值、症状关联及时间范围。"
+      ],
+      "stage": "screening",
+      "specification_status": "frozen_with_explicit_gaps",
+      "execution_status": "not_validated",
+      "clinical_review_status": "pending_Ming_review"
+    },
+    {
+      "rule_id": "T2-E2",
+      "trial_id": "NCT07610278",
+      "type": "exclusion",
+      "source_text": "Treatment with certain medications and/or unable to comply with prohibited medications requirements.",
+      "source_locator": {
+        "file": "sources/NCT07610278.json",
+        "json_path": "protocolSection.eligibilityModule.eligibilityCriteria",
+        "character_start": 1063,
+        "character_end_exclusive": 1163
+      },
+      "normalization": "Backslash-escaped comparison signs remain in source_text; expression stores normalized operators.",
+      "title": "禁药治疗或不能遵守禁药要求",
+      "computability": "N",
+      "expression": {
+        "op": "or",
+        "args": [
+          {
+            "op": "review_required",
+            "review_key": "prohibited_medication_exposure_per_missing_list",
+            "default": "unknown"
+          },
+          {
+            "op": "review_required",
+            "review_key": "unable_to_comply_with_prohibited_medications",
+            "default": "unknown"
+          }
+        ]
+      },
+      "required_fields": [
+        "medication_exposures",
+        "reviews",
+        "coverage",
+        "evidence"
+      ],
+      "logic_zh": "命中禁药治疗 OR 无法遵守禁药要求；输入须区分无法遵守与尚未询问。",
+      "unresolved": [
+        "补完整禁药表、洗脱期、例外、前瞻用药限制及CRC确认。"
+      ],
+      "stage": "screening",
+      "specification_status": "frozen_with_explicit_gaps",
+      "execution_status": "not_validated",
+      "clinical_review_status": "pending_Ming_review"
+    }
+  ],
+  "source": [
+    {
+      "local_id": "T2",
+      "nct_id": "NCT07610278",
+      "title": "A Study to Evaluate the Pharmacodynamics of a Combination of QCZ484 and Inclisiran in Participants With Hypertension and Concomitant Hypercholesterolemia",
+      "file": "sources/NCT07610278.json",
+      "file_sha256": "19abd2e8b5d729abdf8c63a7c9ce4f233b5be10a88571f2abe8509260090939a",
+      "criteria_sha256": "bc35801794d4e4f69ff9a556479afb0ecce7b125543605b785bd5d78e7cde113",
+      "api_url": "https://clinicaltrials.gov/api/v2/studies/NCT07610278",
+      "last_update_post": "2026-07-30",
+      "original_downloaded_at": null,
+      "timestamp_note": "Exact original retrieval time was not recorded; freeze time is separate.",
+      "structured_age": {
+        "minimum": "18 Years",
+        "maximum": "75 Years"
+      },
+      "sex": "ALL",
+      "healthy_volunteers": false,
+      "source_completeness": "registry_eligibility_only_not_full_protocol"
+    }
+  ],
+  "note": "Original frozen source files and hashes remain in archive/2026-10-09-pre-sad/rules. Nine criteria; pending mapping and clinical review."
+}

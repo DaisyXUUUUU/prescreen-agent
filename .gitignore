@@ -24,3 +24,8 @@ logs/
 
 # placeholder test trial (not trial B); real snapshots are committed
 data/snapshots/NCT02178098/
+
+# Ming local runtime, historical work and full generated Synthea histories
+/tools/
+/archive/
+/t6_sad_demo/data/raw/

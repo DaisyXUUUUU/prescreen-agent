@@ -1,0 +1,14 @@
+{
+  "cases": 8,
+  "rule_evaluations": 88,
+  "decision_counts": {
+    "passes_evaluated_criteria": 2,
+    "fails_evaluated_criteria": 4,
+    "pending": 1,
+    "review": 1
+  },
+  "manual_review_cases": 8,
+  "complete_eligibility_cases": 0,
+  "human_ground_truth_reviewed": false,
+  "implementation": "local deterministic FHIR adapter/evaluator; no LLM agent yet"
+}

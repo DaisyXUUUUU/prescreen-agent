@@ -1,0 +1,624 @@
+Warning: Synthea is configured to export FHIR transaction bundles for generated patients but not to export the practitioners and organizations that the patient bundle entries will reference. See https://github.com/synthetichealth/synthea/wiki/FHIR-Transaction-Bundles for more information.
+org.mitre.synthea.X12.ExporterAdaptor
+org.mitre.synthea.X12.ExporterAdaptor
+SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#noProviders for further details.
+Scanned 90 modules and 444 submodules.
+Loading submodule modules/allergies/allergy_panel.json
+Loading submodule modules/allergies/drug_allergy_incidence.json
+Loading submodule modules/allergies/environmental_allergy_incidence.json
+Loading submodule modules/allergies/food_allergy_incidence.json
+Loading submodule modules/allergies/immunotherapy.json
+Loading submodule modules/allergies/outgrow_env_allergies.json
+Loading submodule modules/allergies/outgrow_food_allergies.json
+Loading submodule modules/allergies/severe_allergic_reaction.json
+Loading submodule modules/anemia/anemia_sub.json
+Loading submodule modules/breast_cancer/chemotherapy_breast.json
+Loading submodule modules/breast_cancer/hormone_diagnosis.json
+Loading submodule modules/breast_cancer/hormonetherapy_breast.json
+Loading submodule modules/breast_cancer/surgery_therapy_breast.json
+Loading submodule modules/breast_cancer/tnm_diagnosis.json
+Loading submodule modules/contraceptives/clear_contraceptive.json
+Loading submodule modules/contraceptives/female_sterilization.json
+Loading submodule modules/contraceptives/implant_contraceptive.json
+Loading submodule modules/contraceptives/injectable_contraceptive.json
+Loading submodule modules/contraceptives/intrauterine_device.json
+Loading submodule modules/contraceptives/male_sterilization.json
+Loading submodule modules/contraceptives/oral_contraceptive.json
+Loading submodule modules/contraceptives/patch_contraceptive.json
+Loading submodule modules/contraceptives/ring_contraceptive.json
+Loading submodule modules/covid19/admission.json
+Loading submodule modules/covid19/determine_risk.json
+Loading Lookup Table: covid-19-severity-outcomes.csv
+Loading Lookup Table: covid-19-survival-outcomes.csv
+Loading submodule modules/covid19/diagnose_bacterial_infection.json
+Loading submodule modules/covid19/diagnose_blood_clot.json
+Loading submodule modules/covid19/end_outcomes.json
+Loading submodule modules/covid19/end_symptoms.json
+Loading submodule modules/covid19/infection.json
+Loading submodule modules/covid19/measurements_daily.json
+Loading submodule modules/covid19/measurements_frequent.json
+Loading submodule modules/covid19/measurements_vitals.json
+Loading submodule modules/covid19/medications.json
+Loading submodule modules/covid19/nonsurvivor_lab_values.json
+Loading submodule modules/covid19/outcomes.json
+Loading submodule modules/covid19/supplies_hospitalization.json
+Loading submodule modules/covid19/supplies_icu.json
+Loading submodule modules/covid19/supplies_intubation.json
+Loading submodule modules/covid19/survivor_lab_values.json
+Loading submodule modules/covid19/symptoms.json
+Loading submodule modules/covid19/treat_blood_clot.json
+Loading submodule modules/dental/dental_emergency.json
+Loading submodule modules/dental/dental_encounter.json
+Loading submodule modules/dental/dental_hospital.json
+Loading submodule modules/dental/dental_telephone.json
+Loading submodule modules/dental/diagnosis/cavity.json
+Loading submodule modules/dental/diagnosis/dental disorder.json
+Loading submodule modules/dental/diagnosis/gingivitis.json
+Loading submodule modules/dental/diagnosis/periodontitis.json
+Loading submodule modules/dental/diagnosis/plaque.json
+Loading submodule modules/dental/end_dental_diagnoses.json
+Loading submodule modules/dental/procedure/d01.json
+Loading submodule modules/dental/procedure/d02.json
+Loading submodule modules/dental/procedure/d03.json
+Loading submodule modules/dental/procedure/d04.json
+Loading submodule modules/dental/procedure/d05.json
+Loading submodule modules/dental/procedure/d06.json
+Loading submodule modules/dental/procedure/d09.json
+Loading submodule modules/dental/procedure/d11.json
+Loading submodule modules/dental/procedure/d12.json
+Loading submodule modules/dental/procedure/d13.json
+Loading submodule modules/dental/procedure/d15.json
+Loading submodule modules/dental/procedure/d19.json
+Loading submodule modules/dental/procedure/d21.json
+Loading submodule modules/dental/procedure/d23.json
+Loading submodule modules/dental/procedure/d25.json
+Loading submodule modules/dental/procedure/d26.json
+Loading submodule modules/dental/procedure/d27.json
+Loading submodule modules/dental/procedure/d29.json
+Loading submodule modules/dental/procedure/d31.json
+Loading submodule modules/dental/procedure/d32.json
+Loading submodule modules/dental/procedure/d33.json
+Loading submodule modules/dental/procedure/d34.json
+Loading submodule modules/dental/procedure/d39.json
+Loading submodule modules/dental/procedure/d42.json
+Loading submodule modules/dental/procedure/d43.json
+Loading submodule modules/dental/procedure/d49.json
+Loading submodule modules/dental/procedure/d51.json
+Loading submodule modules/dental/procedure/d52.json
+Loading submodule modules/dental/procedure/d54.json
+Loading submodule modules/dental/procedure/d55.json
+Loading submodule modules/dental/procedure/d56.json
+Loading submodule modules/dental/procedure/d57.json
+Loading submodule modules/dental/procedure/d58.json
+Loading submodule modules/dental/procedure/d59.json
+Loading submodule modules/dental/procedure/d60.json
+Loading submodule modules/dental/procedure/d61.json
+Loading submodule modules/dental/procedure/d62.json
+Loading submodule modules/dental/procedure/d65.json
+Loading submodule modules/dental/procedure/d66.json
+Loading submodule modules/dental/procedure/d67.json
+Loading submodule modules/dental/procedure/d69.json
+Loading submodule modules/dental/procedure/d71.json
+Loading submodule modules/dental/procedure/d72.json
+Loading submodule modules/dental/procedure/d73.json
+Loading submodule modules/dental/procedure/d74.json
+Loading submodule modules/dental/procedure/d75.json
+Loading submodule modules/dental/procedure/d76.json
+Loading submodule modules/dental/procedure/d77.json
+Loading submodule modules/dental/procedure/d78.json
+Loading submodule modules/dental/procedure/d79.json
+Loading submodule modules/dental/procedure/d80.json
+Loading submodule modules/dental/procedure/d82.json
+Loading submodule modules/dental/procedure/d86.json
+Loading submodule modules/dental/procedure/d89.json
+Loading submodule modules/dental/procedure/d91.json
+Loading submodule modules/dental/procedure/d92.json
+Loading submodule modules/dental/procedure/d93.json
+Loading submodule modules/dental/procedure/d94.json
+Loading submodule modules/dental/procedure/d96.json
+Loading submodule modules/dental/procedure/d99.json
+Loading submodule modules/dental_idr/dental_idr_cluster_0.json
+Loading submodule modules/dental_idr/dental_idr_cluster_1.json
+Loading submodule modules/dental_idr/dental_idr_cluster_2.json
+Loading submodule modules/dental_idr/dental_idr_cluster_3.json
+Loading submodule modules/dental_idr/dental_idr_cluster_4.json
+Loading submodule modules/dental_idr/diagnosis/c00.json
+Loading submodule modules/dental_idr/diagnosis/c01.json
+Loading submodule modules/dental_idr/diagnosis/c02.json
+Loading submodule modules/dental_idr/diagnosis/c03.json
+Loading submodule modules/dental_idr/diagnosis/c04.json
+Loading submodule modules/dental_idr/diagnosis/c05.json
+Loading submodule modules/dental_idr/diagnosis/c06.json
+Loading submodule modules/dental_idr/diagnosis/c07.json
+Loading submodule modules/dental_idr/diagnosis/c08.json
+Loading submodule modules/dental_idr/diagnosis/c09.json
+Loading submodule modules/dental_idr/diagnosis/c10.json
+Loading submodule modules/dental_idr/diagnosis/c11.json
+Loading submodule modules/dental_idr/diagnosis/c12.json
+Loading submodule modules/dental_idr/diagnosis/c13.json
+Loading submodule modules/dental_idr/diagnosis/c14.json
+Loading submodule modules/dental_idr/diagnosis/c15.json
+Loading submodule modules/dental_idr/diagnosis/c16.json
+Loading submodule modules/dental_idr/diagnosis/c17.json
+Loading submodule modules/dental_idr/diagnosis/c18.json
+Loading submodule modules/dental_idr/diagnosis/c19.json
+Loading submodule modules/dental_idr/diagnosis/c20.json
+Loading submodule modules/dental_idr/diagnosis/c21.json
+Loading submodule modules/dental_idr/diagnosis/c22.json
+Loading submodule modules/dental_idr/diagnosis/c24.json
+Loading submodule modules/dental_idr/diagnosis/c25.json
+Loading submodule modules/dental_idr/diagnosis/c26.json
+Loading submodule modules/dental_idr/diagnosis/c30.json
+Loading submodule modules/dental_idr/diagnosis/c31.json
+Loading submodule modules/dental_idr/diagnosis/c32.json
+Loading submodule modules/dental_idr/diagnosis/c33.json
+Loading submodule modules/dental_idr/diagnosis/c34.json
+Loading submodule modules/dental_idr/diagnosis/c37.json
+Loading submodule modules/dental_idr/diagnosis/c38.json
+Loading submodule modules/dental_idr/diagnosis/c39.json
+Loading submodule modules/dental_idr/diagnosis/c40.json
+Loading submodule modules/dental_idr/diagnosis/c41.json
+Loading submodule modules/dental_idr/diagnosis/c43.json
+Loading submodule modules/dental_idr/diagnosis/c44.json
+Loading submodule modules/dental_idr/diagnosis/c45.json
+Loading submodule modules/dental_idr/diagnosis/c46.json
+Loading submodule modules/dental_idr/diagnosis/c47.json
+Loading submodule modules/dental_idr/diagnosis/c48.json
+Loading submodule modules/dental_idr/diagnosis/c49.json
+Loading submodule modules/dental_idr/diagnosis/c4a.json
+Loading submodule modules/dental_idr/diagnosis/c50.json
+Loading submodule modules/dental_idr/diagnosis/c51.json
+Loading submodule modules/dental_idr/diagnosis/c53.json
+Loading submodule modules/dental_idr/diagnosis/c54.json
+Loading submodule modules/dental_idr/diagnosis/c56.json
+Loading submodule modules/dental_idr/diagnosis/c57.json
+Loading submodule modules/dental_idr/diagnosis/c61.json
+Loading submodule modules/dental_idr/diagnosis/c62.json
+Loading submodule modules/dental_idr/diagnosis/c63.json
+Loading submodule modules/dental_idr/diagnosis/c64.json
+Loading submodule modules/dental_idr/diagnosis/c65.json
+Loading submodule modules/dental_idr/diagnosis/c66.json
+Loading submodule modules/dental_idr/diagnosis/c67.json
+Loading submodule modules/dental_idr/diagnosis/c68.json
+Loading submodule modules/dental_idr/diagnosis/c69.json
+Loading submodule modules/dental_idr/diagnosis/c71.json
+Loading submodule modules/dental_idr/diagnosis/c72.json
+Loading submodule modules/dental_idr/diagnosis/c73.json
+Loading submodule modules/dental_idr/diagnosis/c74.json
+Loading submodule modules/dental_idr/diagnosis/c75.json
+Loading submodule modules/dental_idr/diagnosis/c76.json
+Loading submodule modules/dental_idr/diagnosis/c77.json
+Loading submodule modules/dental_idr/diagnosis/c78.json
+Loading submodule modules/dental_idr/diagnosis/c79.json
+Loading submodule modules/dental_idr/diagnosis/c7a.json
+Loading submodule modules/dental_idr/diagnosis/c7b.json
+Loading submodule modules/dental_idr/diagnosis/c80.json
+Loading submodule modules/dental_idr/diagnosis/c81.json
+Loading submodule modules/dental_idr/diagnosis/c82.json
+Loading submodule modules/dental_idr/diagnosis/c83.json
+Loading submodule modules/dental_idr/diagnosis/c84.json
+Loading submodule modules/dental_idr/diagnosis/c85.json
+Loading submodule modules/dental_idr/diagnosis/c86.json
+Loading submodule modules/dental_idr/diagnosis/c88.json
+Loading submodule modules/dental_idr/diagnosis/c90.json
+Loading submodule modules/dental_idr/diagnosis/c91.json
+Loading submodule modules/dental_idr/diagnosis/c92.json
+Loading submodule modules/dental_idr/diagnosis/c93.json
+Loading submodule modules/dental_idr/diagnosis/c95.json
+Loading submodule modules/dental_idr/diagnosis/c96.json
+Loading submodule modules/dental_idr/diagnosis/d00.json
+Loading submodule modules/dental_idr/diagnosis/d01.json
+Loading submodule modules/dental_idr/diagnosis/d02.json
+Loading submodule modules/dental_idr/diagnosis/d03.json
+Loading submodule modules/dental_idr/diagnosis/d04.json
+Loading submodule modules/dental_idr/diagnosis/d05.json
+Loading submodule modules/dental_idr/diagnosis/d06.json
+Loading submodule modules/dental_idr/diagnosis/d07.json
+Loading submodule modules/dental_idr/diagnosis/d09.json
+Loading submodule modules/dental_idr/diagnosis/d10.json
+Loading submodule modules/dental_idr/diagnosis/d11.json
+Loading submodule modules/dental_idr/diagnosis/d12.json
+Loading submodule modules/dental_idr/diagnosis/d13.json
+Loading submodule modules/dental_idr/diagnosis/d14.json
+Loading submodule modules/dental_idr/diagnosis/d16.json
+Loading submodule modules/dental_idr/diagnosis/d17.json
+Loading submodule modules/dental_idr/diagnosis/d18.json
+Loading submodule modules/dental_idr/diagnosis/d19.json
+Loading submodule modules/dental_idr/diagnosis/d21.json
+Loading submodule modules/dental_idr/diagnosis/d22.json
+Loading submodule modules/dental_idr/diagnosis/d23.json
+Loading submodule modules/dental_idr/diagnosis/d24.json
+Loading submodule modules/dental_idr/diagnosis/d25.json
+Loading submodule modules/dental_idr/diagnosis/d28.json
+Loading submodule modules/dental_idr/diagnosis/d29.json
+Loading submodule modules/dental_idr/diagnosis/d30.json
+Loading submodule modules/dental_idr/diagnosis/d31.json
+Loading submodule modules/dental_idr/diagnosis/d32.json
+Loading submodule modules/dental_idr/diagnosis/d33.json
+Loading submodule modules/dental_idr/diagnosis/d34.json
+Loading submodule modules/dental_idr/diagnosis/d35.json
+Loading submodule modules/dental_idr/diagnosis/d36.json
+Loading submodule modules/dental_idr/diagnosis/d37.json
+Loading submodule modules/dental_idr/diagnosis/d38.json
+Loading submodule modules/dental_idr/diagnosis/d39.json
+Loading submodule modules/dental_idr/diagnosis/d3a.json
+Loading submodule modules/dental_idr/diagnosis/d40.json
+Loading submodule modules/dental_idr/diagnosis/d41.json
+Loading submodule modules/dental_idr/diagnosis/d44.json
+Loading submodule modules/dental_idr/diagnosis/d45.json
+Loading submodule modules/dental_idr/diagnosis/d46.json
+Loading submodule modules/dental_idr/diagnosis/d47.json
+Loading submodule modules/dental_idr/diagnosis/d48.json
+Loading submodule modules/dental_idr/diagnosis/d49.json
+Loading submodule modules/dental_idr/diagnosis/k00.json
+Loading submodule modules/dental_idr/diagnosis/k01.json
+Loading submodule modules/dental_idr/diagnosis/k02.json
+Loading submodule modules/dental_idr/diagnosis/k03.json
+Loading submodule modules/dental_idr/diagnosis/k04.json
+Loading submodule modules/dental_idr/diagnosis/k05.json
+Loading submodule modules/dental_idr/diagnosis/k06.json
+Loading submodule modules/dental_idr/diagnosis/k08.json
+Loading submodule modules/dental_idr/diagnosis/k09.json
+Loading submodule modules/dental_idr/diagnosis/k11.json
+Loading submodule modules/dental_idr/diagnosis/k12.json
+Loading submodule modules/dental_idr/diagnosis/k13.json
+Loading submodule modules/dental_idr/diagnosis/m26.json
+Loading submodule modules/dental_idr/diagnosis/m27.json
+Loading submodule modules/dental_idr/diagnosis/r69.json
+Loading submodule modules/dental_idr/diagnosis/s02.json
+Loading submodule modules/dental_idr/diagnosis/z00.json
+Loading submodule modules/dental_idr/diagnosis/z01.json
+Loading submodule modules/dental_idr/diagnosis/z13.json
+Loading submodule modules/dental_idr/diagnosis/z40.json
+Loading submodule modules/dental_idr/diagnosis/z41.json
+Loading submodule modules/dental_idr/diagnosis/z51.json
+Loading submodule modules/dental_idr/end_dental_diagnoses.json
+Loading submodule modules/dental_idr/procedure/d01.json
+Loading submodule modules/dental_idr/procedure/d02.json
+Loading submodule modules/dental_idr/procedure/d03.json
+Loading submodule modules/dental_idr/procedure/d04.json
+Loading submodule modules/dental_idr/procedure/d05.json
+Loading submodule modules/dental_idr/procedure/d06.json
+Loading submodule modules/dental_idr/procedure/d07.json
+Loading submodule modules/dental_idr/procedure/d08.json
+Loading submodule modules/dental_idr/procedure/d09.json
+Loading submodule modules/dental_idr/procedure/d11.json
+Loading submodule modules/dental_idr/procedure/d12.json
+Loading submodule modules/dental_idr/procedure/d13.json
+Loading submodule modules/dental_idr/procedure/d15.json
+Loading submodule modules/dental_idr/procedure/d17.json
+Loading submodule modules/dental_idr/procedure/d19.json
+Loading submodule modules/dental_idr/procedure/d21.json
+Loading submodule modules/dental_idr/procedure/d23.json
+Loading submodule modules/dental_idr/procedure/d24.json
+Loading submodule modules/dental_idr/procedure/d25.json
+Loading submodule modules/dental_idr/procedure/d26.json
+Loading submodule modules/dental_idr/procedure/d27.json
+Loading submodule modules/dental_idr/procedure/d29.json
+Loading submodule modules/dental_idr/procedure/d31.json
+Loading submodule modules/dental_idr/procedure/d32.json
+Loading submodule modules/dental_idr/procedure/d33.json
+Loading submodule modules/dental_idr/procedure/d34.json
+Loading submodule modules/dental_idr/procedure/d35.json
+Loading submodule modules/dental_idr/procedure/d39.json
+Loading submodule modules/dental_idr/procedure/d42.json
+Loading submodule modules/dental_idr/procedure/d43.json
+Loading submodule modules/dental_idr/procedure/d49.json
+Loading submodule modules/dental_idr/procedure/d51.json
+Loading submodule modules/dental_idr/procedure/d52.json
+Loading submodule modules/dental_idr/procedure/d54.json
+Loading submodule modules/dental_idr/procedure/d55.json
+Loading submodule modules/dental_idr/procedure/d56.json
+Loading submodule modules/dental_idr/procedure/d57.json
+Loading submodule modules/dental_idr/procedure/d58.json
+Loading submodule modules/dental_idr/procedure/d59.json
+Loading submodule modules/dental_idr/procedure/d60.json
+Loading submodule modules/dental_idr/procedure/d61.json
+Loading submodule modules/dental_idr/procedure/d62.json
+Loading submodule modules/dental_idr/procedure/d65.json
+Loading submodule modules/dental_idr/procedure/d66.json
+Loading submodule modules/dental_idr/procedure/d67.json
+Loading submodule modules/dental_idr/procedure/d69.json
+Loading submodule modules/dental_idr/procedure/d71.json
+Loading submodule modules/dental_idr/procedure/d72.json
+Loading submodule modules/dental_idr/procedure/d73.json
+Loading submodule modules/dental_idr/procedure/d74.json
+Loading submodule modules/dental_idr/procedure/d75.json
+Loading submodule modules/dental_idr/procedure/d76.json
+Loading submodule modules/dental_idr/procedure/d77.json
+Loading submodule modules/dental_idr/procedure/d78.json
+Loading submodule modules/dental_idr/procedure/d79.json
+Loading submodule modules/dental_idr/procedure/d80.json
+Loading submodule modules/dental_idr/procedure/d82.json
+Loading submodule modules/dental_idr/procedure/d86.json
+Loading submodule modules/dental_idr/procedure/d87.json
+Loading submodule modules/dental_idr/procedure/d89.json
+Loading submodule modules/dental_idr/procedure/d91.json
+Loading submodule modules/dental_idr/procedure/d92.json
+Loading submodule modules/dental_idr/procedure/d93.json
+Loading submodule modules/dental_idr/procedure/d94.json
+Loading submodule modules/dental_idr/procedure/d96.json
+Loading submodule modules/dental_idr/procedure/d99.json
+Loading submodule modules/dermatitis/early_moderate_eczema_obs.json
+Loading submodule modules/dermatitis/early_severe_eczema_obs.json
+Loading submodule modules/dermatitis/mid_moderate_eczema_obs.json
+Loading submodule modules/dermatitis/mid_severe_eczema_obs.json
+Loading submodule modules/dermatitis/moderate_cd_obs.json
+Loading submodule modules/dermatitis/severe_cd_obs.json
+Loading submodule modules/dme/wheelchair.json
+Loading submodule modules/dme/wheelchair_end.json
+Loading submodule modules/encounter/anxiety_screening.json
+Loading submodule modules/encounter/depression_screening.json
+Loading submodule modules/encounter/fall_risk_screening.json
+Loading submodule modules/encounter/hark_screening.json
+Loading submodule modules/encounter/hospital_basic_labs.json
+Loading submodule modules/encounter/sdoh_hrsn.json
+Loading submodule modules/encounter/substance_use_screening.json
+Loading submodule modules/encounter/vitals.json
+Loading submodule modules/heart/acs_anticoagulant.json
+Loading submodule modules/heart/acs_antiplatelet.json
+Loading submodule modules/heart/acs_arrival_medications.json
+Loading submodule modules/heart/acs_discharge_meds.json
+Loading submodule modules/heart/avrr/antithrombotic.json
+Loading submodule modules/heart/avrr/avrr_referral.json
+Loading submodule modules/heart/avrr/intraop_meds_blood.json
+Loading submodule modules/heart/avrr/outcomes.json
+Loading submodule modules/heart/avrr/preoperative.json
+Loading submodule modules/heart/avrr/savrr_operation.json
+Loading submodule modules/heart/avrr/savrr_postop.json
+Loading submodule modules/heart/avrr/sequence.json
+Loading submodule modules/heart/cabg/cabg_referral.json
+Loading submodule modules/heart/cabg/details.json
+Loading Lookup Table: cabg_details_operative_approach.csv
+Loading Lookup Table: cabg_details_num_grafts.csv
+Loading Lookup Table: cabg_details_num_art_cond.csv
+Loading submodule modules/heart/cabg/icu_meds_devices.json
+Loading submodule modules/heart/cabg/labs_common.json
+Loading submodule modules/heart/cabg/operation.json
+Loading submodule modules/heart/cabg/or_intraop.json
+Loading submodule modules/heart/cabg/or_labs_meds.json
+Loading submodule modules/heart/cabg/outcomes.json
+Loading submodule modules/heart/cabg/postop.json
+Loading submodule modules/heart/cabg/postop_blood.json
+Loading submodule modules/heart/cabg/preoperative.json
+Loading submodule modules/heart/cabg_sequence.json
+Loading submodule modules/heart/cardiac_labs.json
+Loading submodule modules/heart/chf_lab_work.json
+Loading submodule modules/heart/chf_lvad.json
+Loading submodule modules/heart/chf_meds.json
+Loading submodule modules/heart/chf_meds_hfmef.json
+Loading submodule modules/heart/chf_meds_hfref_nyha2.json
+Loading submodule modules/heart/chf_meds_hfref_nyha3.json
+Loading submodule modules/heart/chf_meds_hfref_nyha4.json
+Loading submodule modules/heart/chf_nyha_panel.json
+Loading submodule modules/heart/chf_transplant.json
+Loading submodule modules/heart/nsteacs_pathway.json
+Loading submodule modules/heart/operative_status.json
+Loading submodule modules/heart/or_blood.json
+Loading Lookup Table: or_blood_anemia_check.csv
+Loading Lookup Table: or_blood_platelet_check.csv
+Loading Lookup Table: or_blood_plasma_check.csv
+Loading submodule modules/heart/savrepair/operative_status.json
+Loading submodule modules/heart/savreplace/operative_status.json
+Loading submodule modules/heart/stemi_fibrinolytic.json
+Loading submodule modules/heart/stemi_pathway.json
+Loading submodule modules/heart/tavr/alt_access.json
+Loading submodule modules/heart/tavr/operation.json
+Loading submodule modules/heart/tavr/operative_status.json
+Loading submodule modules/heart/tavr/outcomes.json
+Loading submodule modules/heart/tavr/postop.json
+Loading submodule modules/heart/vhd_risks.json
+Loading submodule modules/hiv/art_sequence.json
+Loading submodule modules/hiv/art_sequence_1987_1994.json
+Loading submodule modules/hiv/art_sequence_1995_1996.json
+Loading submodule modules/hiv/art_sequence_1997_2002.json
+Loading submodule modules/hiv/art_sequence_2003_2005.json
+Loading submodule modules/hiv/art_sequence_2006_2014.json
+Loading submodule modules/hiv/art_sequence_2015.json
+Loading submodule modules/hiv/hiv_baseline.json
+Loading submodule modules/hiv/hiv_cd4.json
+Loading Lookup Table: hiv_stage.csv
+Loading submodule modules/hiv/hiv_oi_prophylaxis.json
+Loading submodule modules/hiv/hiv_screening.json
+Loading submodule modules/hiv/hiv_viral_load.json
+Loading submodule modules/hiv/stop_all_art_meds.json
+Loading submodule modules/injuries/broken_jaw.json
+Loading submodule modules/lung_cancer/lung_cancer_probabilities.json
+Loading submodule modules/medications/ace_arb.json
+Loading Lookup Table: ace_arb_ingredient_distribution.csv
+Loading Lookup Table: ace_arb_amlodipine_benazepril_product_distribution.csv
+Loading Lookup Table: ace_arb_benazepril_product_distribution.csv
+Loading Lookup Table: ace_arb_benazepril_hydrochlorothiazide_product_distribution.csv
+Loading Lookup Table: ace_arb_enalapril_product_distribution.csv
+Loading Lookup Table: ace_arb_hydrochlorothiazide_lisinopril_product_distribution.csv
+Loading Lookup Table: ace_arb_hydrochlorothiazide_losartan_product_distribution.csv
+Loading Lookup Table: ace_arb_hydrochlorothiazide_valsartan_product_distribution.csv
+Loading Lookup Table: ace_arb_irbesartan_product_distribution.csv
+Loading Lookup Table: ace_arb_lisinopril_product_distribution.csv
+Loading Lookup Table: ace_arb_losartan_product_distribution.csv
+Loading Lookup Table: ace_arb_quinapril_product_distribution.csv
+Loading Lookup Table: ace_arb_ramipril_product_distribution.csv
+Loading Lookup Table: ace_arb_sacubitril_valsartan_product_distribution.csv
+Loading Lookup Table: ace_arb_telmisartan_product_distribution.csv
+Loading Lookup Table: ace_arb_valsartan_product_distribution.csv
+Loading submodule modules/medications/beta_blocker.json
+Loading Lookup Table: beta_blocker_ingredient_distribution.csv
+Loading Lookup Table: beta_blocker_atenolol_product_distribution.csv
+Loading Lookup Table: beta_blocker_bisoprolol_product_distribution.csv
+Loading Lookup Table: beta_blocker_bisoprolol_hydrochlorothiazide_product_distribution.csv
+Loading Lookup Table: beta_blocker_carvedilol_product_distribution.csv
+Loading Lookup Table: beta_blocker_labetalol_product_distribution.csv
+Loading Lookup Table: beta_blocker_metoprolol_product_distribution.csv
+Loading Lookup Table: beta_blocker_nebivolol_product_distribution.csv
+Loading Lookup Table: beta_blocker_propranolol_product_distribution.csv
+Loading submodule modules/medications/ear_infection_antibiotic.json
+Loading submodule modules/medications/emergency_inhaler.json
+Loading Lookup Table: emergency_inhaler_ingredient_distribution.csv
+Loading Lookup Table: emergency_inhaler_albuterol_product_distribution.csv
+Loading Lookup Table: emergency_inhaler_levalbuterol_product_distribution.csv
+Loading submodule modules/medications/hypertension_medication.json
+Loading submodule modules/medications/maintenance_inhaler.json
+Loading Lookup Table: maintenance_inhaler_ingredient_distribution.csv
+Loading Lookup Table: maintenance_inhaler_beclomethasone_product_distribution.csv
+Loading Lookup Table: maintenance_inhaler_budesonide_product_distribution.csv
+Loading Lookup Table: maintenance_inhaler_fluticasone_product_distribution.csv
+Loading Lookup Table: maintenance_inhaler_mometasone_product_distribution.csv
+Loading submodule modules/medications/moderate_opioid_pain_reliever.json
+Loading submodule modules/medications/otc_antihistamine.json
+Loading submodule modules/medications/otc_pain_reliever.json
+Loading submodule modules/medications/statin.json
+Loading Lookup Table: statin_ingredient_distribution.csv
+Loading Lookup Table: statin_atorvastatin_product_distribution.csv
+Loading Lookup Table: statin_ezetimibe_simvastatin_product_distribution.csv
+Loading Lookup Table: statin_lovastatin_product_distribution.csv
+Loading Lookup Table: statin_pitavastatin_product_distribution.csv
+Loading Lookup Table: statin_pravastatin_product_distribution.csv
+Loading Lookup Table: statin_rosuvastatin_product_distribution.csv
+Loading Lookup Table: statin_simvastatin_product_distribution.csv
+Loading submodule modules/medications/strong_opioid_pain_reliever.json
+Loading submodule modules/metabolic_syndrome/amputations.json
+Loading submodule modules/metabolic_syndrome/dme_supplies.json
+Loading submodule modules/metabolic_syndrome/eye_conditions.json
+Loading submodule modules/metabolic_syndrome/kidney_conditions.json
+Loading submodule modules/metabolic_syndrome/medications.json
+Loading submodule modules/snf/skilled_nursing_facility.json
+Loading submodule modules/surgery/general_anesthesia.json
+Loading submodule modules/total_joint_replacement/functional_status_assessments.json
+Loading submodule modules/uti/abx_tx.json
+Loading submodule modules/uti/ambulatory_eval.json
+Loading submodule modules/uti/ambulatory_path.json
+Loading submodule modules/uti/ed_bundle.json
+Loading submodule modules/uti/ed_eval.json
+Loading submodule modules/uti/ed_path.json
+Loading submodule modules/uti/gu_pregnancy_check.json
+Loading submodule modules/uti/hpi.json
+Loading submodule modules/uti/lab_follow_up.json
+Loading submodule modules/uti/labs.json
+Loading submodule modules/uti/telemed_path.json
+Loading submodule modules/veterans/veteran_suicide_probabilities.json
+Loading submodule modules/weight_loss/mend_week.json
+Loading module modules/acute_myeloid_leukemia.json
+Loading Lookup Table: AML.csv
+Loading module modules/allergic_rhinitis.json
+Loading module modules/allergies.json
+Loading module modules/anemia___unknown_etiology.json
+Loading module modules/appendicitis.json
+Loading module modules/asthma.json
+Loading module modules/atopy.json
+Loading module modules/atrial_fibrillation.json
+Loading module modules/attention_deficit_disorder.json
+Loading module modules/bone_marrow_transplant.json
+Loading module modules/breast_cancer.json
+Loading module modules/bronchitis.json
+Loading module modules/cerebral_palsy.json
+Loading module modules/chronic_kidney_disease.json
+Loading module modules/colorectal_cancer.json
+Loading module modules/congestive_heart_failure.json
+Loading module modules/contraceptive_maintenance.json
+Loading module modules/contraceptives.json
+Loading module modules/copd.json
+Loading module modules/covid19.json
+Loading Lookup Table: covid19_prob.csv
+Loading module modules/cystic_fibrosis.json
+Loading module modules/dementia.json
+Loading module modules/dental_and_oral_examination.json
+Loading module modules/dental_encounters.json
+Loading module modules/dental_medicare_clustered_encounters.json
+Loading module modules/dentures.json
+Loading module modules/dermatitis.json
+Loading module modules/dialysis.json
+Loading module modules/ear_infections.json
+Loading module modules/epilepsy.json
+Loading module modules/female_reproduction.json
+Loading module modules/fibromyalgia.json
+Loading module modules/food_allergies.json
+Loading module modules/gallstones.json
+Loading module modules/gout.json
+Loading module modules/hiv_care.json
+Loading Lookup Table: hiv_care.csv
+Loading module modules/hiv_diagnosis.json
+Loading Lookup Table: hiv_mortality_later.csv
+Loading Lookup Table: hiv_mortality_early.csv
+Loading Lookup Table: hiv_mortality_very_early.csv
+Loading Lookup Table: hiv_diagnosis_early.csv
+Loading Lookup Table: hiv_diagnosis_later.csv
+Loading module modules/home_health_treatment.json
+Loading module modules/home_hospice_snf.json
+Loading module modules/homelessness.json
+Loading module modules/hospice_treatment.json
+Loading module modules/hypertension.json
+Loading module modules/hypothyroidism.json
+Loading module modules/injuries.json
+Loading module modules/kidney_transplant.json
+Loading module modules/lung_cancer.json
+Loading module modules/lupus.json
+Loading module modules/mTBI.json
+Loading module modules/med_rec.json
+Loading module modules/mend_program.json
+Loading module modules/metabolic_syndrome_care.json
+Loading module modules/metabolic_syndrome_disease.json
+Loading module modules/myocardial_infarction.json
+Loading module modules/opioid_addiction.json
+Loading module modules/osteoarthritis.json
+Loading module modules/osteoporosis.json
+Loading module modules/pregnancy.json
+Loading module modules/prescribing_opioids_for_chronic_pain_and_treatment_of_oud.json
+Loading module modules/rheumatoid_arthritis.json
+Loading module modules/self_harm.json
+Loading module modules/sepsis.json
+Loading module modules/sexual_activity.json
+Loading module modules/sinusitis.json
+Loading module modules/sleep_apnea.json
+Loading module modules/sore_throat.json
+Loading module modules/spina_bifida.json
+Loading module modules/stable_ischemic_heart_disease.json
+Loading module modules/stroke.json
+Loading module modules/total_joint_replacement.json
+Loading module modules/trigger_bone_marrow_transplant.json
+Loading module modules/urinary_tract_infections.json
+Loading Lookup Table: uti.csv
+Loading Lookup Table: uti_recurrence.csv
+Loading module modules/veteran.json
+Loading module modules/veteran_hyperlipidemia.json
+Loading module modules/veteran_lung_cancer.json
+Loading module modules/veteran_mdd.json
+Loading module modules/veteran_prostate_cancer.json
+Loading module modules/veteran_ptsd.json
+Loading module modules/veteran_self_harm.json
+Loading module modules/veteran_substance_abuse_conditions.json
+Loading module modules/veteran_substance_abuse_treatment.json
+Loading module modules/vhd_aortic.json
+Loading Lookup Table: vhd_as.csv
+Loading Lookup Table: vhd_ar.csv
+Loading module modules/vhd_mitral.json
+Loading Lookup Table: vhd_mr.csv
+Loading Lookup Table: vhd_ms.csv
+Loading module modules/vhd_pulmonic.json
+Loading Lookup Table: vhd_ps.csv
+Loading Lookup Table: vhd_pr.csv
+Loading module modules/vhd_tricuspid.json
+Loading Lookup Table: vhd_tr.csv
+Loading Lookup Table: vhd_ts.csv
+Loading module modules/wellness_encounters.json
+Running with options:
+Population: 8
+Seed: 20261009
+Provider Seed:20261009
+Reference Time: 1791504000000
+Location: Massachusetts
+Min Age: 18
+Max Age: 65
+2 -- Ezequiel972 Stehr398 (28 y/o M) Gardner, Massachusetts  (39220)
+6 -- Leana211 Reita211 Wehner319 (30 y/o F) Hingham, Massachusetts  (42374)
+7 -- Melany872 Margarette462 Denesik803 (43 y/o F) Fitchburg, Massachusetts  (65139)
+1 -- Christian753 Satterfield305 (60 y/o M) Marblehead, Massachusetts  (84332)
+8 -- Celsa248 Zemlak964 (54 y/o F) Salisbury, Massachusetts  (85332)
+5 -- Tawnya388 Schaefer657 (49 y/o F) Mansfield, Massachusetts  (69595)
+3 -- Cecil300 Graham902 (46 y/o F) Amherst, Massachusetts  (64906)
+WARNING: sun.reflect.Reflection.getCallerClass is not supported. This will impact performance.
+4 -- Diego848 Bayer639 (56 y/o M) Easton, Massachusetts  (78234)
+Records: total=8, alive=8, dead=0
+RNG=8
+Clinician RNG=5643
