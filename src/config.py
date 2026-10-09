@@ -5,6 +5,7 @@ T4 needs the trial table and the `ctgov_timeout` switch; T9 fills in the rest
 """
 
 import os
+from datetime import date
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -13,6 +14,7 @@ ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
 
 DATA_DIR = ROOT / "data"
+PATIENT_DIR = DATA_DIR / "patients"
 SNAPSHOT_DIR = DATA_DIR / "snapshots"
 CACHE_DIR = ROOT / "cache"
 
@@ -29,6 +31,9 @@ TRIALS: dict[str, str | None] = {
 # Public trial used only to exercise the ctgov tool until real IDs arrive.
 # It is NOT trial B.
 TEST_NCT_ID = "NCT02178098"
+
+# Default anchor for time windows; override with SCREENING_DATE=YYYY-MM-DD.
+SCREENING_DATE = os.getenv("SCREENING_DATE") or date.today().isoformat()
 
 # Cache older than this cannot back a log (brief section 6).
 CTGOV_MAX_CACHE_AGE_DAYS = 14

@@ -1,0 +1,306 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:fixture-complete",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "fixture-complete",
+        "birthDate": "1968-03-14",
+        "gender": "female",
+        "name": [
+          {
+            "family": "Fixture",
+            "given": [
+              "fixture-complete"
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:c-101",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "c-101",
+        "subject": {
+          "reference": "urn:uuid:fixture-complete"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "59621000",
+              "display": "Essential hypertension (disorder)"
+            }
+          ],
+          "text": "Essential hypertension (disorder)"
+        },
+        "onsetDateTime": "2015-06-01T09:00:00Z",
+        "recordedDate": "2015-06-01T09:00:00Z"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Condition"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:c-102",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "c-102",
+        "subject": {
+          "reference": "urn:uuid:fixture-complete"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "55822004",
+              "display": "Hyperlipidemia (disorder)"
+            }
+          ],
+          "text": "Hyperlipidemia (disorder)"
+        },
+        "onsetDateTime": "2017-02-10T09:00:00Z",
+        "recordedDate": "2017-02-10T09:00:00Z"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Condition"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:o-101",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "o-101",
+        "status": "final",
+        "subject": {
+          "reference": "urn:uuid:fixture-complete"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "18262-1",
+              "display": "Low Density Lipoprotein Cholesterol"
+            }
+          ],
+          "text": "Low Density Lipoprotein Cholesterol"
+        },
+        "effectiveDateTime": "2026-08-20T10:00:00Z",
+        "valueQuantity": {
+          "value": 162.4,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:o-102",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "o-102",
+        "status": "final",
+        "subject": {
+          "reference": "urn:uuid:fixture-complete"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "18262-1",
+              "display": "Low Density Lipoprotein Cholesterol"
+            }
+          ],
+          "text": "Low Density Lipoprotein Cholesterol"
+        },
+        "effectiveDateTime": "2025-09-02T10:00:00Z",
+        "valueQuantity": {
+          "value": 171.0,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:o-103",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "o-103",
+        "status": "final",
+        "subject": {
+          "reference": "urn:uuid:fixture-complete"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2571-8",
+              "display": "Triglycerides"
+            }
+          ],
+          "text": "Triglycerides"
+        },
+        "effectiveDateTime": "2026-08-20T10:00:00Z",
+        "valueQuantity": {
+          "value": 188.0,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:o-104",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "o-104",
+        "status": "final",
+        "subject": {
+          "reference": "urn:uuid:fixture-complete"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "85354-9",
+              "display": "Blood pressure panel with all children optional"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-08-20T10:00:00Z",
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "8480-6",
+                  "display": "Systolic Blood Pressure"
+                }
+              ]
+            },
+            "valueQuantity": {
+              "value": 142,
+              "unit": "mm[Hg]",
+              "system": "http://unitsofmeasure.org",
+              "code": "mm[Hg]"
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "8462-4",
+                  "display": "Diastolic Blood Pressure"
+                }
+              ]
+            },
+            "valueQuantity": {
+              "value": 91,
+              "unit": "mm[Hg]",
+              "system": "http://unitsofmeasure.org",
+              "code": "mm[Hg]"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:m-101",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "m-101",
+        "status": "active",
+        "intent": "order",
+        "subject": {
+          "reference": "urn:uuid:fixture-complete"
+        },
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "310798",
+              "display": "Hydrochlorothiazide 25 MG Oral Tablet"
+            }
+          ],
+          "text": "Hydrochlorothiazide 25 MG Oral Tablet"
+        },
+        "authoredOn": "2015-06-01T09:00:00Z"
+      },
+      "request": {
+        "method": "POST",
+        "url": "MedicationRequest"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:m-102",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "m-102",
+        "status": "stopped",
+        "intent": "order",
+        "subject": {
+          "reference": "urn:uuid:fixture-complete"
+        },
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "312961",
+              "display": "Simvastatin 20 MG Oral Tablet"
+            }
+          ],
+          "text": "Simvastatin 20 MG Oral Tablet"
+        },
+        "authoredOn": "2017-02-10T09:00:00Z"
+      },
+      "request": {
+        "method": "POST",
+        "url": "MedicationRequest"
+      }
+    }
+  ]
+}

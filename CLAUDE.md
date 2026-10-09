@@ -103,4 +103,4 @@ If Daisy's account is ever needed (e.g. for S3 ownership), recheck its quotas fi
 
 ## Current status
 
-**T1** done except GitHub remote (waiting on `gh auth login`). Next: T4.
+T1 done (pending: Ming clones and pushes). T4 done on placeholder NCT. T3 done on fixtures in `tests/fixtures/patients/`. Next: T5.

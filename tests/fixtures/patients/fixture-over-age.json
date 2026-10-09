@@ -1,0 +1,188 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:fixture-over-age",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "fixture-over-age",
+        "birthDate": "1944-11-02",
+        "gender": "male",
+        "name": [
+          {
+            "family": "Fixture",
+            "given": [
+              "fixture-over-age"
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:c-201",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "c-201",
+        "subject": {
+          "reference": "urn:uuid:fixture-over-age"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "59621000",
+              "display": "Essential hypertension (disorder)"
+            }
+          ],
+          "text": "Essential hypertension (disorder)"
+        },
+        "onsetDateTime": "2001-04-01T09:00:00Z",
+        "recordedDate": "2001-04-01T09:00:00Z"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Condition"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:c-202",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "c-202",
+        "subject": {
+          "reference": "urn:uuid:fixture-over-age"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "55822004",
+              "display": "Hyperlipidemia (disorder)"
+            }
+          ],
+          "text": "Hyperlipidemia (disorder)"
+        },
+        "onsetDateTime": "2003-07-15T09:00:00Z",
+        "recordedDate": "2003-07-15T09:00:00Z"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Condition"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:o-201",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "o-201",
+        "status": "final",
+        "subject": {
+          "reference": "urn:uuid:fixture-over-age"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "18262-1",
+              "display": "Low Density Lipoprotein Cholesterol"
+            }
+          ],
+          "text": "Low Density Lipoprotein Cholesterol"
+        },
+        "effectiveDateTime": "2026-07-11T10:00:00Z",
+        "valueQuantity": {
+          "value": 148.0,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:o-202",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "o-202",
+        "status": "final",
+        "subject": {
+          "reference": "urn:uuid:fixture-over-age"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "85354-9",
+              "display": "Blood pressure panel with all children optional"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-07-11T10:00:00Z",
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "8480-6",
+                  "display": "Systolic Blood Pressure"
+                }
+              ]
+            },
+            "valueQuantity": {
+              "value": 150,
+              "unit": "mm[Hg]",
+              "system": "http://unitsofmeasure.org",
+              "code": "mm[Hg]"
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "8462-4",
+                  "display": "Diastolic Blood Pressure"
+                }
+              ]
+            },
+            "valueQuantity": {
+              "value": 88,
+              "unit": "mm[Hg]",
+              "system": "http://unitsofmeasure.org",
+              "code": "mm[Hg]"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    }
+  ]
+}

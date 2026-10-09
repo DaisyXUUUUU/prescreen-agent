@@ -38,6 +38,13 @@ python -m src.tools.ctgov NCT02178098                       # live
 python -m src.tools.ctgov NCT02178098 --fail ctgov_timeout  # simulated outage -> "stale" from cache
 ```
 
+Query the local FHIR store (Synthea bundles in `data/patients/`; `--dir` points elsewhere):
+
+```bash
+python -m src.adapters.fhir_store --dir tests/fixtures/patients                            # list patients
+python -m src.adapters.fhir_store fixture-complete 18262-1 --dir tests/fixtures/patients   # LDL-C by LOINC
+```
+
 Tests: `python -m pytest tests/`
 
 ## Layout
@@ -53,7 +60,8 @@ tests/
 
 - [x] T1 infrastructure: scaffold, Bedrock check (Amazon Nova 2 Lite)
 - [x] T4 ctgov tool (tested on placeholder NCT02178098; real trial B/G IDs pending)
-- [ ] T3 data adapter · T5 engine · T6 log · T7–T9 agent/trace/failures · T10 amendments · T11 eval
+- [x] T3 FHIR file adapter (tested on 3 hand-written fixture bundles; real Synthea data pending)
+- [ ] T5 engine · T6 log · T7–T9 agent/trace/failures · T10 amendments · T11 eval
 
 ## License
 
