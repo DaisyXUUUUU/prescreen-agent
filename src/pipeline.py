@@ -14,6 +14,15 @@ def screen(predicates: list[dict], screening_date: str, use_agent: bool = True,
     """Returns (results, empty queries sent to the agent, of which resolved)."""
     by_id = {p["criterion_id"]: p for p in predicates}
     results, attempted, recovered = [], 0, 0
+    model = None
+    if use_agent:
+        # One preflight instead of failing once per case when Bedrock is not reachable.
+        from src.agent.agent import make_model
+        try:
+            model = make_model()
+        except Exception as e:  # noqa: BLE001
+            print(f"  agent{label}: model unavailable ({type(e).__name__}: {e}); continuing with rules only")
+            use_agent = False
     for pid in fhir_store.list_patients():
         verdicts = [evaluate(p, pid, screening_date) for p in predicates]
         if use_agent:
@@ -23,7 +32,7 @@ def screen(predicates: list[dict], screening_date: str, use_agent: bool = True,
                 if v.needs_recovery and v.status == "unknown":
                     attempted += 1
                     print(f"  agent{label}: {pid} {v.criterion_id} ...", end="", flush=True)
-                    verdicts[i] = recover(v, by_id[v.criterion_id], screening_date)
+                    verdicts[i] = recover(v, by_id[v.criterion_id], screening_date, model=model)
                     recovered += verdicts[i].status != "unknown"
                     print(f" {verdicts[i].status}")
         results.append(aggregate(pid, predicates, verdicts))
