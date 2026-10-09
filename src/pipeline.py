@@ -17,11 +17,10 @@ def screen(predicates: list[dict], screening_date: str, use_agent: bool = True,
     model = None
     if use_agent:
         # One preflight instead of failing once per case when Bedrock is not reachable.
-        from src.agent.agent import make_model
-        try:
-            model = make_model()
-        except Exception as e:  # noqa: BLE001
-            print(f"  agent{label}: model unavailable ({type(e).__name__}: {e}); continuing with rules only")
+        from src.agent.agent import preflight
+        model, reason = preflight()
+        if model is None:
+            print(f"  agent{label}: model unavailable ({reason}); continuing with rules only")
             use_agent = False
     for pid in fhir_store.list_patients():
         verdicts = [evaluate(p, pid, screening_date) for p in predicates]

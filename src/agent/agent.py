@@ -18,7 +18,7 @@ import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from strands import Agent, tool
+from strands import Agent, ModelRetryStrategy, tool
 from strands.hooks import BeforeToolCallEvent
 
 from src import config
@@ -189,15 +189,43 @@ def build_tools(case: RecoveryCase) -> list:
     return [get_predicate, lookup_equivalent_codes, fhir_query_codes, search_notes, evaluate_with_records, record_decision]
 
 
-def make_model():
+# Fail fast: a daily-quota throttle does not clear by waiting, so do not back off for minutes.
+BOTO_CONFIG = {"retries": {"max_attempts": 2, "mode": "standard"}, "connect_timeout": 10, "read_timeout": 90}
+
+
+def retry_strategy() -> ModelRetryStrategy:
+    return ModelRetryStrategy(max_attempts=2, initial_delay=2, max_delay=4)
+
+
+def _session():
     import boto3
+    return boto3.Session(profile_name=config.AWS_PROFILE, region_name=config.AWS_REGION)
+
+
+def make_model():
+    from botocore.config import Config
     from strands.models import BedrockModel
 
     model_id = config.BEDROCK_MODEL_ID
     if not model_id:
         raise RuntimeError("BEDROCK_MODEL_ID is not set")
-    session = boto3.Session(profile_name=config.AWS_PROFILE, region_name=config.AWS_REGION)
-    return BedrockModel(model_id=model_id, boto_session=session, temperature=0.0, max_tokens=1024)
+    return BedrockModel(model_id=model_id, boto_session=_session(), boto_client_config=Config(**BOTO_CONFIG),
+                        temperature=0.0, max_tokens=1024)
+
+
+def preflight():
+    """One tiny real call. Returns (model, None) when Bedrock answers, else (None, reason)."""
+    try:
+        from botocore.config import Config
+
+        model = make_model()
+        client = _session().client("bedrock-runtime", config=Config(**BOTO_CONFIG))
+        client.converse(modelId=config.BEDROCK_MODEL_ID, inferenceConfig={"maxTokens": 4},
+                        messages=[{"role": "user", "content": [{"text": "ok"}]}])
+        return model, None
+    except Exception as e:  # noqa: BLE001
+        code = getattr(e, "response", {}).get("Error", {}).get("Code") if hasattr(e, "response") else None
+        return None, f"{code or type(e).__name__}: {str(e)[:160]}"
 
 
 def _budget_hook(case: RecoveryCase):
@@ -214,7 +242,7 @@ def recover(verdict: Verdict, predicate: dict, screening_date: str, model=None) 
     final_text = ""
     try:
         agent = Agent(model=model or make_model(), tools=build_tools(case), system_prompt=RECOVERY_PROMPT,
-                      hooks=[_budget_hook(case)], callback_handler=None)
+                      hooks=[_budget_hook(case)], callback_handler=None, retry_strategy=retry_strategy())
         result = agent(f"Patient {verdict.patient_id}: the query for criterion {predicate['criterion_id']} "
                        f"({predicate.get('concept')}) returned no records. Try to recover it.")
         final_text = " ".join(str(result).split())

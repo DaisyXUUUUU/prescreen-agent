@@ -152,8 +152,10 @@ def classify(change: Change, model=None) -> Change:
     try:
         from strands import Agent
 
-        agent = Agent(model=model or make_model(), system_prompt=CLASSIFY_PROMPT,
-                      structured_output_model=Classification, callback_handler=None)
+        from src.agent.agent import retry_strategy
+
+        agent = Agent(model=model or make_model(), system_prompt=CLASSIFY_PROMPT, structured_output_model=Classification,
+                      callback_handler=None, retry_strategy=retry_strategy())
         prompt = (f"Section: {change.section}\nChange type: {change.kind}\n"
                   f"Before: {change.old or '(none)'}\nAfter: {change.new or '(none)'}")
         out = agent(prompt).structured_output
