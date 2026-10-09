@@ -1,0 +1,18 @@
+Minimum age: 18 Years
+Maximum age: 80 Years
+Sex: ALL
+
+Inclusion Criteria:
+
+* Mean 24-hour ambulatory SBP greater than or equal to 130 mmHg
+* or- Mean 24-hour ambulatory DBP greater than or equal to 80 mmHg
+* Fasting LDL-C between 140 and 220 mg/dL
+* Fasting triglycerides less than 400 mg/dL
+* Body mass index (BMI) between 18 and 45 kg/m2
+
+Exclusion Criteria:
+
+* Known or suspected secondary hypertension or history of malignant hypertension
+* Taking more than two anti-hypertension medications at the first visit
+* History or current clinically significant cardiovascular disease
+* Current or past history of type 1 or type 2 diabetes

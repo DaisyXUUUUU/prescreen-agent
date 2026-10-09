@@ -34,6 +34,20 @@ Writes `out/prescreen_log_{trial}_{date}.md` (for the CRC: likely eligible / pen
 
 Queries that come back empty and leave a criterion `unknown` go to a recovery agent (Strands Agents + Amazon Nova 2 Lite on Bedrock): it tries equivalent codes, then searches clinical notes, then abstains with an explanation. Records it finds go back to the deterministic engine, which makes every comparison; note text is never treated as a lab value. Every step is traced in the log and in `out/trace_{trial}_{date}.jsonl`. Use `--no-agent` for a rules-only run.
 
+### Amendment monitoring
+
+Every run compares the fetched criteria with the previous snapshot (SHA-256). When they differ, the text is split into items and diffed; each changed item is labelled by the model as **substantive**, **wording** or **ambiguous** (case/spacing/punctuation-only changes are wording by rule; a model failure counts as ambiguous). Only substantive changes trigger a re-screen, using the amended predicate file `data/predicates/trial_{T}_v2.json` (prepared and reviewed by a person, not compiled automatically). The result is `out/amendment_impact_{trial}_{date}.md`: what changed, how it was classified and why, and every patient whose status changes with the criterion and record behind it.
+
+Demo on the fixtures:
+
+```bash
+python run.py --trial SAMPLE --nct NCT02178098 --predicates tests/fixtures/sample_predicates.json \
+  --patients tests/fixtures/patients --date 2026-10-09 --fail amendment_v2 \
+  --v1-snapshot tests/fixtures/snapshots/NCT02178098_v1.txt \
+  --v2-snapshot tests/fixtures/snapshots/NCT02178098_v2.txt \
+  --v2-predicates tests/fixtures/sample_predicates_v2.json
+```
+
 ### Failure injection (for demos)
 
 Each failure path can be reproduced on demand with `--fail` (repeatable). Data failures alter the loaded records in memory only, and the log announces exactly what was altered.
@@ -43,7 +57,7 @@ Each failure path can be reproduced on demand with `--fail` (repeatable). Data f
 | `ctgov_timeout` | ClinicalTrials.gov call times out | criteria served from cache, log stamped STALE (no log if cache > 14 days) |
 | `drop_codes` | one patient's LDL-C recoded 18262-1 → 13457-7 | rule query empty → recovery agent finds it under the equivalent code → engine decides |
 | `bad_units` | one patient's latest LDL-C in mmol/L, another's ×10 | first converted by rule; second rejected as implausible → `unknown` with reason |
-| `amendment_v2` | (T10) | |
+| `amendment_v2` | a prepared amended criteria text stands in for the live fetch | changed items classified substantive / wording / ambiguous; substantive → re-screen with the amended predicates and write an impact report |
 
 Target patients: `FAILURE_TARGETS` in `src/config.py`, otherwise the first patients with an LDL-C record.
 
@@ -92,8 +106,9 @@ tests/
 - [x] T5 engine (tested on fixtures and sample predicates; trial B predicates pending)
 - [x] T6 aggregation and log (end to end on fixtures)
 - [x] T7 recovery agent, T8 trace (live-tested on fixtures)
-- [x] T9 failure switches: ctgov_timeout, drop_codes, bad_units (amendment_v2 with T10; note_conflict optional, not done)
-- [ ] T10 amendments · T11 eval
+- [x] T9 failure switches: ctgov_timeout, drop_codes, bad_units, amendment_v2 (note_conflict optional, not done)
+- [x] T10 amendment monitoring and re-screen (live-tested on sample v1/v2)
+- [ ] T11 eval
 
 ## License
 

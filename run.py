@@ -18,8 +18,9 @@ from pathlib import Path
 from src import config, failures
 from src.adapters import fhir_store
 from src.agent import trace
-from src.engine.aggregate import CATEGORIES, LABELS, aggregate
-from src.engine.evaluate import evaluate
+from src.amendment.rescreen import run_amendment
+from src.engine.aggregate import CATEGORIES, LABELS
+from src.pipeline import screen
 from src.report.log_writer import write_log
 from src.tools.ctgov import ctgov_fetch
 
@@ -38,6 +39,10 @@ def main() -> int:
     parser.add_argument("--patients", type=Path, default=config.PATIENT_DIR)
     parser.add_argument("--out", type=Path, default=config.OUT_DIR)
     parser.add_argument("--no-agent", action="store_true", help="skip the recovery agent (rules only)")
+    parser.add_argument("--v1-snapshot", type=Path, help="T10: previous criteria text (default: latest snapshot)")
+    parser.add_argument("--v2-snapshot", type=Path,
+                        help="T10 with --fail amendment_v2: amended criteria text (default data/snapshots/{NCT}/amendment_v2.txt)")
+    parser.add_argument("--v2-predicates", type=Path, help="T10: amended predicates (default data/predicates/trial_{TRIAL}_v2.json)")
     parser.add_argument("--fail", action="append", default=[], choices=sorted(config.FAILURES),
                         help="enable a failure-injection switch (repeatable)")
     args = parser.parse_args()
@@ -72,24 +77,12 @@ def main() -> int:
         print(f"error: no patients loaded from {args.patients}", file=sys.stderr)
         return 2
 
-    by_id = {p["criterion_id"]: p for p in predicates}
-    results, recovered, attempted = [], 0, 0
-    for pid in patients:
-        verdicts = [evaluate(p, pid, args.date) for p in predicates]
-        if not args.no_agent:
-            # T7: only empty queries left as `unknown` go to the agent; settled verdicts are untouched.
-            from src.agent.agent import recover
-            for i, v in enumerate(verdicts):
-                if v.needs_recovery and v.status == "unknown":
-                    attempted += 1
-                    print(f"  agent: {pid} {v.criterion_id} ...", end="", flush=True)
-                    verdicts[i] = recover(v, by_id[v.criterion_id], args.date)
-                    recovered += verdicts[i].status != "unknown"
-                    print(f" {verdicts[i].status}")
-        results.append(aggregate(pid, predicates, verdicts))
+    results, attempted, recovered = screen(predicates, args.date, use_agent=not args.no_agent)
 
     md, csv_path, warnings = write_log(args.trial, nct, fetch, args.date, results, predicates, args.out,
                                        injections=injections)
+    impact = run_amendment(args.trial, nct, fetch, args.date, predicates, results, args.out, use_agent=not args.no_agent,
+                           v1_snapshot=args.v1_snapshot, v2_snapshot=args.v2_snapshot, v2_predicates=args.v2_predicates)
     trace_path = trace.write_jsonl(args.out / f"trace_{args.trial}_{args.date}.jsonl", args.trial, args.date, results)
 
     counts = {c: sum(r.category == c for r in results) for c in CATEGORIES}
@@ -100,7 +93,7 @@ def main() -> int:
     print(f"{len(results)} patients: " + ", ".join(f"{LABELS[c]} {n}" for c, n in counts.items()))
     if not args.no_agent:
         print(f"recovery agent: {attempted} empty queries handled, {recovered} resolved")
-    print(f"log: {md}\ncsv: {csv_path}\ntrace: {trace_path}")
+    print(f"log: {md}\ncsv: {csv_path}\ntrace: {trace_path}" + (f"\namendment impact: {impact}" if impact else ""))
     for w in fetch.warnings + warnings:
         print(f"warning: {w}")
     return 0
