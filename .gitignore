@@ -21,3 +21,6 @@ logs/
 .DS_Store
 .vscode/
 .idea/
+
+# placeholder test trial (not trial B); real snapshots are committed
+data/snapshots/NCT02178098/

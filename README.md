@@ -31,6 +31,15 @@ python run.py --trial B
 
 _(not implemented yet: lands with T5/T6)_
 
+Fetch a trial's eligibility criteria from ClinicalTrials.gov (caches to `cache/ctgov/`, snapshots to `data/snapshots/{nct}/{date}.txt`, and to S3 when `S3_BUCKET` is set):
+
+```bash
+python -m src.tools.ctgov NCT02178098                       # live
+python -m src.tools.ctgov NCT02178098 --fail ctgov_timeout  # simulated outage -> "stale" from cache
+```
+
+Tests: `python -m pytest tests/`
+
 ## Layout
 
 ```
@@ -43,7 +52,8 @@ tests/
 ## Status
 
 - [x] T1 infrastructure: scaffold, Bedrock check (Amazon Nova 2 Lite)
-- [ ] T3 data adapter · T4 ctgov · T5 engine · T6 log · T7–T9 agent/trace/failures · T10 amendments · T11 eval
+- [x] T4 ctgov tool (tested on placeholder NCT02178098; real trial B/G IDs pending)
+- [ ] T3 data adapter · T5 engine · T6 log · T7–T9 agent/trace/failures · T10 amendments · T11 eval
 
 ## License
 
