@@ -1,0 +1,23 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# local caches / outputs
+.cache/
+cache/
+out/
+logs/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
