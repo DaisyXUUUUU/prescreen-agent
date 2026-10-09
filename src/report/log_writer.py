@@ -95,7 +95,7 @@ def render_markdown(trial: str, nct: str, fetch, screening_date: str, results: l
     return "\n".join(out)
 
 
-CSV_FIELDS = ["trial", "screening_date", "patient_id", "patient_category", "criterion_id", "type",
+CSV_FIELDS = ["trial", "screening_date", "patient_id", "patient_category", "criterion_id", "type", "computable",
               "status", "blocking", "needs_recovery", "evidence_ids", "note"]
 
 
@@ -108,7 +108,10 @@ def write_csv(path: Path, trial: str, screening_date: str, results: list[Patient
             for v in r.verdicts:
                 w.writerow({"trial": trial, "screening_date": screening_date, "patient_id": r.patient_id,
                             "patient_category": r.category, "criterion_id": v.criterion_id,
-                            "type": preds[v.criterion_id]["type"], "status": v.status, "blocking": v.blocking,
+                            "type": preds[v.criterion_id]["type"],
+                            "computable": preds[v.criterion_id].get("computable") is not False
+                            and preds[v.criterion_id].get("grade") != "N",
+                            "status": v.status, "blocking": v.blocking,
                             "needs_recovery": v.needs_recovery,
                             "evidence_ids": ";".join(e["resource_id"] for e in v.evidence), "note": v.note})
 

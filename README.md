@@ -87,7 +87,17 @@ Evaluate predicates for every patient (engine only, no aggregation yet):
 python -m src.engine.evaluate --predicates tests/fixtures/sample_predicates.json --patients tests/fixtures/patients --date 2026-10-09
 ```
 
-Tests: `python -m pytest tests/`
+### Evaluation
+
+One command runs the baseline and every failure switch, then scores the baseline against the labels:
+
+```bash
+python eval/evaluate.py --trial B --labels data/ground_truth/trial_B.csv
+```
+
+Labels are a CSV `patient_id,criterion_id,expected` with one row per computable criterion (`met` / `not_met`) and one `PATIENT` row per patient (`eligible` / `not_eligible`). Planted amendment flips go in `data/ground_truth/trial_B_amendment_flips.txt`, one patient ID per line. The report (`out/eval/B/eval_report_B_{date}.md`) covers wrongful exclusions, patient-level sensitivity, criterion accuracy, abstention, evidence and trace coverage, recovery rate, amendment recall and failure paths, and lists every disagreement for error attribution. `--reuse` scores existing runs without re-running.
+
+Tests: `python -m pytest tests/` (offline; no model calls)
 
 ## Layout
 
@@ -108,7 +118,8 @@ tests/
 - [x] T7 recovery agent, T8 trace (live-tested on fixtures)
 - [x] T9 failure switches: ctgov_timeout, drop_codes, bad_units, amendment_v2 (note_conflict optional, not done)
 - [x] T10 amendment monitoring and re-screen (live-tested on sample v1/v2)
-- [ ] T11 eval
+- [x] T11 evaluation script (runs on sample labels; real numbers need Ming's ground truth)
+- [ ] T12 README check, demo video, submission
 
 ## License
 

@@ -73,6 +73,15 @@ def run_amendment(trial: str, nct: str, fetch, screening_date: str, predicates_v
     text = impact_writer.render(trial, nct, screening_date, chk, rescreened, blocked, pred_changes, patients,
                                 _rel(v2_path), generated, n)
     path = impact_writer.write(out_dir / f"amendment_impact_{trial}_{screening_date}.md", text)
+    summary = {
+        "trial": trial, "nct": nct, "screening_date": screening_date,
+        "old_source": chk.old_source, "new_source": chk.new_source, "old_sha": chk.old_sha, "new_sha": chk.new_sha,
+        "changes": [dataclasses.asdict(c) for c in chk.changes],
+        "rescreened": rescreened, "blocked": blocked, "predicate_changes": pred_changes,
+        "patients": [dataclasses.asdict(p) for p in patients],
+        "flips": [p.patient_id for p in patients if p.old_category != p.new_category],
+    }
+    path.with_suffix(".json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     for w in _upload(trial, screening_date, [path]):
         print(f"warning: {w}")
     flips = sum(p.old_category != p.new_category for p in patients)

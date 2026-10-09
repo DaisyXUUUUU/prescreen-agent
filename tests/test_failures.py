@@ -32,7 +32,7 @@ def test_all_switches_off_changes_nothing(store):
 
 def test_drop_codes_empties_rule_query_and_agent_recovers(store):
     config.enable_failure("drop_codes")
-    lines = failures.inject(store)
+    lines = [i["text"] for i in failures.inject(store)]
     assert lines == ["drop_codes: fixture-complete LDL-C o-101, o-102 recoded 18262-1 -> 13457-7"]
 
     v = evaluate(PREDS["S-I5"], "fixture-complete", DATE)
@@ -49,7 +49,7 @@ def test_drop_codes_empties_rule_query_and_agent_recovers(store):
 
 def test_bad_units_convertible_and_implausible(store):
     config.enable_failure("bad_units")
-    lines = failures.inject(store)
+    lines = [i["text"] for i in failures.inject(store)]
     assert lines == ["bad_units: fixture-complete LDL-C o-101 162.4 mg/dL -> 4.2 mmol/L",
                      "bad_units: fixture-over-age LDL-C o-201 148 mg/dL -> 1480 mg/dL"]
 
@@ -65,14 +65,13 @@ def test_bad_units_convertible_and_implausible(store):
 def test_switches_pick_distinct_patients(store):
     config.enable_failure("drop_codes")
     config.enable_failure("bad_units")
-    lines = failures.inject(store)
-    assert [l.split(":")[1].split()[0] for l in lines] == ["fixture-complete", "fixture-over-age"]
+    assert [i["patient_id"] for i in failures.inject(store)] == ["fixture-complete", "fixture-over-age"]
 
 
 def test_explicit_targets_from_config(store, monkeypatch):
     monkeypatch.setattr(config, "FAILURE_TARGETS", {"drop_codes": ["fixture-over-age"]})
     config.enable_failure("drop_codes")
-    assert failures.inject(store)[0].startswith("drop_codes: fixture-over-age")
+    assert failures.inject(store)[0]["patient_id"] == "fixture-over-age"
 
 
 def test_unknown_switch_rejected():

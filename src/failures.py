@@ -36,8 +36,9 @@ def _targets(store: FhirStore, name: str, n: int, exclude: set[str]) -> list[str
     return candidates[:n]
 
 
-def inject(store: FhirStore) -> list[str]:
-    """Apply the enabled data failures. Returns one human-readable line per injection."""
+def inject(store: FhirStore) -> list[dict]:
+    """Apply the enabled data failures. Returns one record per injection:
+    {"switch", "patient_id", "resource_ids", "text"} where text is the line the log prints."""
     done, used = [], set()
 
     if config.failure_enabled("drop_codes"):
@@ -46,8 +47,9 @@ def inject(store: FhirStore) -> list[str]:
             for o in obs:
                 o["code"] = {"coding": [dict(LDL_ALT)], "text": LDL_ALT["display"]}
             used.add(pid)
-            done.append(f"drop_codes: {pid} LDL-C {', '.join(o['id'] for o in obs)} recoded "
-                        f"{LDL_CODE} -> {LDL_ALT['code']}")
+            done.append({"switch": "drop_codes", "patient_id": pid, "resource_ids": [o["id"] for o in obs],
+                         "text": f"drop_codes: {pid} LDL-C {', '.join(o['id'] for o in obs)} recoded "
+                                 f"{LDL_CODE} -> {LDL_ALT['code']}"})
 
     if config.failure_enabled("bad_units"):
         for i, pid in enumerate(_targets(store, "bad_units", 2, used)):
@@ -59,8 +61,11 @@ def inject(store: FhirStore) -> list[str]:
             else:  # implausible: decimal slip, x10
                 q.update(value=round(q["value"] * 10, 1))
             used.add(pid)
-            done.append(f"bad_units: {pid} LDL-C {o['id']} {before} -> {q['value']:g} {q['unit']}")
+            done.append({"switch": "bad_units", "patient_id": pid, "resource_ids": [o["id"]],
+                         "kind": "convertible" if i == 0 else "implausible",
+                         "text": f"bad_units: {pid} LDL-C {o['id']} {before} -> {q['value']:g} {q['unit']}"})
 
     if config.failure_enabled("note_conflict"):
-        done.append("note_conflict: not implemented (optional)")
+        done.append({"switch": "note_conflict", "patient_id": None, "resource_ids": [],
+                     "text": "note_conflict: not implemented (optional)"})
     return done
