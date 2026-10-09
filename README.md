@@ -26,10 +26,17 @@ python check_bedrock.py
 ## Run
 
 ```bash
-python run.py --trial B
+python run.py --trial B --date 2026-10-12
+python run.py --trial B --fail ctgov_timeout   # criteria served from cache, log stamped STALE
 ```
 
-_(not implemented yet: lands with T5/T6)_
+Writes `out/prescreen_log_{trial}_{date}.md` (for the CRC: likely eligible / pending / excluded / needs review, with evidence and trace per patient) and a `.csv` with one row per patient and criterion (for evaluation). Uploads both to `s3://$S3_BUCKET/logs/{trial}/{date}/` when `S3_BUCKET` is set. If the criteria cannot be fetched and the cache is older than 14 days, no log is written.
+
+Until trial B's data arrives, run on the fixtures:
+
+```bash
+python run.py --trial SAMPLE --nct NCT02178098 --predicates tests/fixtures/sample_predicates.json --patients tests/fixtures/patients --date 2026-10-09
+```
 
 Fetch a trial's eligibility criteria from ClinicalTrials.gov (caches to `cache/ctgov/`, snapshots to `data/snapshots/{nct}/{date}.txt`, and to S3 when `S3_BUCKET` is set):
 
@@ -68,7 +75,8 @@ tests/
 - [x] T4 ctgov tool (tested on placeholder NCT02178098; real trial B/G IDs pending)
 - [x] T3 FHIR file adapter (tested on 3 hand-written fixture bundles; real Synthea data pending)
 - [x] T5 engine (tested on fixtures and sample predicates; trial B predicates pending)
-- [ ] T6 log · T7–T9 agent/trace/failures · T10 amendments · T11 eval
+- [x] T6 aggregation and log (end to end on fixtures)
+- [ ] T7–T9 agent/trace/failures · T10 amendments · T11 eval
 
 ## License
 

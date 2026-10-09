@@ -50,6 +50,7 @@ class Verdict:
     note: str = ""
     blocking: bool = True
     needs_recovery: bool = False  # empty query: T7 agent may retry codes / notes
+    conflict: bool = False  # structured data vs note disagree (T7 decision 4) -> needs review
     trace: list[dict] = field(default_factory=list)
 
     def log(self, step: str, tool: str, result: str, decision: str) -> None:
@@ -191,7 +192,7 @@ def _judge_age(predicate: dict, records: list[dict], v: Verdict, screening_date:
     age = _age(birth, screening_date)
     rid = records[0]["resource_id"]
     return _compare(predicate, v, float(age), f"age {age} at {screening_date}",
-                    [{"resource_id": rid, "value": birth, "date": birth}])
+                    [{"resource_id": rid, "value": f"born {birth}", "date": None}])
 
 
 def _compare(predicate: dict, v: Verdict, value: float, label: str, evidence: list[dict]) -> Verdict:

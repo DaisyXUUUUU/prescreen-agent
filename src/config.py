@@ -35,6 +35,13 @@ TEST_NCT_ID = "NCT02178098"
 # Default anchor for time windows; override with SCREENING_DATE=YYYY-MM-DD.
 SCREENING_DATE = os.getenv("SCREENING_DATE") or date.today().isoformat()
 
+# Aggregation order (open question for Ming). True: a blocking unknown is checked
+# before a failed inclusion, so such a patient is "pending" rather than "excluded"
+# (brief goal 2: answer unknown before excluded). False: failed inclusion wins.
+PENDING_BEFORE_INCLUSION_FAIL = True
+
+OUT_DIR = ROOT / "out"
+
 # Cache older than this cannot back a log (brief section 6).
 CTGOV_MAX_CACHE_AGE_DAYS = 14
 

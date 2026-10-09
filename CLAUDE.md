@@ -92,7 +92,8 @@ Work proceeds on placeholders; every item below must be swapped in and **re-veri
 | Ground truth (≥20 patients) | T11 | Sat night | — | — |
 
 Open questions for Ming:
-- Aggregation order: a patient with an inclusion criterion clearly `not_met` AND a blocking `unknown` elsewhere — "excluded" or "pending"? Current draft says pending; to confirm.
+- Aggregation order: a patient with an inclusion criterion clearly `not_met` AND a blocking `unknown` elsewhere — "excluded" or "pending"? Implemented as switch `config.PENDING_BEFORE_INCLUSION_FAIL` (default True = pending, log row also says "Already fails ..."); flip after Ming answers.
+- Non-computable predicates (computable=false or grade N) never block; they are listed as "CRC to check". Confirm.
 - Unit conversion factors and plausible ranges in `units.py` need Ming's review.
 - Engine assumptions made in T5 (confirm or correct):
   1. `exists` on Condition counts any clinical status, including resolved (history counts).
@@ -111,4 +112,4 @@ If Daisy's account is ever needed (e.g. for S3 ownership), recheck its quotas fi
 
 ## Current status
 
-T1 done (pending: Ming clones and pushes). T4 done on placeholder NCT. T3 done on fixtures. T5 done on fixtures + `tests/fixtures/sample_predicates.json` (NOT trial B); real acceptance waits for `trial_B.json` and Ming's injected cases. Next: T6.
+T1 done (pending: Ming clones and pushes). T4 done on placeholder NCT. T3 done on fixtures. T5 done on fixtures + `tests/fixtures/sample_predicates.json` (NOT trial B). T6 done: `run.py` runs end to end on fixtures. Real acceptance (50 patients, trial B) waits for Ming's data. Next: T7 (agent) + T8 (trace).
