@@ -133,3 +133,16 @@ def test_stale_criteria_are_stamped(monkeypatch, tmp_path):
 def test_no_log_when_criteria_unavailable(monkeypatch, tmp_path):
     assert run_cli(monkeypatch, tmp_path, fetch_status="error") == 3
     assert not list(tmp_path.glob("*.md"))
+
+
+def test_injection_is_announced_in_log(monkeypatch, tmp_path):
+    monkeypatch.setattr(config, "FAILURES", {k: False for k in config.FAILURES})
+    assert run_cli(monkeypatch, tmp_path, "--fail", "drop_codes") == 0
+    md = (tmp_path / "prescreen_log_SAMPLE_2026-10-09.md").read_text()
+    assert "Failure injection active" in md and "recoded 18262-1 -> 13457-7" in md
+
+
+def test_no_switch_means_no_injection_banner(monkeypatch, tmp_path):
+    monkeypatch.setattr(config, "FAILURES", {k: False for k in config.FAILURES})
+    assert run_cli(monkeypatch, tmp_path) == 0
+    assert "Failure injection" not in (tmp_path / "prescreen_log_SAMPLE_2026-10-09.md").read_text()

@@ -55,6 +55,11 @@ FAILURES: dict[str, bool] = {
 }
 
 
+# Patients each data failure is applied to (Ming's injected-case list). Empty:
+# src/failures.py picks the first patients with an LDL-C record, in ID order.
+FAILURE_TARGETS: dict[str, list[str]] = {}
+
+
 def enable_failure(name: str) -> None:
     if name not in FAILURES:
         raise ValueError(f"unknown failure switch {name!r}; choose from {sorted(FAILURES)}")

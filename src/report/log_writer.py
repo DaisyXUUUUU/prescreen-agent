@@ -28,7 +28,7 @@ def _key_evidence(r: PatientResult) -> str:
 def _notes(r: PatientResult) -> str:
     parts = []
     if r.category == "pending":
-        parts.append("Missing: " + ", ".join(r.missing))
+        parts.append("Needs data: " + ", ".join(r.missing))
         parts += [f"Already fails {x}" for x in r.also_fails]
     elif r.category != "likely_eligible":
         parts += r.reasons
@@ -41,7 +41,7 @@ def _notes(r: PatientResult) -> str:
 
 
 def render_markdown(trial: str, nct: str, fetch, screening_date: str, results: list[PatientResult],
-                    predicates: list[dict], generated_at: str) -> str:
+                    predicates: list[dict], generated_at: str, injections: list[str] = ()) -> str:
     preds = {p["criterion_id"]: p for p in predicates}
     groups = {c: [r for r in results if r.category == c] for c in CATEGORIES}
 
@@ -58,6 +58,12 @@ def render_markdown(trial: str, nct: str, fetch, screening_date: str, results: l
         f"- Generated: {generated_at}",
         f"- Patients screened: {len(results)} · " + " · ".join(f"{LABELS[c]}: {len(groups[c])}" for c in CATEGORIES),
         "",
+    ]
+    if injections:
+        out += ["> **Failure injection active (demo).** The following data was altered in memory for this run:", ">"]
+        out += [f"> - {_cell(x)}" for x in injections]
+        out += [""]
+    out += [
         "> Synthetic data only. No patient has been contacted. Every verdict links to the record it used;"
         " anything the data cannot settle is marked pending or left to the CRC, never guessed.",
         "",
@@ -108,13 +114,15 @@ def write_csv(path: Path, trial: str, screening_date: str, results: list[Patient
 
 
 def write_log(trial: str, nct: str, fetch, screening_date: str, results: list[PatientResult],
-              predicates: list[dict], out_dir: Path | None = None, generated_at: str | None = None) -> tuple[Path, Path, list[str]]:
+              predicates: list[dict], out_dir: Path | None = None, generated_at: str | None = None,
+              injections: list[str] = ()) -> tuple[Path, Path, list[str]]:
     out_dir = Path(out_dir or config.OUT_DIR)
     out_dir.mkdir(parents=True, exist_ok=True)
     generated_at = generated_at or datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     stem = f"prescreen_log_{trial}_{screening_date}"
     md, csv_path = out_dir / f"{stem}.md", out_dir / f"{stem}.csv"
-    md.write_text(render_markdown(trial, nct, fetch, screening_date, results, predicates, generated_at), encoding="utf-8")
+    md.write_text(render_markdown(trial, nct, fetch, screening_date, results, predicates, generated_at, injections),
+                  encoding="utf-8")
     write_csv(csv_path, trial, screening_date, results, predicates)
     return md, csv_path, _upload(trial, screening_date, [md, csv_path])
 

@@ -15,7 +15,7 @@ import logging
 import sys
 from pathlib import Path
 
-from src import config
+from src import config, failures
 from src.adapters import fhir_store
 from src.agent import trace
 from src.engine.aggregate import CATEGORIES, LABELS, aggregate
@@ -62,7 +62,11 @@ def main() -> int:
         return 3
 
     predicates = load_predicates(pred_path)
-    fhir_store.set_store(fhir_store.FhirStore(args.patients))
+    store = fhir_store.FhirStore(args.patients)
+    injections = failures.inject(store)
+    if config.failure_enabled("ctgov_timeout"):
+        injections.insert(0, f"ctgov_timeout: ClinicalTrials.gov call forced to time out; criteria {fetch.status}")
+    fhir_store.set_store(store)
     patients = fhir_store.list_patients()
     if not patients:
         print(f"error: no patients loaded from {args.patients}", file=sys.stderr)
@@ -84,12 +88,15 @@ def main() -> int:
                     print(f" {verdicts[i].status}")
         results.append(aggregate(pid, predicates, verdicts))
 
-    md, csv_path, warnings = write_log(args.trial, nct, fetch, args.date, results, predicates, args.out)
+    md, csv_path, warnings = write_log(args.trial, nct, fetch, args.date, results, predicates, args.out,
+                                       injections=injections)
     trace_path = trace.write_jsonl(args.out / f"trace_{args.trial}_{args.date}.jsonl", args.trial, args.date, results)
 
     counts = {c: sum(r.category == c for r in results) for c in CATEGORIES}
     print(f"trial {args.trial} ({nct}) · {args.date} · criteria {fetch.status}"
           + (f" ({fetch.cache_age_days:g} days old)" if fetch.status == "stale" else ""))
+    for line in injections:
+        print(f"injected: {line}")
     print(f"{len(results)} patients: " + ", ".join(f"{LABELS[c]} {n}" for c, n in counts.items()))
     if not args.no_agent:
         print(f"recovery agent: {attempted} empty queries handled, {recovered} resolved")

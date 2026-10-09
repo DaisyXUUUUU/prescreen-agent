@@ -86,7 +86,7 @@ Work proceeds on placeholders; every item below must be swapped in and **re-veri
 | `data/predicates/trial_B.json` (15 predicates) | T5 | Fri night | none — engine tested on hand-written fixture predicates in `tests/` | T5 runs on real file; schema mismatches reported to Ming, not fixed by us |
 | Confirm extension fields (`grade, resource, anchor, aggregation, absence_means, assumption`) | T5 scope | Fri | assume all enabled | — |
 | Synthea patients in `data/patients/` (5 first is fine) | T3 | Fri night | 3 hand-written minimal bundles in `tests/fixtures/` (eligible / excluded / missing lab) | T3 loads real bundles; trust real structure over fixtures |
-| Injected-case list | T5 tests, T9 | Sat AM | — | — |
+| Injected-case list | T5 tests, T9 | Sat AM | `src/failures.py` picks first patients with LDL-C 18262-1 | put patient IDs into `config.FAILURE_TARGETS`; rerun each `--fail` switch |
 | ATC→RxNorm map, local code map | medication / code matching; agent equivalents | Sat AM | placeholder table in `src/agent/agent.py` | agent `lookup_equivalent_codes` reports source = Ming's file |
 | v2 snapshot + v2 predicates | T10 | Sat PM | — | — |
 | Ground truth (≥20 patients) | T11 | Sat night | — | — |
@@ -113,4 +113,4 @@ If Daisy's account is ever needed (e.g. for S3 ownership), recheck its quotas fi
 
 ## Current status
 
-T1 done (pending: Ming clones and pushes). T4 done on placeholder NCT. T3 done on fixtures. T5 done on fixtures + `tests/fixtures/sample_predicates.json` (NOT trial B). T6 done: `run.py` runs end to end on fixtures. T7+T8 done: recovery agent (Strands + Nova 2 Lite) live-tested on fixtures; trace JSONL. Real acceptance (50 patients, trial B, Ming's wrong-code cases) waits for Ming's data. Next: T9 (failure switches).
+T1 done (pending: Ming clones and pushes). T4 done on placeholder NCT. T3 done on fixtures. T5 done on fixtures + `tests/fixtures/sample_predicates.json` (NOT trial B). T6 done: `run.py` runs end to end on fixtures. T7+T8 done: recovery agent (Strands + Nova 2 Lite) live-tested on fixtures; trace JSONL. Real acceptance (50 patients, trial B, Ming's wrong-code cases) waits for Ming's data. T9 done for ctgov_timeout / drop_codes / bad_units (live-tested); amendment_v2 comes with T10; note_conflict (optional) not done. Next: T10.

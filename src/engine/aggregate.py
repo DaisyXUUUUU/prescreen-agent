@@ -68,7 +68,8 @@ def aggregate(patient_id: str, predicates: list[dict], verdicts: list[Verdict]) 
 
     def pending() -> PatientResult:
         r.category = "pending"
-        r.missing = [_label(p) for p, _ in blocking_unknown]
+        # "missing" = no record; a rejected record (bad unit, implausible value) is named as such
+        r.missing = [_label(p) + (" (record unusable, see note)" if v.evidence else "") for p, v in blocking_unknown]
         r.reasons = [_why(p, v) for p, v in blocking_unknown]
         r.decisive = [v.criterion_id for _, v in blocking_unknown]
         # the CRC should not chase missing data for a patient who already fails an inclusion
