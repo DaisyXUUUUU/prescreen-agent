@@ -74,10 +74,25 @@ docs/PROJECT_BRIEF.md, docs/TASKS.md
 - Keep README updated as each module lands; it must run from a clean clone.
 - Python 3.11+. Keep dependencies minimal.
 
-## Open questions (waiting on Ming)
+## ⏳ Waiting on Ming (requested 2026-10-09, no reply yet)
 
+Work proceeds on placeholders; every item below must be swapped in and **re-verified** when it arrives.
+
+| Item | Needed for | Due | Placeholder meanwhile | Re-verify when it lands |
+|---|---|---|---|---|
+| GitHub username | invite → T1 "Ming clones and pushes" | Fri | — | Ming's commit visible after `git pull` |
+| NCT IDs for B and G | T4, T10 | Fri | a public test NCT, never labelled as trial B | T4 acceptance on the real ID |
+| S3 bucket name + write access for `prescreen-dev-xzy` | T4 snapshots, logs | Fri | local-only, warning printed | snapshot appears in S3 |
+| `data/predicates/trial_B.json` (15 predicates) | T5 | Fri night | none — engine tested on hand-written fixture predicates in `tests/` | T5 runs on real file; schema mismatches reported to Ming, not fixed by us |
+| Confirm extension fields (`grade, resource, anchor, aggregation, absence_means, assumption`) | T5 scope | Fri | assume all enabled | — |
+| Synthea patients in `data/patients/` (5 first is fine) | T3 | Fri night | 3 hand-written minimal bundles in `tests/fixtures/` (eligible / excluded / missing lab) | T3 loads real bundles; trust real structure over fixtures |
+| Injected-case list | T5 tests, T9 | Sat AM | — | — |
+| ATC→RxNorm map, local code map | medication / code matching | Sat AM | — | — |
+| v2 snapshot + v2 predicates | T10 | Sat PM | — | — |
+| Ground truth (≥20 patients) | T11 | Sat night | — | — |
+
+Open questions for Ming:
 - Aggregation order: a patient with an inclusion criterion clearly `not_met` AND a blocking `unknown` elsewhere — "excluded" or "pending"? Current draft says pending; to confirm.
-- NCT IDs for trials B and G.
 - Unit conversion factors and plausible ranges in `units.py` need Ming's review.
 
 ## Bedrock access (resolved 2026-10-09)
