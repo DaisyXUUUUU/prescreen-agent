@@ -60,6 +60,15 @@ E5_TERMS = ["hmg-coa reductase", "hmg coa reductase", "lipid modifying", "antili
             "cholesterol absorption inhibitor", "bile acid sequestrant", "fibrate", "lipid-lowering"]
 
 
+def matched_class(entry: dict, criterion: str) -> str | None:
+    """The terminology class name that put the drug in the criterion's class, e.g. 'RNA, Small Interfering (MEDRT)'."""
+    terms = E4_TERMS if criterion == "E4" else E5_TERMS
+    for name, source in entry.get("classes", []):
+        if any(t in name.lower() for t in terms):
+            return f"{name} ({source})"
+    return None
+
+
 def in_class(entry: dict, criterion: str) -> str | None:
     """'yes' / 'no' from the terminology, None when the terminology cannot tell."""
     if entry.get("status") != "ok" or not entry.get("classes"):

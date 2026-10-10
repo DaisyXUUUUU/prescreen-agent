@@ -33,7 +33,7 @@ python check_bedrock.py            # expect: response: bedrock ok
 python run.py --trial SAD --date 2026-10-09
 ```
 
-Open `out/prescreen_log_SAD_2026-10-09.md`. If Bedrock is unreachable, the run says so once and continues with rules only. Expected result on the 8 cases: likely eligible 2, pending 1, excluded 4, needs review 1 (identical to Ming's own evaluator, checked by `tests/test_sad.py`).
+Open `out/prescreen_log_SAD_2026-10-09.md`. If Bedrock is unreachable, the run says so once and continues with rules only. The SAD run includes Ming's 8 cases plus 7 engineering-authored cases in `data/eng_cases/` (free text, boundaries, I5 evidence, material conflict; `--no-eng-cases` to leave them out). With `--no-agent` the result equals Ming's own evaluator (checked by `tests/test_sad.py`).
 
 `tests/fixtures/` holds engineering's own sample data (four hand-written patients on NCT02178098, sample labels, a sample SAD amendment). None of it is a project trial or ground truth; see [tests/fixtures/README.md](tests/fixtures/README.md).
 
@@ -59,8 +59,12 @@ Logs are uploaded to `s3://$S3_BUCKET/logs/{trial}/{date}/` when `S3_BUCKET` is 
 2. **Cases** are loaded into one in-memory FHIR store shared by the evaluator, the failure switches and the agent.
 3. **Engineering guards** run first and are traced as rules: unambiguous unit conversion (e.g. LDL mmol/L → mg/dL) and plausibility ranges (an LDL of 690 mg/dL becomes `unknown`, not "met").
 4. **Ming's evaluator** decides each criterion: screening-encounter binding, fasting specimen, ULN from the reference range (ALT or AST > 1.5×ULN), questionnaire coverage windows for smoking and drug history; I5 is always left to the investigator.
-5. **The recovery agent** takes only criteria whose screening query came back empty: equivalent codes, then notes, then abstain. A record it finds goes back to Ming's evaluator by ID.
-6. **Aggregation** follows Ming's rule: any clearly failed criterion → excluded; then conflict → needs review; then unknown → pending; else likely eligible. I5 is listed as "CRC to check".
+5. **The agent** (Strands + Nova 2 Lite) handles what the rules cannot settle. The model reads and explains; code compares and decides:
+   - *Empty query* → recovery agent: equivalent codes, then notes, then abstain; a found record goes back to Ming's evaluator by ID.
+   - *Free-text history* (smoking, advanced therapies, lipid-lowering drugs) → the model extracts facts with quotes; quotes absent from the source are dropped; drug classes come from NLM **RxNav** (RxNorm/RxClass), not the model's memory; code applies Ming's thresholds and windows; where the protocol's definitions disagree (e.g. 4–5 cigarettes on weekend nights) the criterion stays unknown for the CRC.
+   - *Conflicting results* → code re-runs Ming's evaluator per candidate to tell whether the choice matters; the model explains the difference and what to check, never picks one.
+   - *I5 (investigator judgement)* → a tool-using evidence agent looks up liver and kidney labs, diagnoses and notes; lab flags come from reference ranges in code; cited records are verified; abnormal findings send the patient to review.
+6. **Aggregation** follows Ming's rule: any clearly failed criterion → excluded; then conflict, agent-suggested exclusion or flagged I5 evidence → needs review; then unknown → pending; else likely eligible. **A verdict that rests on the model's reading never excludes a patient on its own.** I5 is listed as "CRC to check".
 
 ### How a verdict is made (generic engine)
 

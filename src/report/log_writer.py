@@ -99,7 +99,8 @@ def render_markdown(trial: str, nct: str, fetch, screening_date: str, results: l
 
 
 CSV_FIELDS = ["trial", "screening_date", "patient_id", "patient_category", "criterion_id", "type", "computable",
-              "status", "blocking", "needs_recovery", "evidence_ids", "note"]
+              "status", "blocking", "needs_recovery", "interpreted", "evidence_ids", "note", "agent_summary",
+              "review_reason"]
 
 
 def write_csv(path: Path, trial: str, screening_date: str, results: list[PatientResult], predicates: list[dict]) -> None:
@@ -116,7 +117,9 @@ def write_csv(path: Path, trial: str, screening_date: str, results: list[Patient
                             and preds[v.criterion_id].get("grade") != "N",
                             "status": v.status, "blocking": v.blocking,
                             "needs_recovery": v.needs_recovery,
-                            "evidence_ids": ";".join(e["resource_id"] for e in v.evidence), "note": v.note})
+                            "interpreted": v.interpreted,
+                            "evidence_ids": ";".join(str(e["resource_id"]) for e in v.evidence), "note": v.note,
+                            "agent_summary": v.recovery, "review_reason": v.review_reason})
 
 
 def write_log(trial: str, nct: str, fetch, screening_date: str, results: list[PatientResult],

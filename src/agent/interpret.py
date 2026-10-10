@@ -154,7 +154,8 @@ def interpret(case, cid: str, rule: dict, source_text: str, prior: Verdict, mode
         # Drug class from the terminology service, not from the model's memory.
         term = rxnav.lookup(x.substance)
         klass = rxnav.in_class(term, cid)
-        source = f"RxNav: {', '.join(term['ingredients'][:2]) or x.substance}"
+        matched = rxnav.matched_class(term, cid)
+        source = f"RxNav: {', '.join(term['ingredients'][:1]) or x.substance}" + (f" -> {matched}" if matched else "")
         if klass is None:  # terminology cannot tell: keep the model's yes, never trust its no
             klass, source = ("yes" if x.in_class == "yes" else "unclear"), "model (not in terminology)"
         trace.add(v.trace, "rxnav", f"{x.substance} -> {term['status']} {term['ingredients'][:2]} -> in class: {klass} "
@@ -181,6 +182,8 @@ def interpret(case, cid: str, rule: dict, source_text: str, prior: Verdict, mode
              f"not counted: {'; '.join(outside)}" if outside else "",
              "patient explicitly reports none" if facts.explicitly_none and not facts.exposures else ""]
     v.note = " | ".join(p for p in parts if p) or "no usable statement about this class"
-    v.note += f". Agent: {facts.explanation}"
+    # The model's own prose can contain wrong drug facts (it called inclisiran an ASO); keep it in the
+    # trace, labelled, and build the CRC-facing note only from verified facts and the terminology.
+    trace.add(v.trace, "agent:summary", f"model text, not verified: {facts.explanation}")
     trace.add(v.trace, "rule:interpreted_window", v.note, v.status)
     return v
