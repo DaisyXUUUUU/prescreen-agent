@@ -10,7 +10,7 @@ JSONL file lets the evaluation count trace coverage.
 import json
 from pathlib import Path
 
-ENGINE_TOOLS = {"fhir_query"}
+ENGINE_TOOLS = {"fhir_query", "rxnav"}  # deterministic lookups, not model decisions
 
 
 def add(trace: list[dict], tool: str, result: str, decision: str = "") -> dict:

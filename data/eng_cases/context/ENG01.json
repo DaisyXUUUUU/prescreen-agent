@@ -1,0 +1,12 @@
+{
+  "case_id": "ENG01",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "6b078266-4d8e-5ece-bd88-2de660b216dd",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "f106c405-4553-5407-82bd-bcd4b034b540",
+  "history_id": "45c005a2-4995-5a03-84fe-76107d136d65",
+  "FHIR_file": "cases/ENG01.json",
+  "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
+  "purpose": "smoking described only in free text, intermittent weekend smoking (boundary of 'regular')"
+}

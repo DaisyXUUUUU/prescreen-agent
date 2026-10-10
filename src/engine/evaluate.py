@@ -52,7 +52,9 @@ class Verdict:
     blocking: bool = True
     needs_recovery: bool = False  # empty query: T7 agent may retry codes / notes
     conflict: bool = False  # structured data vs note disagree (T7 decision 4) -> needs review
-    recovery: str = ""  # one-line summary of what the recovery agent did (shown in the log)
+    recovery: str = ""  # one-line summary of what an agent did (shown in the log)
+    interpreted: bool = False  # status derived from the model's reading of free text (never excludes alone)
+    review_reason: str = ""  # agent evidence that should put the patient in front of a person
     trace: list[dict] = field(default_factory=list)
 
     def log(self, tool: str, result: str, decision: str = "") -> None:

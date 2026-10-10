@@ -1,0 +1,12 @@
+{
+  "case_id": "ENG02",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "8e8b9049-2171-571e-8e32-bf545993592e",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "649bdf52-bc96-5ba7-9c73-b5142a2c75ec",
+  "history_id": "e74986ec-fac0-589c-bd10-133138c72c09",
+  "FHIR_file": "cases/ENG02.json",
+  "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
+  "purpose": "smoking described only in free text, clearly daily"
+}

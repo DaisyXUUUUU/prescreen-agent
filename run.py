@@ -41,6 +41,8 @@ def main() -> int:
                         help="default data/patients/; for SAD, Ming's t6_sad_demo/data/cases (contexts in ../context)")
     parser.add_argument("--out", type=Path, default=config.OUT_DIR)
     parser.add_argument("--no-agent", action="store_true", help="skip the recovery agent (rules only)")
+    parser.add_argument("--no-eng-cases", action="store_true",
+                        help="SAD: only Ming's cases (default adds engineering-authored data/eng_cases/)")
     parser.add_argument("--v1-snapshot", type=Path, help="T10: previous criteria text (default: latest snapshot)")
     parser.add_argument("--v2-snapshot", type=Path,
                         help="T10 with --fail amendment_v2: amended criteria text (default data/snapshots/{NCT}/amendment_v2.txt)")
@@ -81,6 +83,9 @@ def main() -> int:
         cases_dir = args.patients or sa.SAD_DIR / "data" / "cases"
         input_problems = sa.verify_inputs(pred_path, cases_dir)
         cases = sa.load_cases(cases_dir)
+        eng_dir = config.DATA_DIR / "eng_cases" / "cases"
+        if not args.patients and not args.no_eng_cases and eng_dir.exists():
+            cases += sa.load_cases(eng_dir)
         predicates = sa.predicates(spec)
         store = sa.install_store(cases)
         if not config.FAILURE_TARGETS:
@@ -140,7 +145,7 @@ def main() -> int:
         print(f"injected: {i['text']}")
     print(f"{len(results)} patients: " + ", ".join(f"{LABELS[c]} {n}" for c, n in counts.items()))
     if not args.no_agent:
-        print(f"recovery agent: {attempted} empty queries handled, {recovered} resolved")
+        print(f"agent: {attempted} task(s), {recovered} changed the rule result")
     print(f"log: {md}\ncsv: {csv_path}\ntrace: {trace_path}" + (f"\namendment impact: {impact}" if impact else ""))
     for w in fetch.warnings + warnings:
         print(f"warning: {w}")

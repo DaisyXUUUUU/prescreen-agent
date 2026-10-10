@@ -1,0 +1,12 @@
+{
+  "case_id": "ENG04",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "4a28050a-581a-5bd8-b76e-9207a424b3ba",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "3cd23249-b99a-53c4-9bf2-e0c1b4344759",
+  "history_id": "6ed413dd-2b39-562e-99ac-a6cb3ad448e2",
+  "FHIR_file": "cases/ENG04.json",
+  "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
+  "purpose": "advanced-therapy history in free text naming a brand (Leqvio = inclisiran, an siRNA)"
+}

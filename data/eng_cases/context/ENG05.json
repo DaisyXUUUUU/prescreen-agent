@@ -1,0 +1,12 @@
+{
+  "case_id": "ENG05",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "6b9aac06-1542-55ec-a97b-52a979640d21",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "adc77161-7ebb-51cc-9139-ac436f67197f",
+  "history_id": "2f113639-5249-5a8a-a9cb-5dc65b99a430",
+  "FHIR_file": "cases/ENG05.json",
+  "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
+  "purpose": "lipid-lowering history in free text, negative with OTC supplements"
+}

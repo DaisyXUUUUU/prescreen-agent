@@ -60,12 +60,17 @@ def aggregate(patient_id: str, predicates: list[dict], verdicts: list[Verdict], 
     computable = [(p, v) for p, v in pairs if _computable(p)]
     r.crc_checks = [_label(p) for p, _ in pairs if not _computable(p)]
 
-    excl_met = [(p, v) for p, v in computable if p["type"] == "exclusion" and v.status == "met"]
+    failing = [(p, v) for p, v in computable
+               if (p["type"] == "exclusion" and v.status == "met") or (p["type"] == "inclusion" and v.status == "not_met")]
+    # A failure that rests on the model's reading of free text never excludes on its own: review instead.
+    suggested = [(p, v) for p, v in failing if v.interpreted]
+    excl_met = [(p, v) for p, v in computable if p["type"] == "exclusion" and v.status == "met" and not v.interpreted]
     conflicts = [(p, v) for p, v in computable if v.conflict]
+    flagged = [(p, v) for p, v in pairs if v.review_reason]  # agent evidence, e.g. I5
     blocking_unknown = [(p, v) for p, v in computable if v.status == "unknown" and v.blocking]
     soft_unknown = [(p, v) for p, v in computable if v.status == "unknown" and not v.blocking]
     incl = [(p, v) for p, v in computable if p["type"] == "inclusion"]
-    incl_failed = [(p, v) for p, v in incl if v.status == "not_met"]
+    incl_failed = [(p, v) for p, v in incl if v.status == "not_met" and not v.interpreted]
 
     def pending() -> PatientResult:
         r.category = "pending"
@@ -94,10 +99,13 @@ def aggregate(patient_id: str, predicates: list[dict], verdicts: list[Verdict], 
         r.reasons = [_why(p, v) for p, v in excl_met]
         r.decisive = [v.criterion_id for _, v in excl_met]
         return r
-    if conflicts:
+    if conflicts or suggested or flagged:
         r.category = "needs_review"
-        r.reasons = [_why(p, v) for p, v in conflicts]
-        r.decisive = [v.criterion_id for _, v in conflicts]
+        r.reasons = ([_why(p, v) for p, v in conflicts]
+                     + [f"{_label(p)}: agent reading suggests {'exclusion' if p['type'] == 'exclusion' else 'not met'}, "
+                        f"CRC to confirm: {v.note}" for p, v in suggested]
+                     + [f"{_label(p)}: {v.review_reason}" for p, v in flagged])
+        r.decisive = [v.criterion_id for _, v in conflicts + suggested + flagged]
         return r
 
     if config.PENDING_BEFORE_INCLUSION_FAIL:
@@ -115,5 +123,6 @@ def aggregate(patient_id: str, predicates: list[dict], verdicts: list[Verdict], 
     r.category = "likely_eligible"
     r.reasons = [f"all {len(incl)} computable inclusion criteria met; no exclusion met"]
     r.decisive = [v.criterion_id for _, v in incl if v.status == "met"]
-    r.confirm_at_visit = [_label(p) for p, _ in soft_unknown]
+    r.confirm_at_visit = [_label(p) for p, _ in soft_unknown] + [
+        f"{_label(p)} (from free text)" for p, v in computable if v.interpreted and v.status in ("met", "not_met")]
     return r

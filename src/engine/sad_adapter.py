@@ -274,10 +274,17 @@ def evaluate_with_records(case: SadCase, spec: dict, cid: str, records: list[dic
 # ---------- screening ----------
 
 def screen(cases: list[SadCase], spec: dict, use_agent: bool = True, label: str = "") -> tuple[list[PatientResult], int, int, dict]:
-    """Returns (results, agent attempts, resolved, engine decisions by case) under one rule pack."""
+    """Returns (results, agent tasks, tasks that changed the rule result, engine decisions by case).
+
+    With the agent on, each case goes through: recovery of empty queries, free-text interpretation of
+    history criteria, conflict explanation, and the I5 evidence pack. With it off, results equal
+    Ming's engine exactly."""
+    from src.agent import conflict, evidence, interpret
+
     engine = load_engine()
     preds = predicates(spec)
     by_id = {p["criterion_id"]: p for p in preds}
+    rules = {r["id"]: r for r in spec["rules"]}
     model = None
     if use_agent:
         from src.agent.agent import preflight
@@ -286,20 +293,34 @@ def screen(cases: list[SadCase], spec: dict, use_agent: bool = True, label: str 
             print(f"  agent{label}: model unavailable ({reason}); continuing with rules only")
             use_agent = False
 
-    results, attempted, recovered, decisions = [], 0, 0, {}
+    results, attempted, changed, decisions = [], 0, 0, {}
+
+    def step(case, what, fn, v):
+        nonlocal attempted, changed
+        attempted += 1
+        print(f"  agent{label}: {case.case_id} {v.criterion_id} {what} ...", end="", flush=True)
+        out = fn()
+        changed += (out.status, out.conflict, bool(out.review_reason)) != (v.status, v.conflict, False)
+        print(f" {out.status}" + (" [review]" if out.review_reason else "") + (" [conflict]" if out.conflict else ""))
+        return out
+
     for case in cases:
         verdicts, raw = evaluate_case(case, spec, engine)
         decisions[case.case_id] = raw["decision"]
         if use_agent:
             from src.agent.agent import recover
             for i, v in enumerate(verdicts):
+                cid = v.criterion_id
                 if v.needs_recovery:
-                    attempted += 1
-                    print(f"  agent{label}: {case.case_id} {v.criterion_id} ...", end="", flush=True)
-                    verdicts[i] = recover(
-                        v, by_id[v.criterion_id], case.screening_date, model=model, query_patient_id=case.patient_id,
-                        evaluate_records=lambda recs, c=case, cid=v.criterion_id: evaluate_with_records(c, spec, cid, recs, engine))
-                    recovered += verdicts[i].status != "unknown"
-                    print(f" {verdicts[i].status}")
+                    verdicts[i] = step(case, "recover", lambda v=v, cid=cid: recover(
+                        v, by_id[cid], case.screening_date, model=model, query_patient_id=case.patient_id,
+                        evaluate_records=lambda recs, c=case, k=cid: evaluate_with_records(c, spec, k, recs, engine)), v)
+                elif v.status == "unknown" and cid in HISTORY and interpret.has_free_text(case, cid):
+                    verdicts[i] = step(case, "interpret", lambda v=v, cid=cid: interpret.interpret(
+                        case, cid, rules[cid]["predicate"], rules[cid]["source_text"], v, model), v)
+                elif v.conflict:
+                    verdicts[i] = step(case, "conflict", lambda v=v: conflict.explain(case, spec, v, engine, model), v)
+                elif cid == "I5":
+                    verdicts[i] = step(case, "evidence", lambda v=v: evidence.evidence_pack(case, v, model), v)
         results.append(aggregate(case.case_id, preds, verdicts, failed_first=True))
-    return results, attempted, recovered, decisions
+    return results, attempted, changed, decisions
