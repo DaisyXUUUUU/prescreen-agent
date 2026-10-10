@@ -10,8 +10,10 @@ returns structured facts. It does not decide the criterion:
     or days, date arithmetic) to those facts;
   - anything the model marks unclear stays `unknown`, with the model's explanation for the CRC.
 
-The resulting verdict is marked `interpreted`; aggregation never excludes on an interpreted
-verdict alone (it routes the patient to review with the suggestion).
+The resulting verdict is marked `interpreted`. When it settles an exclusion (verified quote,
+code-applied threshold or window, drug class confirmed by RxNav) the patient is excluded like any
+other exclusion, with the quote shown (decided 2026-10-09). A class vouched for only by the model
+sets `review_reason` and goes to review instead.
 """
 
 import calendar
@@ -146,7 +148,7 @@ def interpret(case, cid: str, rule: dict, source_text: str, prior: Verdict, mode
         return v
 
     start = _window_start(screening, rule)
-    counted, unclear, outside = [], [], []
+    counted, unclear, outside, weak = [], [], [], []
     for x in facts.exposures:
         if not llm.quote_found(x.quote, text):
             trace.add(v.trace, "rule:quote_check", f"dropped {x.substance!r}: quote not found in source")
@@ -157,7 +159,8 @@ def interpret(case, cid: str, rule: dict, source_text: str, prior: Verdict, mode
         klass = rxnav.in_class(term, cid)
         matched = rxnav.matched_class(term, cid)
         source = f"RxNav: {', '.join(term['ingredients'][:1]) or x.substance}" + (f" -> {matched}" if matched else "")
-        if klass is None:  # terminology cannot tell: keep the model's yes, never trust its no
+        model_only = klass is None
+        if model_only:  # terminology cannot tell: keep the model's yes, never trust its no
             klass, source = ("yes" if x.in_class == "yes" else "unclear"), "model (not in terminology)"
         trace.add(v.trace, "rxnav", f"{x.substance} -> {term['status']} {term['ingredients'][:2]} -> in class: {klass} "
                                     f"(model said {x.in_class})")
@@ -166,6 +169,8 @@ def interpret(case, cid: str, rule: dict, source_text: str, prior: Verdict, mode
         label = f"{x.substance} (class {klass} per {source}; prescription {x.prescription}; last use {last or 'unknown'})"
         if klass == "yes" and in_window and (x.prescription == "yes" or not needs_rx):
             counted.append(label)
+            if model_only:
+                weak.append(x.substance)
         elif klass == "no" or (last is not None and not in_window):
             outside.append(label)
         else:
@@ -186,6 +191,9 @@ def interpret(case, cid: str, rule: dict, source_text: str, prior: Verdict, mode
               f"not counted {len(outside)}; window {start}..{screening}")
     if counted:
         v.status = "met"
+        if weak and len(weak) == len(counted):
+            # Only the model vouches for the drug class: not firm enough to exclude without a person.
+            v.review_reason = f"drug class of {', '.join(weak)} from the model only, not confirmed by RxNav"
     elif not unclear and (outside or facts.explicitly_none):
         v.status = "not_met"
     parts = [f"counts: {'; '.join(counted)}" if counted else "",

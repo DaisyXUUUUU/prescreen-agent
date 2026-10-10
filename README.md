@@ -64,7 +64,7 @@ Logs are uploaded to `s3://$S3_BUCKET/logs/{trial}/{date}/` when `S3_BUCKET` is 
    - *Free-text history* (smoking, advanced therapies, lipid-lowering drugs) → the model extracts facts with quotes; quotes absent from the source are dropped; drug classes come from NLM **RxNav** (RxNorm/RxClass), not the model's memory; code applies Ming's thresholds and windows; where the protocol's definitions disagree (e.g. 4–5 cigarettes on weekend nights) the criterion stays unknown for the CRC.
    - *Conflicting results* → code re-runs Ming's evaluator per candidate to tell whether the choice matters; the model explains the difference and what to check, never picks one.
    - *I5 (investigator judgement)* → a tool-using evidence agent looks up liver and kidney labs, diagnoses and notes; lab flags come from reference ranges in code; cited records are verified; abnormal findings send the patient to review.
-6. **Aggregation** follows Ming's rule: any clearly failed criterion → excluded; then conflict, agent-suggested exclusion or flagged I5 evidence → needs review; then unknown → pending; else likely eligible. **A verdict that rests on the model's reading never excludes a patient on its own.** I5 is listed as "CRC to check".
+6. **Aggregation** follows Ming's rule: any clearly failed criterion → excluded, including an exclusion read from free text when its basis is firm (verified quote, code-applied threshold, drug class confirmed by RxNav; shown as "from free text" with the quote); then an unresolved conflict, an exclusion resting on the model alone, or flagged I5 evidence → needs review; then unknown → pending; else likely eligible. I5 is listed as "CRC to check".
 
 ### How a verdict is made (generic engine)
 

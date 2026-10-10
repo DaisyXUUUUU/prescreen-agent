@@ -48,7 +48,7 @@ def _label(p: dict) -> str:
 
 
 def _why(p: dict, v: Verdict) -> str:
-    return f"{_label(p)}: {v.note}"
+    return f"{_label(p)}: {'(from free text) ' if v.interpreted else ''}{v.note}"
 
 
 def aggregate(patient_id: str, predicates: list[dict], verdicts: list[Verdict], failed_first: bool = False) -> PatientResult:
@@ -62,15 +62,17 @@ def aggregate(patient_id: str, predicates: list[dict], verdicts: list[Verdict], 
 
     failing = [(p, v) for p, v in computable
                if (p["type"] == "exclusion" and v.status == "met") or (p["type"] == "inclusion" and v.status == "not_met")]
-    # A failure that rests on the model's reading of free text never excludes on its own: review instead.
-    suggested = [(p, v) for p, v in failing if v.interpreted]
-    excl_met = [(p, v) for p, v in computable if p["type"] == "exclusion" and v.status == "met" and not v.interpreted]
+    # A failure read from free text excludes like any other when its basis is firm (verified quote, rule-applied
+    # threshold, terminology-confirmed class); one with a weak basis (review_reason set) goes to review.
+    suggested = [(p, v) for p, v in failing if v.interpreted and v.review_reason]
+    excl_met = [(p, v) for p, v in computable if p["type"] == "exclusion" and v.status == "met"
+                and not (v.interpreted and v.review_reason)]
     conflicts = [(p, v) for p, v in computable if v.conflict]
-    flagged = [(p, v) for p, v in pairs if v.review_reason]  # agent evidence, e.g. I5
+    flagged = [(p, v) for p, v in pairs if v.review_reason and not v.interpreted]  # agent evidence, e.g. I5
     blocking_unknown = [(p, v) for p, v in computable if v.status == "unknown" and v.blocking]
     soft_unknown = [(p, v) for p, v in computable if v.status == "unknown" and not v.blocking]
     incl = [(p, v) for p, v in computable if p["type"] == "inclusion"]
-    incl_failed = [(p, v) for p, v in incl if v.status == "not_met" and not v.interpreted]
+    incl_failed = [(p, v) for p, v in incl if v.status == "not_met" and not (v.interpreted and v.review_reason)]
 
     def pending() -> PatientResult:
         r.category = "pending"

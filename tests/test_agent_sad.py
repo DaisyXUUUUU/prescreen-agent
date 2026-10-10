@@ -127,9 +127,25 @@ def _screen_one(env, case_id, patch):
     return aggregate(case_id, sa.predicates(env.spec), verdicts, failed_first=True)
 
 
-def test_interpreted_exclusion_goes_to_review_not_excluded(env):
+def test_firm_exclusion_from_free_text_excludes(env):
     env.answer(smoking())
     r = _screen_one(env, "ENG02", lambda v: env.run("ENG02", "E3"))
+    assert r.category == "excluded" and r.decisive == ["E3"] and "(from free text)" in r.reasons[0]
+
+
+def test_terminology_confirmed_drug_excludes(env):
+    env.answer(interpret.ExposureFacts(exposures=[exposure("Leqvio", "injection called Leqvio", in_class="no",
+                                                            last_use_date="2026-03-12")], explicitly_none=False, explanation="x"))
+    r = _screen_one(env, "ENG04", lambda v: env.run("ENG04", "E4"))
+    assert r.category == "excluded" and r.decisive == ["E4"]
+
+
+def test_drug_class_from_model_only_goes_to_review(env):
+    # a drug RxNav does not know: only the model says it is an siRNA -> not firm enough to exclude
+    env.answer(interpret.ExposureFacts(exposures=[exposure("an injection called Leqvio", "injection called Leqvio",
+                                                            in_class="yes", last_use_date="2026-03-12")],
+                                       explicitly_none=False, explanation="x"))
+    r = _screen_one(env, "ENG04", lambda v: env.run("ENG04", "E4"))
     assert r.category == "needs_review" and "agent reading suggests exclusion" in r.reasons[0]
 
 
