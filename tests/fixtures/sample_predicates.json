@@ -20,7 +20,7 @@
      "source_text": "Diagnosis of hypercholesterolemia", "grade": "P", "resource": "Condition",
      "absence_means": "not_met", "assumption": "Synthea records Hyperlipidemia; accepted as proxy"},
     {"criterion_id": "S-I5", "trial_id": "SAMPLE", "type": "inclusion", "concept": "LDL-C >= 100 mg/dL",
-     "codes": [{"system": "http://loinc.org", "code": "18262-1", "display": "LDL-C"}],
+     "codes": [{"system": "http://loinc.org", "code": "18262-6", "display": "LDL-C"}],
      "operator": ">=", "value": 100, "unit": "mg/dL", "window_days": 365, "computable": true,
      "source_text": "Fasting LDL-C >= 100 mg/dL", "grade": "C", "resource": "Observation",
      "aggregation": "most_recent", "absence_means": "unknown"},

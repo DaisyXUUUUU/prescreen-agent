@@ -23,14 +23,14 @@ AWS_REGION = os.getenv("AWS_REGION", "us-west-2")
 S3_BUCKET = os.getenv("S3_BUCKET", "")
 BEDROCK_MODEL_ID = os.getenv("BEDROCK_MODEL_ID", "")
 
-# Real NCT IDs come from Ming (see CLAUDE.md "Waiting on Ming").
+# Primary trial (decided 2026-10-09): Ming's T6, NCT07347678, SAD cohort only.
+# T2 (NCT07610278, hypertension + hypercholesterolemia) is kept as a reference; no patients yet.
 TRIALS: dict[str, str | None] = {
-    "B": None,
-    "G": None,
+    "SAD": "NCT07347678",
+    "T2": "NCT07610278",
 }
 
-# Public trial used only to exercise the ctgov tool until real IDs arrive.
-# It is NOT trial B.
+# Public trial used by the engineering fixtures in tests/fixtures/. It is not a project trial.
 TEST_NCT_ID = "NCT02178098"
 
 # Default anchor for time windows; override with SCREENING_DATE=YYYY-MM-DD.

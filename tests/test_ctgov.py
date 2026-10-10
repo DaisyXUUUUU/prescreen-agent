@@ -147,6 +147,10 @@ def test_bad_id_rejected_without_request(env):
 
 
 def test_trial_without_nct_fails_loudly(monkeypatch):
-    monkeypatch.setitem(config.TRIALS, "B", None)
-    with pytest.raises(ValueError, match="waiting on Ming"):
-        config.trial_nct("B")
+    monkeypatch.setitem(config.TRIALS, "X", None)
+    with pytest.raises(ValueError, match="not set"):
+        config.trial_nct("X")
+
+
+def test_primary_trial_is_sad():
+    assert config.trial_nct("SAD") == "NCT07347678"

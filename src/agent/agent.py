@@ -34,7 +34,7 @@ MAX_NOTE_HITS = 5
 
 # Engineering placeholder until Ming's data/mappings/local_code_map.json lands.
 PLACEHOLDER_EQUIVALENTS = [
-    {"concept": "LDL-C", "codes": [{"system": LOINC, "code": "18262-1", "display": "LDL-C direct"},
+    {"concept": "LDL-C", "codes": [{"system": LOINC, "code": "18262-6", "display": "LDL-C direct"},
                                    {"system": LOINC, "code": "13457-7", "display": "LDL-C calculated"},
                                    {"system": LOINC, "code": "2089-1", "display": "LDL-C"}]},
     {"concept": "Triglycerides", "codes": [{"system": LOINC, "code": "2571-8", "display": "Triglyceride serum/plasma"},

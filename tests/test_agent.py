@@ -58,7 +58,7 @@ def test_unrecovered_case_keeps_status_and_explains():
     t["search_notes"](keywords=["LDL", "cholesterol"])
     v = ag.finalize(evaluate(LDL, "fixture-missing-ldl", DATE), case, "Obtain the outside lab report.")
     assert v.status == "unknown" and v.evidence == []
-    assert "tried codes 13457-7, 18262-1, 2089-1" in v.recovery
+    assert "tried codes 13457-7, 18262-6, 2089-1" in v.recovery
     assert "d-301" in v.recovery and "not a lab value" in v.recovery
     assert {"rule:abstain", "agent:summary"} <= {e["tool"] for e in v.trace}
 
@@ -93,7 +93,7 @@ def test_ming_mapping_file_is_preferred(tmp_path, monkeypatch):
     from src import config
     (tmp_path / "mappings").mkdir()
     (tmp_path / "mappings" / "local_code_map.json").write_text(json.dumps(
-        {"groups": [{"concept": "LDL-C", "codes": [{"system": "http://loinc.org", "code": "18262-1"},
+        {"groups": [{"concept": "LDL-C", "codes": [{"system": "http://loinc.org", "code": "18262-6"},
                                                    {"system": "http://loinc.org", "code": "99999-9"}]}]}))
     monkeypatch.setattr(config, "DATA_DIR", tmp_path)
     monkeypatch.setattr(config, "ROOT", tmp_path.parent)

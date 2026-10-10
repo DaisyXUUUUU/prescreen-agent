@@ -95,7 +95,7 @@
       "codes": [
         {
           "system": "http://loinc.org",
-          "code": "18262-1",
+          "code": "18262-6",
           "display": "LDL-C"
         }
       ],

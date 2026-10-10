@@ -7,7 +7,7 @@ from src.adapters import fhir_store
 from src.adapters.fhir_store import FhirStore
 
 FIXTURES = Path(__file__).parent / "fixtures" / "patients"
-LDL = [{"system": "http://loinc.org", "code": "18262-1", "display": "LDL-C"}]
+LDL = [{"system": "http://loinc.org", "code": "18262-6", "display": "LDL-C"}]
 
 
 @pytest.fixture(scope="module")
@@ -40,12 +40,12 @@ def test_missing_lab_is_empty(store):
 
 
 def test_codes_are_or_and_system_aliases_work(store):
-    codes = [{"system": "LOINC", "code": "13457-7"}, {"system": "loinc", "code": "18262-1"}]
+    codes = [{"system": "LOINC", "code": "13457-7"}, {"system": "loinc", "code": "18262-6"}]
     assert len(store.fhir_query("fixture-complete", "Observation", codes).records) == 2
 
 
 def test_system_must_match(store):
-    r = store.fhir_query("fixture-complete", "Observation", [{"system": "http://snomed.info/sct", "code": "18262-1"}])
+    r = store.fhir_query("fixture-complete", "Observation", [{"system": "http://snomed.info/sct", "code": "18262-6"}])
     assert r.status == "empty"
 
 

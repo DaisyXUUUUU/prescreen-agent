@@ -90,7 +90,7 @@ Each failure path can be reproduced on demand with `--fail` (repeatable). Data f
 | Switch | What it does | Expected behaviour |
 |---|---|---|
 | `ctgov_timeout` | ClinicalTrials.gov call times out | criteria served from cache, log stamped STALE (no log if cache > 14 days) |
-| `drop_codes` | one patient's LDL-C recoded 18262-1 → 13457-7 | rule query empty → recovery agent finds it under the equivalent code → engine decides |
+| `drop_codes` | one patient's LDL-C recoded 18262-6 → 13457-7 | rule query empty → recovery agent finds it under the equivalent code → engine decides |
 | `bad_units` | one patient's latest LDL-C in mmol/L, another's ×10 | first converted by rule; second rejected as implausible → `unknown` with reason |
 | `amendment_v2` | a prepared amended criteria text stands in for the live fetch | changes classified; substantive → re-screen and impact report |
 | `note_conflict` | (optional, not implemented) | |
@@ -123,7 +123,7 @@ Labels are a CSV `patient_id,criterion_id,expected` with one row per computable 
 ```bash
 python -m src.tools.ctgov NCT02178098                                   # fetch criteria (add --fail ctgov_timeout)
 python -m src.adapters.fhir_store --dir tests/fixtures/patients         # list patients
-python -m src.adapters.fhir_store fixture-complete 18262-1 --dir tests/fixtures/patients   # LDL-C by LOINC
+python -m src.adapters.fhir_store fixture-complete 18262-6 --dir tests/fixtures/patients   # LDL-C by LOINC
 python -m src.engine.evaluate --predicates tests/fixtures/sample_predicates.json \
   --patients tests/fixtures/patients --date 2026-10-09                  # per-criterion verdicts, no aggregation
 ```

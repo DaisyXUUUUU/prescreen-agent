@@ -33,7 +33,7 @@ def test_all_switches_off_changes_nothing(store):
 def test_drop_codes_empties_rule_query_and_agent_recovers(store):
     config.enable_failure("drop_codes")
     lines = [i["text"] for i in failures.inject(store)]
-    assert lines == ["drop_codes: fixture-complete LDL-C o-101, o-102 recoded 18262-1 -> 13457-7"]
+    assert lines == ["drop_codes: fixture-complete LDL-C o-101, o-102 recoded 18262-6 -> 13457-7"]
 
     v = evaluate(PREDS["S-I5"], "fixture-complete", DATE)
     assert v.status == "unknown" and v.needs_recovery

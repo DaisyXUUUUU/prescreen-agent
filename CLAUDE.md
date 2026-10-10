@@ -17,7 +17,7 @@ Team split: Ming = clinical data, predicates, ground-truth labels, evaluation ju
 
 ## Decisions already made (do not revisit without asking)
 
-1. **Form factor:** a Python CLI batch job (`python run.py --trial B`). Not a chatbot, not a web app. No frontend. Optional later: terminal output with `rich`, and a static HTML version of the log.
+1. **Form factor:** a Python CLI batch job (`python run.py --trial SAD`). Not a chatbot, not a web app. No frontend. Optional later: terminal output with `rich`, and a static HTML version of the log.
 2. **No FHIR server.** A file-based adapter reads Synthea JSON from `data/patients/` and exposes FHIR-style query functions. Interface stays FHIR-compatible so a real server could be swapped in.
 3. **Deterministic engine first, agent only for exceptions.** Every numeric and temporal comparison is plain Python. The LLM is called only for:
    - Decision 2 (priority): a query returned empty → try equivalent codes → search notes → abstain, explaining what was tried.
@@ -30,7 +30,9 @@ Team split: Ming = clinical data, predicates, ground-truth labels, evaluation ju
 8. **Amendments:** compare SHA-256 of criteria snapshots; item-level diff with `difflib`; on substantive change, re-run the whole trial with the v2 predicate file (prepared by Ming) and diff patient statuses. No automatic predicate compilation (disclosed as human-reviewed).
 9. **Failure injection via config switches** in `src/config.py`: `ctgov_timeout`, `bad_units`, `drop_codes`, `amendment_v2`, `note_conflict` (optional). Also overridable with `--fail <name>`.
 10. **AWS services:** Bedrock + S3 required. EventBridge, Lambda, SES are optional and come last.
-11. **Scope:** trial B only until it works end to end. Trial G and F are optional.
+11. **Scope (changed 2026-10-09):** primary trial is Ming's **T6 = NCT07347678, SAD cohort only** (config key `SAD`). Ming's T2 = NCT07610278 (hypertension + hypercholesterolemia, the original "trial B" idea) is kept as reference only; it has rules but no patients. The old B/G labels are retired.
+12. **SAD evaluation reuses Ming's engine (decided 2026-10-09).** `t6_sad_demo/engine.py` is the deterministic evaluator for SAD; engineering wraps it with an adapter (`src/engine/sad_adapter.py`, P1) and adds the agent, trace, aggregation, log, amendment, failure switches and eval around it. Clinical logic stays in one place, owned by Ming. Acceptance for the adapter: reproduce Ming's 8-case result exactly (2 passes / 4 fails / 1 pending / 1 review) before adding anything.
+13. **Aggregation for SAD follows Ming's rule:** any clearly failed criterion → fails (excluded), even with unknowns elsewhere; manual items (I5) remain listed. This answers the old open question: `PENDING_BEFORE_INCLUSION_FAIL` = False for SAD.
 
 ## Data contracts (from brief section 5)
 
@@ -65,7 +67,8 @@ docs/PROJECT_BRIEF.md, docs/TASKS.md
 ## Working rules
 
 - Work on **one T-task at a time**. When done, run its acceptance check from `docs/TASKS.md` and show me the output before moving on.
-- **Never edit files in `data/predicates/`, `data/mappings/`, or `data/ground_truth/`** — Ming owns them. If something looks wrong, tell me.
+- **Never edit files in `data/predicates/`, `data/mappings/`, `data/ground_truth/`, `t6_sad_demo/`, `t2_backup/`** — Ming owns them. If something looks wrong, tell me.
+- **Do not run `t6_sad_demo/run.py`**: it rewrites Ming's tracked `t6_sad_demo/outputs/` (CRLF → LF churn). Call `engine.evaluate()` from our adapter instead.
 - **Tests:** expected values come from Ming's labels or from me, not invented to match the code.
 - **Synthetic data only.** No real patient data anywhere.
 - **Secrets:** never write AWS keys or tokens into files. Use the local AWS profile / env vars; keep `.env` git-ignored and only commit `.env.example`.
@@ -74,25 +77,24 @@ docs/PROJECT_BRIEF.md, docs/TASKS.md
 - Keep README updated as each module lands; it must run from a clean clone.
 - Python 3.11+. Keep dependencies minimal.
 
-## ⏳ Waiting on Ming (requested 2026-10-09, no reply yet)
+## ⏳ Waiting on Ming (updated 2026-10-09 after her `ming/t6-sad-integration` delivery, merged into main)
 
-Work proceeds on placeholders; every item below must be swapped in and **re-verified** when it arrives.
+Delivered: SAD rules `t6_sad_demo/rules/sad-1.0.0.json` (10 criteria + age, own `rules[].predicate` format, codes live in her `engine.py`), 8 cases + contexts `t6_sad_demo/data/{cases,context}/`, her engine and outputs, T2 reference rules. Ming pushes to the repo (GitHub `Charlottttttte`), so T1's "Ming clones and pushes" is done.
 
-| Item | Needed for | Due | Placeholder meanwhile | Re-verify when it lands |
-|---|---|---|---|---|
-| GitHub username | invite → T1 "Ming clones and pushes" | Fri | — | Ming's commit visible after `git pull` |
-| NCT IDs for B and G | T4, T10 | Fri | a public test NCT, never labelled as trial B | T4 acceptance on the real ID |
-| S3 bucket name + write access for `prescreen-dev-xzy` | T4 snapshots, logs | Fri | local-only, warning printed | snapshot appears in S3 |
-| `data/predicates/trial_B.json` (15 predicates) | T5 | Fri night | none — engine tested on hand-written fixture predicates in `tests/` | T5 runs on real file; schema mismatches reported to Ming, not fixed by us |
-| Confirm extension fields (`grade, resource, anchor, aggregation, absence_means, assumption`) | T5 scope | Fri | assume all enabled | — |
-| Synthea patients in `data/patients/` (5 first is fine) | T3 | Fri night | 3 hand-written minimal bundles in `tests/fixtures/` (eligible / excluded / missing lab) | T3 loads real bundles; trust real structure over fixtures |
-| Injected-case list | T5 tests, T9 | Sat AM | `src/failures.py` picks first patients with LDL-C 18262-1 | put patient IDs into `config.FAILURE_TARGETS`; rerun each `--fail` switch |
-| ATC→RxNorm map, local code map | medication / code matching; agent equivalents | Sat AM | placeholder table in `src/agent/agent.py` | agent `lookup_equivalent_codes` reports source = Ming's file |
-| v2 snapshot + v2 predicates | T10 | Sat PM | `tests/fixtures/snapshots/NCT02178098_v{1,2}.txt` + `tests/fixtures/sample_predicates_v2.json` (LDL 100→140, one wording change) | put Ming's files at `data/snapshots/{NCT}/amendment_v2.txt` and `data/predicates/trial_B_v2.json`; run `--fail amendment_v2`; every planted flip must appear in the impact report |
-| Ground truth (≥20 patients) | T11 | Sat night | `tests/fixtures/sample_labels.csv` (only proves the script runs; numbers are NOT an evaluation) | `data/ground_truth/trial_B.csv` in format `patient_id,criterion_id,expected` (criteria: met/not_met; one `PATIENT` row: eligible/not_eligible) + `trial_B_amendment_flips.txt`; **format proposed by engineering, confirm with Ming**; run `python eval/evaluate.py --trial B --labels data/ground_truth/trial_B.csv` |
+| Item | Needed for | Status / placeholder | Re-verify when it lands |
+|---|---|---|---|
+| Ground truth for SAD (≥20 patients, format `patient_id,criterion_id,expected` + `PATIENT` rows; flips list) | T11 | **missing**; Ming says her 8-case outputs are not independent labels | `python eval/evaluate.py --trial SAD --labels data/ground_truth/trial_SAD.csv` |
+| More SAD patients (8 now) | scale, demo | 8 cases | rerun adapter acceptance |
+| Injected-case list mapped to switches (`drop_codes`, `bad_units`, …) | T9 | her scenarios live in `prepare.py`/`test_demo.py`; not mapped to `FAILURE_TARGETS` | set `config.FAILURE_TARGETS`, rerun each `--fail` |
+| Equivalent-code map (e.g. LDL 18262-6 / 13457-7 / 2089-1) | agent recovery | placeholder table in `src/agent/agent.py` | agent reports source = Ming's file |
+| v2 amendment text + v2 rules for SAD | T10 | missing; engineering fixtures on NCT02178098 only | `--fail amendment_v2` on SAD; planted flips in impact report |
+| Fasting ≥ 6 h policy in her engine; method-check scope; I5 evidence-retrieval agent | SAD correctness | open items in her README; her engine still checks fasting > 0 h | — |
+| Raw Synthea files (~62 MB, not committed) | her `test_originals_unchanged`, I5 longitudinal retrieval | not needed for the adapter | — |
 
-Open questions for Ming:
-- Aggregation order: a patient with an inclusion criterion clearly `not_met` AND a blocking `unknown` elsewhere — "excluded" or "pending"? Implemented as switch `config.PENDING_BEFORE_INCLUSION_FAIL` (default True = pending, log row also says "Already fails ..."); flip after Ming answers.
+S3: bucket **`prescreen-hack-5b19ed`** (us-west-2, Ming's account, public access blocked, SSE-S3) created 2026-10-09 with Ming's consent; `prescreen-dev-xzy` can write; SAD snapshot upload verified.
+
+Open questions for Ming (engine assumptions below were made for the generic engine on fixtures; most do not apply to SAD, which uses her engine):
+- ~~Aggregation order~~ answered by Ming's SAD rules: failed criterion wins (decision 13).
 - Non-computable predicates (computable=false or grade N) never block; they are listed as "CRC to check". Confirm.
 - Unit conversion factors and plausible ranges in `units.py` need Ming's review.
 - Engine assumptions made in T5 (confirm or correct):
@@ -103,7 +105,7 @@ Open questions for Ming:
   5. If the value chosen by aggregation is unconvertible or implausible → `unknown`; never fall back to an older value.
   6. Values are rounded to 2 decimals after unit conversion before comparing (boundary stability).
   7. Every empty query sets `needs_recovery`; T7 sends only those still `unknown` (labs, allergies) to the agent. Missing diagnoses/medications stay `not_met` by rule and are not sent (saves model calls). Confirm.
-  8. Recovery agent uses a placeholder equivalent-code table (LDL 18262-1/13457-7/2089-1, TG 2571-8/3043-7, hypercholesterolemia 13644009/55822004) until `data/mappings/local_code_map.json` exists; expected shape `{"groups": [{"concept", "codes": [{system, code, display}]}]}`.
+  8. Recovery agent uses a placeholder equivalent-code table (LDL 18262-6/13457-7/2089-1, TG 2571-8/3043-7, hypercholesterolemia 13644009/55822004) until `data/mappings/local_code_map.json` exists; expected shape `{"groups": [{"concept", "codes": [{system, code, display}]}]}`.
 
 ## Bedrock access (resolved 2026-10-09)
 
@@ -113,4 +115,6 @@ If Daisy's account is ever needed (e.g. for S3 ownership), recheck its quotas fi
 
 ## Current status
 
-T1 done (pending: Ming clones and pushes). T4 done on placeholder NCT. T3 done on fixtures. T5 done on fixtures + `tests/fixtures/sample_predicates.json` (NOT trial B). T6 done: `run.py` runs end to end on fixtures. T7+T8 done: recovery agent (Strands + Nova 2 Lite) live-tested on fixtures; trace JSONL. Real acceptance (50 patients, trial B, Ming's wrong-code cases) waits for Ming's data. T9 done (ctgov_timeout, drop_codes, bad_units, amendment_v2; note_conflict optional, not done). T10 done, live-tested on sample v1/v2. Known model limitation: borderline wording ("first visit" -> "screening visit") flips between substantive and wording across runs. T11 done: `eval/evaluate.py` runs all 5 switch runs and scores them in one command (sample labels only). T12 part A done 2026-10-09: README verified from a clean clone (with and without AWS; quota-exhausted profile fails fast in ~4 s). Remaining T12: demo video, make repo public, submit. Optional: note_conflict (5/5 failure paths).
+Engineering T1, T3–T11 done and verified on engineering fixtures (`tests/fixtures/`, NCT02178098, NOT a project trial); README verified from a clean clone. LOINC LDL code corrected 18262-1 → 18262-6 everywhere (2026-10-09; 18262-1 was an engineering typo).
+SAD pivot plan: **P0 done 2026-10-09** (Ming's branch merged, decisions recorded, LOINC fix, TRIALS = SAD/T2, S3 bucket live). **Next: P1** adapter `src/engine/sad_adapter.py` + `run.py --trial SAD`, acceptance = Ming's 2/4/1/1. Then P2 agent on SAD, P3 switches + amendment on SAD, P4 eval / HTML report / README / demo script.
+Remaining T12: demo video, make repo public, writeup, submit. Optional: note_conflict (5/5 failure paths). Known model limitation: borderline amendment wording flips between substantive and wording across runs.

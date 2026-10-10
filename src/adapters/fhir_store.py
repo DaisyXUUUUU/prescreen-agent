@@ -9,7 +9,7 @@ Tools never raise to the caller: every query returns a QueryResult with
 status ok | empty | timeout | malformed.
 
     python -m src.adapters.fhir_store                     # summary of loaded patients
-    python -m src.adapters.fhir_store PATIENT_ID 18262-1  # LOINC lookup
+    python -m src.adapters.fhir_store PATIENT_ID 18262-6  # LOINC lookup
 """
 
 import argparse

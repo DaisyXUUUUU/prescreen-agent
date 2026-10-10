@@ -180,7 +180,7 @@ def test_resource_inferred_from_code_system():
 
 
 @pytest.mark.parametrize("value,unit,code,expected", [
-    (4.2, "mmol/L", "18262-1", 162.41),
+    (4.2, "mmol/L", "18262-6", 162.41),
     (2.0, "mmol/L", "2571-8", 177.14),
     (142, "mm[Hg]", "8480-6", 142.0),
     (50, "IU/L", "1742-6", 50.0),

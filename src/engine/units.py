@@ -22,7 +22,7 @@ LIPID_MMOL_TO_MG = 38.67
 TG_MMOL_TO_MG = 88.57
 
 ANALYTES = [
-    Analyte("LDL-C", frozenset({"18262-1", "13457-7", "2089-1"}), "mg/dL", {"mmol/L": LIPID_MMOL_TO_MG}, 10, 500),
+    Analyte("LDL-C", frozenset({"18262-6", "13457-7", "2089-1"}), "mg/dL", {"mmol/L": LIPID_MMOL_TO_MG}, 10, 500),
     Analyte("Total cholesterol", frozenset({"2093-3"}), "mg/dL", {"mmol/L": LIPID_MMOL_TO_MG}, 10, 500),
     Analyte("HDL-C", frozenset({"2085-9"}), "mg/dL", {"mmol/L": LIPID_MMOL_TO_MG}, 10, 500),
     Analyte("Triglycerides", frozenset({"2571-8"}), "mg/dL", {"mmol/L": TG_MMOL_TO_MG}, 20, 5000),
