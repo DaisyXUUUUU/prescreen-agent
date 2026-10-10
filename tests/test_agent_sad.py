@@ -201,3 +201,27 @@ def test_rules_only_still_matches_ming(env):
     results, *_ = sa.screen([env.cases[f"SAD0{i}"] for i in range(1, 9)], env.spec, use_agent=False)
     assert sorted(r.category for r in results) == sorted(
         ["likely_eligible"] * 2 + ["excluded"] * 4 + ["pending", "needs_review"])
+
+
+def test_flag_concern_needs_a_finding_not_just_normal_labs(env, monkeypatch):
+    """Observed live: the agent flagged 'no kidney tests' citing normal ALT/AST, sending the patient to review."""
+    from src.agent import evidence as ev
+
+    captured = {}
+
+    class FakeAgent:
+        def __init__(self, tools, **kw):
+            captured["tools"] = {t.tool_spec["name"]: t for t in tools}
+
+        def __call__(self, prompt):
+            t = captured["tools"]
+            labs = t["get_labs"](keywords=["ALT", "AST"])
+            captured["normal"] = t["flag_concern"](resource_ids=[l["id"] for l in labs],
+                                                    concern="no kidney function tests available")
+            return "summary"
+
+    monkeypatch.setattr(ev, "Agent", FakeAgent)
+    monkeypatch.setattr("src.agent.agent.make_model", lambda: None)
+    v = next(v for v in sa.evaluate_case(env.cases["ENG05"], env.spec, env.engine)[0] if v.criterion_id == "I5")
+    v = ev.evidence_pack(env.cases["ENG05"], v)
+    assert captured["normal"].startswith("rejected") and not v.review_reason
