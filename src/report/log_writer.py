@@ -41,11 +41,14 @@ def _notes(r: PatientResult) -> str:
 
 
 def render_markdown(trial: str, nct: str, fetch, screening_date: str, results: list[PatientResult],
-                    predicates: list[dict], generated_at: str, injections: list[str] = ()) -> str:
+                    predicates: list[dict], generated_at: str, injections: list[str] = (),
+                    criteria_source: str | None = None) -> str:
     preds = {p["criterion_id"]: p for p in predicates}
     groups = {c: [r for r in results if r.category == c] for c in CATEGORIES}
 
-    if fetch.status == "stale":
+    if criteria_source:
+        source = criteria_source
+    elif fetch.status == "stale":
         source = f"**STALE**: served from cache, {fetch.cache_age_days:g} days old (fetched {fetch.fetched_at[:16]} UTC; live fetch failed: {fetch.error})"
     else:
         source = f"fetched live {fetch.fetched_at[:16]} UTC"
@@ -118,13 +121,14 @@ def write_csv(path: Path, trial: str, screening_date: str, results: list[Patient
 
 def write_log(trial: str, nct: str, fetch, screening_date: str, results: list[PatientResult],
               predicates: list[dict], out_dir: Path | None = None, generated_at: str | None = None,
-              injections: list[str] = ()) -> tuple[Path, Path, list[str]]:
+              injections: list[str] = (), criteria_source: str | None = None) -> tuple[Path, Path, list[str]]:
     out_dir = Path(out_dir or config.OUT_DIR)
     out_dir.mkdir(parents=True, exist_ok=True)
     generated_at = generated_at or datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     stem = f"prescreen_log_{trial}_{screening_date}"
     md, csv_path = out_dir / f"{stem}.md", out_dir / f"{stem}.csv"
-    md.write_text(render_markdown(trial, nct, fetch, screening_date, results, predicates, generated_at, injections),
+    md.write_text(render_markdown(trial, nct, fetch, screening_date, results, predicates, generated_at, injections,
+                                  criteria_source),
                   encoding="utf-8")
     write_csv(csv_path, trial, screening_date, results, predicates)
     return md, csv_path, _upload(trial, screening_date, [md, csv_path])

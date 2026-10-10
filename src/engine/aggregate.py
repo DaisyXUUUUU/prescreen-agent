@@ -51,7 +51,8 @@ def _why(p: dict, v: Verdict) -> str:
     return f"{_label(p)}: {v.note}"
 
 
-def aggregate(patient_id: str, predicates: list[dict], verdicts: list[Verdict]) -> PatientResult:
+def aggregate(patient_id: str, predicates: list[dict], verdicts: list[Verdict], failed_first: bool = False) -> PatientResult:
+    """failed_first (SAD, Ming's rule): any clearly failed criterion -> excluded before conflicts and unknowns."""
     by_id = {p["criterion_id"]: p for p in predicates}
     pairs = [(by_id[v.criterion_id], v) for v in verdicts]
     r = PatientResult(patient_id, "pending", verdicts=verdicts)
@@ -82,6 +83,12 @@ def aggregate(patient_id: str, predicates: list[dict], verdicts: list[Verdict]) 
         r.decisive = [v.criterion_id for _, v in incl_failed]
         return r
 
+    if failed_first and (excl_met or incl_failed):
+        failed = excl_met + incl_failed
+        r.category = "excluded"
+        r.reasons = [_why(p, v) for p, v in failed]
+        r.decisive = [v.criterion_id for _, v in failed]
+        return r
     if excl_met:
         r.category = "excluded"
         r.reasons = [_why(p, v) for p, v in excl_met]

@@ -32,11 +32,13 @@ def load_predicates(path: Path) -> list[dict]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Pre-screen every patient for one trial and write the CRC log")
-    parser.add_argument("--trial", required=True, help="trial letter, e.g. B")
+    parser.add_argument("--trial", required=True, help="trial key from src/config.py, e.g. SAD")
     parser.add_argument("--date", default=config.SCREENING_DATE, help="screening date YYYY-MM-DD (default today)")
     parser.add_argument("--nct", help="override the trial's NCT ID from src/config.py")
-    parser.add_argument("--predicates", type=Path, help="default data/predicates/trial_{TRIAL}.json")
-    parser.add_argument("--patients", type=Path, default=config.PATIENT_DIR)
+    parser.add_argument("--predicates", type=Path,
+                        help="default data/predicates/trial_{TRIAL}.json; for SAD, Ming's t6_sad_demo/rules/sad-1.0.0.json")
+    parser.add_argument("--patients", type=Path,
+                        help="default data/patients/; for SAD, Ming's t6_sad_demo/data/cases (contexts in ../context)")
     parser.add_argument("--out", type=Path, default=config.OUT_DIR)
     parser.add_argument("--no-agent", action="store_true", help="skip the recovery agent (rules only)")
     parser.add_argument("--v1-snapshot", type=Path, help="T10: previous criteria text (default: latest snapshot)")
@@ -55,7 +57,12 @@ def main() -> int:
     except ValueError as e:
         print(f"error: {e}. Pass --nct to run anyway.", file=sys.stderr)
         return 2
-    pred_path = args.predicates or config.DATA_DIR / "predicates" / f"trial_{args.trial}.json"
+    sad = args.trial == "SAD"
+    if sad:
+        from src.engine import sad_adapter as sa
+        pred_path = args.predicates or sa.SPEC_PATH
+    else:
+        pred_path = args.predicates or config.DATA_DIR / "predicates" / f"trial_{args.trial}.json"
     if not pred_path.exists():
         print(f"error: predicate file {pred_path} not found", file=sys.stderr)
         return 2
@@ -66,24 +73,52 @@ def main() -> int:
         print(f"error: cannot issue a log, eligibility criteria unavailable: {fetch.error}", file=sys.stderr)
         return 3
 
-    predicates = load_predicates(pred_path)
-    store = fhir_store.FhirStore(args.patients)
-    injections = failures.inject(store)
+    use_agent = not args.no_agent
+    input_problems = []
+    if sad:
+        # Ming's rule pack and cases, evaluated by her engine through the adapter.
+        spec = sa.load_spec(pred_path)
+        cases_dir = args.patients or sa.SAD_DIR / "data" / "cases"
+        input_problems = sa.verify_inputs(pred_path, cases_dir)
+        cases = sa.load_cases(cases_dir)
+        predicates = sa.predicates(spec)
+        store = sa.install_store(cases)
+        if not config.FAILURE_TARGETS:
+            ids = {c.case_id: c.patient_id for c in cases}
+            config.FAILURE_TARGETS = {k: [ids[x] for x in v if x in ids] for k, v in sa.DEFAULT_FAILURE_TARGETS.items()}
+        injections = failures.inject(store)
+        names = {c.patient_id: c.case_id for c in cases}
+        for i in injections:  # show case IDs in the log, keep the FHIR ID in the record
+            if i.get("patient_id") in names:
+                i["case_id"] = names[i["patient_id"]]
+                i["text"] = i["text"].replace(i["patient_id"], i["case_id"])
+        results, attempted, recovered, _ = sa.screen(cases, spec, use_agent=use_agent)
+
+        def rescreen(v2_path):
+            spec2 = sa.load_spec(v2_path)
+            res, _, _, _ = sa.screen(cases, spec2, use_agent=use_agent, label=" (v2)")
+            return res, sa.predicates(spec2)
+    else:
+        predicates = load_predicates(pred_path)
+        store = fhir_store.FhirStore(args.patients or config.PATIENT_DIR)
+        injections = failures.inject(store)
+        fhir_store.set_store(store)
+        if not fhir_store.list_patients():
+            print(f"error: no patients loaded from {args.patients or config.PATIENT_DIR}", file=sys.stderr)
+            return 2
+        results, attempted, recovered = screen(predicates, args.date, use_agent=use_agent)
+        rescreen = None
     if config.failure_enabled("ctgov_timeout"):
         injections.insert(0, {"switch": "ctgov_timeout", "patient_id": None, "resource_ids": [],
                               "text": f"ctgov_timeout: ClinicalTrials.gov call forced to time out; criteria {fetch.status}"})
-    fhir_store.set_store(store)
-    patients = fhir_store.list_patients()
-    if not patients:
-        print(f"error: no patients loaded from {args.patients}", file=sys.stderr)
-        return 2
-
-    results, attempted, recovered = screen(predicates, args.date, use_agent=not args.no_agent)
+    for p in input_problems:
+        print(f"warning: input check: {p}")
 
     md, csv_path, warnings = write_log(args.trial, nct, fetch, args.date, results, predicates, args.out,
                                        injections=[i["text"] for i in injections])
-    impact = run_amendment(args.trial, nct, fetch, args.date, predicates, results, args.out, use_agent=not args.no_agent,
-                           v1_snapshot=args.v1_snapshot, v2_snapshot=args.v2_snapshot, v2_predicates=args.v2_predicates)
+    impact = run_amendment(args.trial, nct, fetch, args.date, predicates, results, args.out, use_agent=use_agent,
+                           v1_snapshot=args.v1_snapshot, v2_snapshot=args.v2_snapshot, v2_predicates=args.v2_predicates,
+                           rescreen_fn=rescreen)
     trace_path = trace.write_jsonl(args.out / f"trace_{args.trial}_{args.date}.jsonl", args.trial, args.date, results)
 
     counts = {c: sum(r.category == c for r in results) for c in CATEGORIES}
@@ -92,6 +127,7 @@ def main() -> int:
         "failures": sorted(k for k, on in config.FAILURES.items() if on),
         "criteria_status": fetch.status, "criteria_cache_age_days": fetch.cache_age_days,
         "injections": injections, "agent": None if args.no_agent else {"attempted": attempted, "recovered": recovered},
+        "input_problems": input_problems,
         "counts": counts, "patients": len(results),
         "files": {"log": str(md), "csv": str(csv_path), "trace": str(trace_path),
                   "impact": str(impact) if impact else None,

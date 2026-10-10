@@ -1,0 +1,19 @@
+Minimum age: 18 Years
+Maximum age: 65 Years
+Sex: ALL
+
+Inclusion Criteria:
+
+* Body mass index (BMI) 18 to 35 kg/m2
+* Fasting LDL-C ≥100 mg/dL (2.59 mmol/L) (all SAD cohorts); fasting LDL-C ≥100 mg/dL (2.59 mmol/L) (POC cohort only)
+* Lp(a) at Screening: SAD cohort: ≥25 nmol/L POC cohort: ≥100 nmol/L
+* Fasting triglycerides \<400 mg/dL (4.51 mmol/L) at Screening
+* No clinically significant abnormalities of hepatic or renal function
+
+Exclusion Criteria:
+
+* Alanine aminotransferase (ALT) or aspartate aminotransferase (AST) \>1.5× the upper limit of normal at screening
+* HbA1c of 6.5% or higher at the screening visit
+* Current regular smoker (defined as \>2 cigarettes/day or \>10 cigarettes/week) within 3 months prior to screening
+* Use of any siRNA, antisense oligonucleotide (ASO), cell and gene therapy, or clustered regularly interspaced short palindromic repeats (CRISPR) agent in the prior 12 months
+* Received any prescription lipid-lowering medication, including but not limited to statins, ezetimibe, and PCSK9 inhibitors to alter serum lipids within 30 days before screening

@@ -1,0 +1,148 @@
+{
+  "version": "1.0.1-engineering-sample",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "source_sha256": "40ed9e30c7b08b2a35b466df9dd8968caa1b476ede619dbb3ffbb1e03ba5422e",
+  "source_last_update": "2026-04-03",
+  "source_saved_date": "2026-10-09",
+  "source_download_exact_time": null,
+  "scope": "local synthetic pre-screening demo, no verified full protocol or independent clinical signoff",
+  "age_metadata": {
+    "minimum": 18,
+    "maximum": 65,
+    "inclusive": true,
+    "anchor": "screening"
+  },
+  "rules": [
+    {
+      "id": "I1",
+      "type": "inclusion",
+      "concept": "BMI",
+      "predicate": {
+        "lower": 18,
+        "upper": 35,
+        "inclusive": true,
+        "unit": "kg/m2"
+      },
+      "source_text": "Body mass index (BMI) 18 to 35 kg/m2"
+    },
+    {
+      "id": "I2",
+      "type": "inclusion",
+      "concept": "fasting LDL-C",
+      "predicate": {
+        "lower": 100,
+        "inclusive": true,
+        "unit": "mg/dL",
+        "cohort": "SAD"
+      },
+      "source_text": "Fasting LDL-C ≥100 mg/dL (2.59 mmol/L) (all SAD cohorts); fasting LDL-C ≥100 mg/dL (2.59 mmol/L) (POC cohort only)"
+    },
+    {
+      "id": "I3",
+      "type": "inclusion",
+      "concept": "Lp(a)",
+      "predicate": {
+        "lower": 25,
+        "inclusive": true,
+        "unit": "nmol/L",
+        "cohort": "SAD"
+      },
+      "source_text": "Lp(a) at Screening: SAD cohort: ≥25 nmol/L POC cohort: ≥100 nmol/L"
+    },
+    {
+      "id": "I4",
+      "type": "inclusion",
+      "concept": "fasting TG",
+      "predicate": {
+        "upper": 400,
+        "inclusive": false,
+        "unit": "mg/dL"
+      },
+      "source_text": "Fasting triglycerides \\<400 mg/dL (4.51 mmol/L) at Screening"
+    },
+    {
+      "id": "I5",
+      "type": "inclusion",
+      "concept": "clinically significant hepatic/renal abnormality",
+      "predicate": {
+        "mode": "manual_review",
+        "default": "unknown"
+      },
+      "source_text": "No clinically significant abnormalities of hepatic or renal function"
+    },
+    {
+      "id": "E1",
+      "type": "exclusion",
+      "concept": "ALT or AST",
+      "predicate": {
+        "operator": ">",
+        "ULN_multiplier": 1.5,
+        "logical_operator": "OR"
+      },
+      "source_text": "Alanine aminotransferase (ALT) or aspartate aminotransferase (AST) \\>1.5× the upper limit of normal at screening"
+    },
+    {
+      "id": "E2",
+      "type": "exclusion",
+      "concept": "HbA1c",
+      "predicate": {
+        "operator": ">=",
+        "value": 6.5,
+        "unit": "%"
+      },
+      "source_text": "Hemoglobin A1c (HbA1c) ≥6.5% at screening"
+    },
+    {
+      "id": "E3",
+      "type": "exclusion",
+      "concept": "current regular smoking",
+      "predicate": {
+        "daily_operator": ">",
+        "daily": 2,
+        "weekly_operator": ">",
+        "weekly": 10,
+        "logical_operator": "OR",
+        "lookback_calendar_months": 3
+      },
+      "source_text": "Current regular smoker (defined as \\>2 cigarettes/day or \\>10 cigarettes/week) within 3 months prior to screening"
+    },
+    {
+      "id": "E4",
+      "type": "exclusion",
+      "concept": "advanced therapies",
+      "predicate": {
+        "classes": [
+          "siRNA",
+          "ASO",
+          "cell and gene therapy",
+          "CRISPR"
+        ],
+        "lookback_calendar_months": 12
+      },
+      "source_text": "Use of any siRNA, antisense oligonucleotide (ASO), cell and gene therapy, or clustered regularly interspaced short palindromic repeats (CRISPR) agent in the prior 12 months"
+    },
+    {
+      "id": "E5",
+      "type": "exclusion",
+      "concept": "prescription lipid-lowering medication",
+      "predicate": {
+        "class": "all prescription lipid-lowering agents; examples are non-exhaustive",
+        "lookback_days": 30
+      },
+      "source_text": "Received any prescription lipid-lowering medication, including but not limited to statins, ezetimibe, and PCSK9 inhibitors to alter serum lipids within 30 days before screening"
+    }
+  ],
+  "demo_policies": [
+    "Screening is one explicitly bound encounter; BMI endpoints taken as inclusive.",
+    "Calendar-month/day windows include both endpoints in this demo; exact clinical protocol confirmation remains outstanding.",
+    "Only no-smoking-throughout-window or current-continuous-smoking patterns are automated; intermittent/unclear histories return unknown.",
+    "Negative exposure requires explicit completed synthetic screening interview and coverage spanning the entire requested window; absent records alone never mean negative.",
+    "Questionnaire values are patient-reported synthetic evidence, not proven adherence or independently verified medical history.",
+    "Conflicting observations require review. Unsupported units, missing fasting/method/ULN and missing coverage return unknown.",
+    "I5 always remains manual: normal ALT/AST cannot establish absence of all clinically significant hepatic/renal abnormalities.",
+    "All supplied cases are authored examples, not an unbiased sample or independently labeled clinical test set."
+  ],
+  "freeze_time_utc": "2026-10-09T20:18:43.429369+00:00",
+  "note": "ENGINEERING SAMPLE amendment for the T10 demo, derived from Ming's sad-1.0.0.json. NOT Ming's v2. Only change: I2 SAD LDL-C lower bound 70 -> 100 mg/dL."
+}

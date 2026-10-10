@@ -84,6 +84,13 @@ def test_open_question_switch_excludes(monkeypatch):
     assert r.category == "excluded" and r.decisive == ["I2"]
 
 
+def test_failed_first_excludes_before_conflict_and_unknown():
+    vs = verdicts(I2="not_met", E1="unknown")
+    vs[0].conflict = True
+    r = aggregate("p1", PREDS, vs, failed_first=True)
+    assert r.category == "excluded" and r.decisive == ["I2"]
+
+
 # ---------- end to end through run.py (no network) ----------
 
 def fake_fetch(status="ok"):

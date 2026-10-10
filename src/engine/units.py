@@ -29,6 +29,11 @@ ANALYTES = [
     Analyte("Systolic BP", frozenset({"8480-6"}), "mmHg", {}, 60, 260),
     Analyte("Diastolic BP", frozenset({"8462-4"}), "mmHg", {}, 30, 160),
     Analyte("ALT", frozenset({"1742-6"}), "U/L", {}, 1, 2000),
+    # Added for SAD (2026-10-09); ranges are engineering placeholders pending Ming's review.
+    Analyte("AST", frozenset({"1920-8"}), "U/L", {}, 1, 2000),
+    Analyte("HbA1c", frozenset({"4548-4"}), "%", {}, 3, 20),
+    Analyte("BMI", frozenset({"39156-5"}), "kg/m2", {}, 10, 80),
+    Analyte("Lp(a)", frozenset({"43583-4"}), "nmol/L", {}, 0, 1000),  # molar; no fixed mg/dL conversion
 ]
 _BY_CODE = {code: a for a in ANALYTES for code in a.loinc}
 

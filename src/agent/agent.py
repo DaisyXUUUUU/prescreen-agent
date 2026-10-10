@@ -89,6 +89,15 @@ class RecoveryCase:
     engine_verdict: Verdict | None = None
     agent_trace: list[dict] = field(default_factory=list)
     tool_calls: int = 0
+    # Patient ID in the FHIR store when it differs from the log ID (SAD: log uses the case ID).
+    query_patient_id: str | None = None
+    # Deterministic evaluator for records the agent found: (records sorted newest first) -> Verdict.
+    # None = the generic engine's judge(). SAD passes Ming's engine through the adapter.
+    evaluate_records: object = None
+
+    @property
+    def fhir_id(self) -> str:
+        return self.query_patient_id or self.patient_id
 
     def log(self, tool_name: str, result: str, decision: str = "") -> None:
         trace.add(self.agent_trace, tool_name, result, decision)
@@ -133,7 +142,7 @@ def build_tools(case: RecoveryCase) -> list:
         """
         codes = [str(c).strip() for c in codes if str(c).strip()]
         query = [{"system": systems.get(c, LOINC if resource == "Observation" else SNOMED), "code": c} for c in codes]
-        q = fhir_store.fhir_query(case.patient_id, resource, query, window_days=pred.get("window_days"),
+        q = fhir_store.fhir_query(case.fhir_id, resource, query, window_days=pred.get("window_days"),
                                   anchor_date=case.screening_date)
         case.tried_codes.update(codes)
         for r in q.records:
@@ -150,7 +159,7 @@ def build_tools(case: RecoveryCase) -> list:
             keywords: 2-4 short keywords, e.g. ["LDL", "cholesterol"].
         """
         case.keywords += [k for k in keywords if k not in case.keywords]
-        q = fhir_store.search_notes(case.patient_id, keywords)
+        q = fhir_store.search_notes(case.fhir_id, keywords)
         hits = [{"resource_id": r["resource_id"], "date": r.get("date"), "snippet": r["value"]} for r in q.records[:MAX_NOTE_HITS]]
         case.note_hits += [h for h in hits if h not in case.note_hits]
         case.log("search_notes", f"{keywords} -> {q.status} ({len(q.records)} hits)")
@@ -168,8 +177,11 @@ def build_tools(case: RecoveryCase) -> list:
             case.log("evaluate_with_records", f"rejected {unknown}: not returned by fhir_query_codes", "")
             return {"error": f"{unknown} were not returned by fhir_query_codes; only queried records can be evaluated"}
         records = sorted((case.retrieved[r] for r in resource_ids), key=lambda r: r.get("date") or "", reverse=True)
-        v = judge(pred, QueryResult("ok", records), Verdict(case.patient_id, pred["criterion_id"],
-                                                            blocking=pred.get("blocking", True)), case.screening_date)
+        if case.evaluate_records:
+            v = case.evaluate_records(records)
+        else:
+            v = judge(pred, QueryResult("ok", records), Verdict(case.patient_id, pred["criterion_id"],
+                                                                blocking=pred.get("blocking", True)), case.screening_date)
         case.engine_verdict = v
         case.log("evaluate_with_records", f"engine: {v.note}", v.status)
         return {"status": v.status, "note": v.note}
@@ -236,9 +248,11 @@ def _budget_hook(case: RecoveryCase):
     return limit
 
 
-def recover(verdict: Verdict, predicate: dict, screening_date: str, model=None) -> Verdict:
+def recover(verdict: Verdict, predicate: dict, screening_date: str, model=None,
+            query_patient_id: str | None = None, evaluate_records=None) -> Verdict:
     """Run the agent on one empty-query verdict. Returns a new Verdict; never raises."""
-    case = RecoveryCase(verdict.patient_id, predicate, screening_date)
+    case = RecoveryCase(verdict.patient_id, predicate, screening_date,
+                        query_patient_id=query_patient_id, evaluate_records=evaluate_records)
     final_text = ""
     try:
         agent = Agent(model=model or make_model(), tools=build_tools(case), system_prompt=RECOVERY_PROMPT,

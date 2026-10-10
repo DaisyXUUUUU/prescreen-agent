@@ -123,27 +123,38 @@ class FhirStore:
 
     # ---------- loading ----------
 
+    @classmethod
+    def from_bundles(cls, bundles: dict[str, dict]) -> "FhirStore":
+        """Index bundles already in memory. Resources are shared, not copied, so callers that
+        evaluate the same bundles (e.g. Ming's SAD engine) see any in-memory changes."""
+        store = cls.__new__(cls)
+        store.patient_dir, store.index, store.load_errors = None, {}, []
+        for name, bundle in bundles.items():
+            store._add_bundle(name, bundle)
+        return store
+
     def _load(self) -> None:
-        files = sorted(self.patient_dir.glob("*.json"))
-        for path in files:
+        for path in sorted(self.patient_dir.glob("*.json")):
             try:
                 bundle = json.loads(path.read_text(encoding="utf-8"))
             except (OSError, ValueError) as e:
                 self.load_errors.append(f"{path.name}: unreadable ({e})")
                 continue
-            resources = [e.get("resource") for e in bundle.get("entry", []) if isinstance(e.get("resource"), dict)]
-            patients = [r for r in resources if r.get("resourceType") == "Patient"]
-            if len(patients) != 1:
-                # Synthea also writes hospital/practitioner bundles with no Patient.
-                self.load_errors.append(f"{path.name}: {len(patients)} Patient resources, skipped")
-                continue
-            pid = patients[0]["id"]
-            by_type: dict[str, list[dict]] = defaultdict(list)
-            for r in resources:
-                if r.get("resourceType") in LOADED:
-                    by_type[r["resourceType"]].append(r)
-            self.index[pid] = by_type
+            self._add_bundle(path.name, bundle)
         log.info("loaded %d patients from %s (%d skipped)", len(self.index), self.patient_dir, len(self.load_errors))
+
+    def _add_bundle(self, name: str, bundle: dict) -> None:
+        resources = [e.get("resource") for e in bundle.get("entry", []) if isinstance(e.get("resource"), dict)]
+        patients = [r for r in resources if r.get("resourceType") == "Patient"]
+        if len(patients) != 1:
+            # Synthea also writes hospital/practitioner bundles with no Patient.
+            self.load_errors.append(f"{name}: {len(patients)} Patient resources, skipped")
+            return
+        by_type: dict[str, list[dict]] = defaultdict(list)
+        for r in resources:
+            if r.get("resourceType") in LOADED:
+                by_type[r["resourceType"]].append(r)
+        self.index[patients[0]["id"]] = by_type
 
     # ---------- queries ----------
 

@@ -27,7 +27,8 @@ def _rel(p: Path) -> str:
 
 def run_amendment(trial: str, nct: str, fetch, screening_date: str, predicates_v1: list[dict], results_v1, out_dir: Path,
                   use_agent: bool = True, v1_snapshot: Path | None = None, v2_snapshot: Path | None = None,
-                  v2_predicates: Path | None = None) -> Path | None:
+                  v2_predicates: Path | None = None, rescreen_fn=None) -> Path | None:
+    """rescreen_fn(v2_path) -> (results, predicates) overrides the generic re-screen (SAD uses Ming's engine)."""
     if config.failure_enabled("amendment_v2"):
         new_path = v2_snapshot or config.SNAPSHOT_DIR / nct / "amendment_v2.txt"
         if not new_path.exists():
@@ -59,15 +60,19 @@ def run_amendment(trial: str, nct: str, fetch, screening_date: str, predicates_v
     elif not v2_path.exists():
         blocked = f"substantive change found but no amended predicate file {_rel(v2_path)} (needs human compilation)"
     else:
-        data = json.loads(v2_path.read_text(encoding="utf-8"))
-        preds_v2 = data["predicates"] if isinstance(data, dict) else data
         print(f"amendment: {len(substantive)} substantive change(s); re-screening with {_rel(v2_path)}")
-        results_v2, _, _ = screen(preds_v2, screening_date, use_agent=use_agent, label=" (v2)")
+        if rescreen_fn:
+            results_v2, preds_v2 = rescreen_fn(v2_path)
+        else:
+            data = json.loads(v2_path.read_text(encoding="utf-8"))
+            preds_v2 = data["predicates"] if isinstance(data, dict) else data
+            results_v2, _, _ = screen(preds_v2, screening_date, use_agent=use_agent, label=" (v2)")
         patients = monitor.compare(results_v1, results_v2)
         rescreened = True
         pred_changes = monitor.predicate_changes(predicates_v1, preds_v2)
         amended_fetch = dataclasses.replace(fetch, sha256=chk.new_sha)
-        write_log(f"{trial}-amended", nct, amended_fetch, screening_date, results_v2, preds_v2, out_dir)
+        write_log(f"{trial}-amended", nct, amended_fetch, screening_date, results_v2, preds_v2, out_dir,
+                  criteria_source=f"amended criteria from `{new_source}`, predicates `{_rel(v2_path)}`")
 
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     text = impact_writer.render(trial, nct, screening_date, chk, rescreened, blocked, pred_changes, patients,
