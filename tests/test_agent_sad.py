@@ -26,6 +26,8 @@ RXNAV = {
 def env(monkeypatch):
     monkeypatch.setattr(config, "FAILURES", {k: False for k in config.FAILURES})
     monkeypatch.setattr(rxnav, "lookup", lambda name: {"query": name, **RXNAV.get(name.lower(), {"status": "not_found", "ingredients": [], "classes": []})})
+    monkeypatch.setattr(rxnav, "scan_text", lambda text, cid: [
+        {"phrase": k, **e} for k, e in RXNAV.items() if k in text.lower() and rxnav.in_class(e, cid) == "yes"])
     spec, engine = sa.load_spec(), sa.load_engine()
     cases = {c.case_id: c for c in sa.load_cases() + sa.load_cases(config.DATA_DIR / "eng_cases" / "cases")}
     sa.install_store(list(cases.values()))
@@ -83,6 +85,14 @@ def test_terminology_overrides_model_memory(env):
     v = env.run("ENG04", "E4")
     assert v.status == "met" and "inclisiran" in v.note
     assert any(t["tool"] == "rxnav" and "model said no" in t["result"] for t in v.trace)
+
+
+def test_drug_the_model_leaves_out_is_caught_by_the_terminology_scan(env):
+    # observed live: the model omitted Leqvio entirely and claimed "explicitly none"
+    env.answer(interpret.ExposureFacts(exposures=[], explicitly_none=True, explanation="x"))
+    v = env.run("ENG04", "E4")
+    assert v.status == "unknown" and "leqvio" in v.note.lower() and "not reported by the model" in v.note
+    assert any(t["tool"] == "rule:terminology_scan" for t in v.trace)
 
 
 def test_statin_before_window_and_otc_supplement_inside_it(env):

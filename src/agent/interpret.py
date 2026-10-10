@@ -52,7 +52,8 @@ class Exposure(BaseModel):
 
 
 class ExposureFacts(BaseModel):
-    exposures: list[Exposure]
+    exposures: list[Exposure] = Field(description="EVERY drug, injection, supplement or product the text mentions, "
+                                                    "whether or not you think it belongs to the class")
     explicitly_none: bool = Field(description="The text explicitly says there was no such exposure")
     explanation: str = Field(description="One or two sentences for the CRC")
 
@@ -170,6 +171,16 @@ def interpret(case, cid: str, rule: dict, source_text: str, prior: Verdict, mode
         else:
             # in class but OTC / prescription unclear, class unclear, or no date: a person decides
             unclear.append(label)
+    # Safety net independent of the model: drug names RxNorm finds in the text that belong to the class.
+    # The model has left out a drug it wrongly thought irrelevant (Leqvio); such a drug can never vanish.
+    reported = " ".join(f"{x.substance} {' '.join(rxnav.lookup(x.substance).get('ingredients', []))}" for x in facts.exposures).lower()
+    for hit in rxnav.scan_text(text, cid):
+        names = [hit["phrase"]] + hit["ingredients"]
+        if not any(n.lower() in reported for n in names):
+            label = (f"{hit['phrase']} (RxNorm: {', '.join(hit['ingredients'][:1])} -> {rxnav.matched_class(hit, cid)}; "
+                     f"found in the text but not reported by the model)")
+            unclear.append(label)
+            trace.add(v.trace, "rule:terminology_scan", label, "unknown")
     trace.add(v.trace, "interpret_free_text",
               f"{len(facts.exposures)} substance(s): in class & in window {len(counted)}, unclear {len(unclear)}, "
               f"not counted {len(outside)}; window {start}..{screening}")
@@ -180,7 +191,7 @@ def interpret(case, cid: str, rule: dict, source_text: str, prior: Verdict, mode
     parts = [f"counts: {'; '.join(counted)}" if counted else "",
              f"needs CRC judgement: {'; '.join(unclear)}" if unclear else "",
              f"not counted: {'; '.join(outside)}" if outside else "",
-             "patient explicitly reports none" if facts.explicitly_none and not facts.exposures else ""]
+             "patient explicitly reports none" if facts.explicitly_none and not facts.exposures and not unclear else ""]
     v.note = " | ".join(p for p in parts if p) or "no usable statement about this class"
     # The model's own prose can contain wrong drug facts (it called inclisiran an ASO); keep it in the
     # trace, labelled, and build the CRC-facing note only from verified facts and the terminology.
