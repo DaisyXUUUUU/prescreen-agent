@@ -82,6 +82,7 @@ def test_drop_codes_then_agent_tools_restore_the_verdict(sad):
     assert out["status"] == "met"  # 70 mg/dL >= 70, decided by Ming's engine
     final = ag.finalize(v, rc, "")
     assert final.status == "met" and "13457-7 -> 18262-6" in final.note
+    assert "equivalent code 13457-7" in final.recovery
 
 
 def test_bad_units_convert_and_implausible_guard(sad):

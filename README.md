@@ -2,13 +2,9 @@
 
 AWS Community Day Bay Area 2026 hackathon — "Hand it off" challenge.
 
-## Ming's T6 SAD materials
+Takes over a clinical research coordinator's weekly clinical-trial pre-screening: reads synthetic patients (Synthea FHIR R4) and trial eligibility criteria (ClinicalTrials.gov), and writes the same pre-screening log the CRC writes by hand: likely eligible / pending / excluded / needs review, with evidence for every verdict. Deterministic code makes every comparison; an agent on Amazon Bedrock (Strands Agents + Amazon Nova 2 Lite) handles only the exceptions (empty queries, changed criteria). No patient is ever contacted. **Synthetic data only.**
 
-Data handoff: [delivery locations and integration gaps](docs/DATA_DELIVERY.md), [file inventory](docs/data_inventory.json). These describe local materials; they do not indicate an upload or completed T6 integration.
-
-The local T6 / NCT07347678 SAD demonstration and T2 reference materials are described in [MING_DEMO.md](MING_DEMO.md). See [Ming handoff status](docs/MING_HANDOFF.md) for the confirmed rule review and integration boundary. These materials currently run with `python t6_sad_demo/run.py`; they have not yet been adapted to the `src/` engine or the root `run.py` command below. The local trial labels T6/T2 are distinct from engineering task numbers T1–T12.
-
-Takes over a clinical research coordinator's weekly clinical-trial pre-screening: reads synthetic patients (Synthea FHIR R4) and trial eligibility criteria (ClinicalTrials.gov), and writes the same pre-screening log the CRC writes by hand: likely eligible / pending / excluded / needs review, with evidence for every verdict. A deterministic engine makes every comparison; an agent on Amazon Bedrock (Strands Agents + Amazon Nova 2 Lite) handles only the exceptions (empty queries, changed criteria). No patient is ever contacted. **Synthetic data only.**
+**Primary trial:** [NCT07347678](https://clinicaltrials.gov/study/NCT07347678), SAD cohort (Ming's "T6"): 10 criteria plus age 18–65, 8 synthetic screening cases. Clinical rules, cases and the SAD evaluator are Ming's (`t6_sad_demo/`, see [its README](t6_sad_demo/README.md) and [her handoff notes](docs/MING_SUBMISSION.md)); the engineering pipeline in `src/` wraps her evaluator unchanged. NCT07610278 ("T2", hypertension with hypercholesterolemia) is kept as reference in `t2_backup/`.
 
 ## Quick start
 
@@ -27,29 +23,27 @@ python -m pytest tests/            # offline, no AWS needed
 **Without AWS** (rules only, recovery agent off):
 
 ```bash
-python run.py --trial SAMPLE --nct NCT02178098 --predicates tests/fixtures/sample_predicates.json \
-  --patients tests/fixtures/patients --date 2026-10-09 --no-agent
+python run.py --trial SAD --date 2026-10-09 --no-agent
 ```
 
-**With AWS.** You need an AWS profile with Bedrock access to Amazon Nova 2 Lite in `us-west-2`. Credentials come from your local profile (`aws configure` or `aws sso login`); nothing secret goes in the repo. In `.env`, set **`AWS_PROFILE`** to that profile (the template says `default`), and check `AWS_REGION` and `BEDROCK_MODEL_ID`. Then:
+**With AWS.** You need an AWS profile with Bedrock access to Amazon Nova 2 Lite in `us-west-2`. Credentials come from your local profile (`aws configure` or `aws sso login`); nothing secret goes in the repo. In `.env`, set **`AWS_PROFILE`** to that profile (the template says `default`), check `AWS_REGION` and `BEDROCK_MODEL_ID`, and set `S3_BUCKET` if you have one. Then:
 
 ```bash
 python check_bedrock.py            # expect: response: bedrock ok
-python run.py --trial SAMPLE --nct NCT02178098 --predicates tests/fixtures/sample_predicates.json \
-  --patients tests/fixtures/patients --date 2026-10-09
+python run.py --trial SAD --date 2026-10-09
 ```
 
-Open `out/prescreen_log_SAMPLE_2026-10-09.md`. If Bedrock is unreachable, the run says so once and continues with rules only.
+Open `out/prescreen_log_SAD_2026-10-09.md`. If Bedrock is unreachable, the run says so once and continues with rules only. Expected result on the 8 cases: likely eligible 2, pending 1, excluded 4, needs review 1 (identical to Ming's own evaluator, checked by `tests/test_sad.py`).
 
-The `tests/fixtures/` data is engineering's sample (four hand-written patients, sample predicates shaped like trial B). It is **not** trial B and not ground truth; see [tests/fixtures/README.md](tests/fixtures/README.md).
+`tests/fixtures/` holds engineering's own sample data (four hand-written patients on NCT02178098, sample labels, a sample SAD amendment). None of it is a project trial or ground truth; see [tests/fixtures/README.md](tests/fixtures/README.md).
 
 ## Weekly run for a trial
 
-Needs the trial's NCT ID in `TRIALS` in `src/config.py`, its predicates in `data/predicates/trial_{T}.json` and patients in `data/patients/`:
-
 ```bash
-python run.py --trial B --date 2026-10-12
+python run.py --trial SAD --date 2026-10-09
 ```
+
+`--trial SAD` evaluates Ming's rule pack `t6_sad_demo/rules/sad-1.0.0.json` on her cases with her evaluator (`t6_sad_demo/engine.py`), after checking every input against her SHA-256 manifests. Other trials use the generic engine: NCT ID in `TRIALS` in `src/config.py`, predicates in `data/predicates/trial_{T}.json`, patients in `data/patients/`.
 
 Writes to `out/`:
 
@@ -59,7 +53,16 @@ Writes to `out/`:
 
 Logs are uploaded to `s3://$S3_BUCKET/logs/{trial}/{date}/` when `S3_BUCKET` is set. If the criteria cannot be fetched and the cached copy is older than 14 days, no log is written.
 
-### How a verdict is made
+### How a verdict is made (SAD)
+
+1. **Criteria** for NCT07347678 are fetched from ClinicalTrials.gov, cached, snapshotted with SHA-256 (and copied to S3).
+2. **Cases** are loaded into one in-memory FHIR store shared by the evaluator, the failure switches and the agent.
+3. **Engineering guards** run first and are traced as rules: unambiguous unit conversion (e.g. LDL mmol/L → mg/dL) and plausibility ranges (an LDL of 690 mg/dL becomes `unknown`, not "met").
+4. **Ming's evaluator** decides each criterion: screening-encounter binding, fasting specimen, ULN from the reference range (ALT or AST > 1.5×ULN), questionnaire coverage windows for smoking and drug history; I5 is always left to the investigator.
+5. **The recovery agent** takes only criteria whose screening query came back empty: equivalent codes, then notes, then abstain. A record it finds goes back to Ming's evaluator by ID.
+6. **Aggregation** follows Ming's rule: any clearly failed criterion → excluded; then conflict → needs review; then unknown → pending; else likely eligible. I5 is listed as "CRC to check".
+
+### How a verdict is made (generic engine)
 
 1. **Criteria** are fetched from the ClinicalTrials.gov API v2 (`src/tools/ctgov.py`), cached, and snapshotted with a SHA-256.
 2. **Data** comes from a file-based FHIR adapter over Synthea bundles (`src/adapters/fhir_store.py`), with FHIR-style queries so a real FHIR server could replace it.
@@ -73,7 +76,18 @@ Use `--no-agent` for a rules-only run.
 
 Every run compares the fetched criteria with the previous snapshot (SHA-256). When they differ, the text is split into items and diffed; the model labels each changed item **substantive**, **wording** or **ambiguous** (case/spacing/punctuation-only changes are wording by rule; a model failure counts as ambiguous). Only substantive changes trigger a re-screen, using the amended predicate file `data/predicates/trial_{T}_v2.json`, which a person prepares and reviews (no automatic compilation). The result is `out/amendment_impact_{trial}_{date}.md`: what changed, how it was classified and why, and every patient whose status changes with the criterion and record behind it.
 
-Demo on the fixtures:
+Demo on SAD with an engineering sample amendment (SAD LDL-C threshold 70 → 100, HbA1c line reworded; not Ming's v2):
+
+```bash
+python run.py --trial SAD --date 2026-10-09 --fail amendment_v2 \
+  --v1-snapshot tests/fixtures/sad/NCT07347678_v1.txt \
+  --v2-snapshot tests/fixtures/sad/NCT07347678_v2.txt \
+  --v2-predicates tests/fixtures/sad/sad-1.0.1-sample.json
+```
+
+Expected: one substantive and one wording change; SAD01, SAD04 and SAD06 change status.
+
+Demo on the engineering fixtures:
 
 ```bash
 python run.py --trial SAMPLE --nct NCT02178098 --predicates tests/fixtures/sample_predicates.json \
@@ -95,14 +109,14 @@ Each failure path can be reproduced on demand with `--fail` (repeatable). Data f
 | `amendment_v2` | a prepared amended criteria text stands in for the live fetch | changes classified; substantive → re-screen and impact report |
 | `note_conflict` | (optional, not implemented) | |
 
-Target patients: `FAILURE_TARGETS` in `src/config.py`, otherwise the first patients with an LDL-C record. Add the fixture arguments from the quick start to try them, e.g. `... --date 2026-10-09 --fail drop_codes`.
+On SAD the targets are SAD04 (`drop_codes`), SAD01 and SAD02 (`bad_units`) until Ming maps her injected cases (`DEFAULT_FAILURE_TARGETS` in `src/engine/sad_adapter.py`; override with `FAILURE_TARGETS` in `src/config.py`). Example: `python run.py --trial SAD --date 2026-10-09 --fail drop_codes`.
 
 ## Evaluation
 
 One command runs the baseline and every failure switch, then scores the baseline against the labels:
 
 ```bash
-python eval/evaluate.py --trial B --labels data/ground_truth/trial_B.csv
+python eval/evaluate.py --trial SAD --labels data/ground_truth/trial_SAD.csv   # once Ming delivers labels
 ```
 
 On the fixtures (sample labels; the report says the numbers are not an evaluation):
@@ -147,7 +161,8 @@ tests/       offline tests and fixtures
 - [x] T3 FHIR file adapter · T4 ClinicalTrials.gov tool · T5 engine · T6 aggregation and log
 - [x] T7 recovery agent · T8 trace · T9 failure switches (`note_conflict` optional, not done)
 - [x] T10 amendment monitoring and re-screen · T11 evaluation script
-- [ ] Trial B data (predicates, patients, labels) pending; everything above is verified on the fixtures
+- [x] SAD (NCT07347678) end to end through Ming's evaluator, with agent, switches and amendment demo
+- [ ] Ground-truth labels, a real amendment (v2) and more cases from Ming; evaluation numbers wait for labels
 - [ ] T12 demo video, submission
 
 ## License

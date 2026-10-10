@@ -283,7 +283,7 @@ def finalize(original: Verdict, case: RecoveryCase, final_text: str) -> Verdict:
     if case.engine_verdict is not None:
         v = case.engine_verdict
         v.trace = _merge_trace(original.trace, case.agent_trace)
-        used = {e["resource_id"] for e in v.evidence}
+        used = {str(e["resource_id"]).split("/")[-1] for e in v.evidence}  # SAD evidence is "Observation/<id>"
         codes = ", ".join(sorted({str(case.retrieved[i]["code"]) for i in used if i in case.retrieved}))
         v.recovery = f"original code had no record; found under equivalent code {codes}; engine decided {v.status}"
         v.note = f"{v.note} (recovered by agent)"
