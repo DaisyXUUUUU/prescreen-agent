@@ -112,7 +112,7 @@ def test_just_below_threshold_is_not_met(tmp_path):
 
 
 def test_mmol_converted_before_comparison(tmp_path):
-    v = store_with_ldl(tmp_path, (4.2, "mmol/L", "2026-09-01"))()  # 4.2 * 38.67 = 162.41
+    v = store_with_ldl(tmp_path, (4.2, "mmol/L", "2026-09-01"))()  # 4.2 * 38.67 = 162.41 -> 162.4
     assert v.status == "met"
     assert any(t["tool"] == "rule:unit_convert" and "converted" in t["result"] for t in v.trace)
 
@@ -180,8 +180,10 @@ def test_resource_inferred_from_code_system():
 
 
 @pytest.mark.parametrize("value,unit,code,expected", [
-    (4.2, "mmol/L", "18262-6", 162.41),
-    (2.0, "mmol/L", "2571-8", 177.14),
+    (4.2, "mmol/L", "18262-6", 162.4),  # 162.41 rounded to 0.1 mg/dL
+    (2.0, "mmol/L", "2571-8", 177.1),   # 177.14
+    (1.81, "mmol/L", "18262-6", 70.0),  # 69.99: the protocol's own ">=70 mg/dL (1.81 mmol/L)" must meet 70
+    (1.80, "mmol/L", "18262-6", 69.6),  # 69.61: below the protocol's 1.81, must stay below 70
     (142, "mm[Hg]", "8480-6", 142.0),
     (50, "IU/L", "1742-6", 50.0),
 ])

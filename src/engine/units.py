@@ -3,6 +3,8 @@
 Factors and ranges are from docs/TASKS.md (T5) and still need Ming's review.
 A value that cannot be converted, or lands outside its plausible range after
 conversion, is rejected; the engine then returns `unknown` with the reason.
+Ranges are deliberately wide (they catch data-entry errors such as a decimal slip, not clinical
+abnormality); kept as engineering defaults by decision on 2026-10-09.
 """
 
 from dataclasses import dataclass
@@ -16,16 +18,21 @@ class Analyte:
     convert: dict[str, float]  # other unit -> factor to standard
     low: float
     high: float
+    converted_decimals: int = 2  # rounding applied to a value after unit conversion
 
 
+# Converted lipid values are rounded to 0.1 mg/dL (decided 2026-10-09: round half up). Protocols state
+# whole-mg/dL thresholds with a rounded mmol/L equivalent, e.g. ">=70 mg/dL (1.81 mmol/L)", and
+# 1.81 x 38.67 = 69.99 -> 70.0 meets it; whole-number rounding would also pass 1.80 mmol/L (69.61 -> 70),
+# which is below the protocol's own 1.81, so one decimal is used.
 LIPID_MMOL_TO_MG = 38.67
 TG_MMOL_TO_MG = 88.57
 
 ANALYTES = [
-    Analyte("LDL-C", frozenset({"18262-6", "13457-7", "2089-1"}), "mg/dL", {"mmol/L": LIPID_MMOL_TO_MG}, 10, 500),
-    Analyte("Total cholesterol", frozenset({"2093-3"}), "mg/dL", {"mmol/L": LIPID_MMOL_TO_MG}, 10, 500),
-    Analyte("HDL-C", frozenset({"2085-9"}), "mg/dL", {"mmol/L": LIPID_MMOL_TO_MG}, 10, 500),
-    Analyte("Triglycerides", frozenset({"2571-8"}), "mg/dL", {"mmol/L": TG_MMOL_TO_MG}, 20, 5000),
+    Analyte("LDL-C", frozenset({"18262-6", "13457-7", "2089-1"}), "mg/dL", {"mmol/L": LIPID_MMOL_TO_MG}, 10, 500, 1),
+    Analyte("Total cholesterol", frozenset({"2093-3"}), "mg/dL", {"mmol/L": LIPID_MMOL_TO_MG}, 10, 500, 1),
+    Analyte("HDL-C", frozenset({"2085-9"}), "mg/dL", {"mmol/L": LIPID_MMOL_TO_MG}, 10, 500, 1),
+    Analyte("Triglycerides", frozenset({"2571-8"}), "mg/dL", {"mmol/L": TG_MMOL_TO_MG}, 20, 5000, 1),
     Analyte("Systolic BP", frozenset({"8480-6"}), "mmHg", {}, 60, 260),
     Analyte("Diastolic BP", frozenset({"8462-4"}), "mmHg", {}, 30, 160),
     Analyte("ALT", frozenset({"1742-6"}), "U/L", {}, 1, 2000),
@@ -77,15 +84,15 @@ def to_unit(value, unit: str | None, code: str | None, target_unit: str | None) 
     note = None
 
     if src == dst or (src is None and analyte is None):
-        pass
+        v = round(v, 2)
     elif analyte and dst == analyte.unit and src in analyte.convert:
         factor = analyte.convert[src]
-        note = f"converted {v:g} {src} x {factor} -> {round(v * factor, 2):g} {dst}"
-        v = v * factor
+        converted = round(v * factor, analyte.converted_decimals)
+        note = f"converted {v:g} {src} x {factor} = {v * factor:.2f} -> {converted:g} {dst} (rounded)"
+        v = converted
     else:
         return Converted(None, f"cannot convert unit {unit!r} to {dst!r}")
 
-    v = round(v, 2)  # keeps boundary comparisons stable after conversion
     if analyte and dst == analyte.unit and not (analyte.low <= v <= analyte.high):
         return Converted(None, f"{analyte.name} {v:g} {dst} outside plausible range {analyte.low:g}-{analyte.high:g}")
     return Converted(v, note)

@@ -148,17 +148,19 @@ def _conflict(env, case_id):
 
 def test_conflict_materiality_is_computed_by_the_engine(env):
     env.answer(conflict.ConflictNote(differences="d", likely_cause="c", what_to_check="w"))
-    assert _conflict(env, "SAD07").trace[-2]["decision"] == "immaterial"  # 90 and 110 both >= 70
+    assert any(t["decision"] == "immaterial" for t in _conflict(env, "SAD07").trace)  # 90 and 110 both >= 70
     eng07 = _conflict(env, "ENG07")
     assert any(t["decision"] == "material" for t in eng07.trace) and eng07.conflict
 
 
-def test_immaterial_conflict_resolves_only_when_switched_on(env, monkeypatch):
+def test_immaterial_conflict_resolves_material_one_stays_in_review(env, monkeypatch):
     env.answer(conflict.ConflictNote(differences="d", likely_cause="c", what_to_check="w"))
-    assert _conflict(env, "SAD07").status == "unknown"
-    monkeypatch.setattr(config, "IMMATERIAL_CONFLICT_RESOLVES", True)
+    monkeypatch.setattr(config, "IMMATERIAL_CONFLICT_RESOLVES", True)  # the decided default
     v = _conflict(env, "SAD07")
-    assert v.status == "met" and not v.conflict
+    assert v.status == "met" and not v.conflict and "resolved by rule" in v.note
+    assert _conflict(env, "ENG07").status == "unknown" and _conflict(env, "ENG07").conflict
+    monkeypatch.setattr(config, "IMMATERIAL_CONFLICT_RESOLVES", False)
+    assert _conflict(env, "SAD07").status == "unknown"
 
 
 # ---------- I5 evidence ----------

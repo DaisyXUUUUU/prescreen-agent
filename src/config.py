@@ -41,9 +41,9 @@ SCREENING_DATE = os.getenv("SCREENING_DATE") or date.today().isoformat()
 # (brief goal 2: answer unknown before excluded). False: failed inclusion wins.
 PENDING_BEFORE_INCLUSION_FAIL = True
 
-# Conflict with every candidate giving the same criterion status: resolve it (True) or keep it in
-# review with the explanation (False, default until Ming decides).
-IMMATERIAL_CONFLICT_RESOLVES = False
+# Conflict where every candidate gives the same criterion status: resolve it to that status, keeping
+# the conflict visible in the evidence (decided 2026-10-09). False keeps it in review.
+IMMATERIAL_CONFLICT_RESOLVES = True
 
 OUT_DIR = ROOT / "out"
 
