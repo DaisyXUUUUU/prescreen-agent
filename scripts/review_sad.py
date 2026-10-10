@@ -82,6 +82,15 @@ def main() -> None:
         k, a = meta["counts"], meta["agent"] or {}
         tbl.append(f"| `{run}` | {k['likely_eligible']} | {k['pending']} | {k['excluded']} | {k['needs_review']} | "
                    f"{a.get('attempted', 0)} / {a.get('recovered', 0)} | {diff} |")
+    caught = []
+    for run in RUNS:
+        for (pid, cid), steps in traces(run).items():
+            for t in steps:
+                if t["tool"] == "rule:terminology_scan":
+                    caught.append(f"`{run}` {pid} {cid}: {t['result']}")
+    safety = ("\n\n**安全网实际触发记录**（模型漏报、被 RxNorm 扫描拦下，判为需 CRC 判断）：\n" + "\n".join(f"- {c}" for c in caught)
+              + "\n\n所以 ENG04 在不同运行之间会是\"需复核\"（模型报告了 Leqvio，按 siRNA 计入）或\"待补\"（模型漏报，被扫描拦下）。"
+                "两种结果都不会把病人放成合格；变化来自模型本身的不稳定（temperature 0 也一样）。") if caught else ""
     injected = [i["text"] for run in RUNS for i in json.load(open(R / run / f"run_SAD_{DATE}.json"))["injections"]]
 
     impact = json.load(open(R / "amendment_v2" / f"amendment_impact_SAD_{DATE}.json"))
@@ -121,7 +130,7 @@ Ming 的 8 个病例中，有 {same_on_ming} 个分区没变。关闭 agent 时�
 
 {chr(10).join(tbl)}
 
-注入内容：{'; '.join(injected) or '无'}
+注入内容：{'; '.join(injected) or '无'}{safety}
 
 ## 5. 修订（工程示例 v2：SAD LDL 门槛 70 → 100，HbA1c 措辞改写）
 
