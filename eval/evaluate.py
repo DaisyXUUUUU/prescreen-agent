@@ -136,7 +136,9 @@ def evidence_coverage(rows: list[dict], trace: dict, store: FhirStore) -> dict:
 def trace_coverage(trace: dict, impact: dict | None) -> dict:
     """Every model decision must leave a reason: agent-handled verdicts and amendment classifications."""
     handled = [k for k, steps in trace.items() if any(t["actor"] == "agent" for t in steps)]
-    terminal = {"evaluate_with_records", "rule:abstain", "agent:error"}
+    terminal = {"evaluate_with_records", "rule:abstain", "agent:error", "rule:interpreted_threshold",
+                "rule:interpreted_window", "explain_conflict", "rule:conflict_materiality", "agent:summary",
+                "rule:i5_lab_flags"}
     covered = [k for k in handled if any(t["tool"] in terminal and (t["result"] or t["decision"]) for t in trace[k])]
     changes = (impact or {}).get("changes", [])
     model_changes = [c for c in changes if any(t["tool"] != "rule:normalize" for t in c["trace"])]
@@ -151,6 +153,14 @@ def _first_query(steps: list[dict]) -> str:
     return next((t["result"] for t in steps if t["tool"] == "fhir_query"), "")
 
 
+def _empty(q: str) -> bool:  # generic engine: "-> empty (0)"; SAD adapter: "-> 0 found"
+    return "-> empty" in q or q.endswith("-> 0 found")
+
+
+def _found(q: str) -> bool:
+    return "-> ok" in q or (q.endswith(" found") and not q.endswith("-> 0 found"))
+
+
 def recovery(base: dict, drop: dict | None) -> dict:
     """Planted wrong-code cases: found by the rule query at baseline, empty under drop_codes."""
     if not drop:
@@ -160,7 +170,8 @@ def recovery(base: dict, drop: dict | None) -> dict:
     drop_status = {(r["patient_id"], r["criterion_id"]): r["status"] for r in drop["rows"]}
     cases = []
     for key, steps in drop["trace"].items():
-        if key[0] in targets and "-> empty" in _first_query(steps) and "-> ok" in _first_query(base["trace"].get(key, [])):
+        targets_case = targets | {i.get("case_id") for i in drop["meta"]["injections"] if i["switch"] == "drop_codes"}
+        if key[0] in targets_case and _empty(_first_query(steps)) and _found(_first_query(base["trace"].get(key, []))):
             cases.append({"patient_id": key[0], "criterion_id": key[1], "baseline": base_status.get(key),
                           "under_drop_codes": drop_status.get(key)})
     rec = [c for c in cases if c["under_drop_codes"] == c["baseline"] and c["baseline"] in DECIDED]
@@ -187,8 +198,9 @@ def failure_paths(runs: dict) -> dict:
         rows = {(x["patient_id"], x["criterion_id"]): x for x in r["rows"]}
         checks = []
         for inj in (i for i in r["meta"]["injections"] if i["switch"] == "bad_units"):
-            hit = [x for (p, _), x in rows.items() if p == inj["patient_id"]
-                   and set(inj["resource_ids"]) & set(x["evidence_ids"].split(";"))]
+            ids = lambda x: {i.split("/")[-1] for i in x["evidence_ids"].split(";")}  # noqa: E731
+            hit = [x for (p, _), x in rows.items() if p in (inj["patient_id"], inj.get("case_id"))
+                   and set(inj["resource_ids"]) & ids(x)]
             want_unknown = inj.get("kind") == "implausible"
             checks.append(bool(hit) and all((x["status"] == "unknown") == want_unknown for x in hit))
         ok["bad_units"] = bool(checks) and all(checks)

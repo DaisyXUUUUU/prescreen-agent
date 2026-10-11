@@ -201,12 +201,15 @@ def build_tools(case: RecoveryCase) -> list:
     return [get_predicate, lookup_equivalent_codes, fhir_query_codes, search_notes, evaluate_with_records, record_decision]
 
 
-# Fail fast: a daily-quota throttle does not clear by waiting, so do not back off for minutes.
-BOTO_CONFIG = {"retries": {"max_attempts": 2, "mode": "standard"}, "connect_timeout": 10, "read_timeout": 90}
+# Two kinds of throttling: a daily token quota does not clear by waiting (the preflight call fails
+# fast and the run continues rules-only), while a per-minute request limit hit during a run does
+# (parallel runs hit it), so in-run calls back off and retry.
+PREFLIGHT_CONFIG = {"retries": {"max_attempts": 2, "mode": "standard"}, "connect_timeout": 10, "read_timeout": 30}
+BOTO_CONFIG = {"retries": {"max_attempts": 5, "mode": "adaptive"}, "connect_timeout": 10, "read_timeout": 90}
 
 
 def retry_strategy() -> ModelRetryStrategy:
-    return ModelRetryStrategy(max_attempts=2, initial_delay=2, max_delay=4)
+    return ModelRetryStrategy(max_attempts=6, initial_delay=3, max_delay=20)
 
 
 def _session():
@@ -231,7 +234,7 @@ def preflight():
         from botocore.config import Config
 
         model = make_model()
-        client = _session().client("bedrock-runtime", config=Config(**BOTO_CONFIG))
+        client = _session().client("bedrock-runtime", config=Config(**PREFLIGHT_CONFIG))
         client.converse(modelId=config.BEDROCK_MODEL_ID, inferenceConfig={"maxTokens": 4},
                         messages=[{"role": "user", "content": [{"text": "ok"}]}])
         return model, None

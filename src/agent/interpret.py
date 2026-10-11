@@ -39,6 +39,7 @@ class SmokingFacts(BaseModel):
     smokes_every_day: Literal["yes", "no", "unclear"]
     cigarettes_on_a_smoking_day: float | None = Field(description="Typical number on a day the patient smokes")
     smoking_days_per_week: float | None = Field(description="Typical number of smoking days per week (7 if daily)")
+    cigarettes_per_week: float | None = Field(default=None, description="Cigarettes per week if stated or directly implied (a pack = 20)")
     quotes: list[str] = Field(description="Exact quotes from the text supporting the facts")
     explanation: str = Field(description="One or two sentences for the CRC")
 
@@ -116,7 +117,9 @@ def interpret(case, cid: str, rule: dict, source_text: str, prior: Verdict, mode
         per_day, days = facts.cigarettes_on_a_smoking_day, facts.smoking_days_per_week
         if facts.smokes_every_day == "yes" and days is None:
             days = 7
-        per_week = per_day * days if per_day is not None and days is not None else None
+        per_week = facts.cigarettes_per_week
+        if per_week is None and per_day is not None and days is not None:
+            per_week = per_day * days
         trace.add(v.trace, "interpret_free_text",
                   f"smokes={facts.currently_smokes} daily={facts.smokes_every_day} per_smoking_day={per_day} "
                   f"days/week={days}; quotes verified {len(verified)}/{len(facts.quotes)}")
@@ -128,8 +131,16 @@ def interpret(case, cid: str, rule: dict, source_text: str, prior: Verdict, mode
             v.note = "free text not usable: no supporting quote found in the source"
         elif facts.currently_smokes == "no":
             v.status, v.note = "not_met", f"patient reports no smoking in the window ({verified[0]!r})"
-        elif facts.currently_smokes != "yes" or per_day is None:
+        elif facts.currently_smokes == "yes" and over_week:
+            # >10/week is unambiguous whatever the daily pattern
+            v.status = "met"
+            v.note = (f"{g(per_day) + '/day, ' if per_day is not None else ''}~{g(per_week)} cigarettes/week "
+                      f"> {rule['weekly']}/week")
+        elif facts.currently_smokes != "yes" or (per_day is None and per_week is None):
             v.note = "smoking status or amount unclear from the patient's words"
+        elif per_day is None:
+            v.status = "not_met" if per_week is not None and not over_week and facts.smokes_every_day != "yes" else "unknown"
+            v.note = f"~{g(per_week)}/week, per-day amount not stated"
         elif facts.smokes_every_day == "yes":
             v.status = "met" if (over_day or over_week) else "not_met"
             v.note = f"daily smoking, {g(per_day)}/day (~{g(per_week)}/week) vs >{rule['daily']}/day or >{rule['weekly']}/week"
@@ -148,6 +159,25 @@ def interpret(case, cid: str, rule: dict, source_text: str, prior: Verdict, mode
         return v
 
     start = _window_start(screening, rule)
+    # Self-check: drugs RxNorm finds in the text that belong to the class but the model did not report.
+    # The model is asked once more, naming them; this is the agent correcting its own omission.
+    def missed(f):
+        reported = " ".join(f"{x.substance} {' '.join(rxnav.lookup(x.substance).get('ingredients', []))}"
+                            for x in f.exposures).lower()
+        return [h for h in rxnav.scan_text(text, cid)
+                if not any(n.lower() in reported for n in [h["phrase"]] + h["ingredients"])]
+    first_missed = missed(facts)
+    if first_missed:
+        names = ", ".join(h["phrase"] for h in first_missed)
+        trace.add(v.trace, "rule:terminology_scan", f"model did not report {names}, which RxNorm finds in the text; asking again")
+        try:
+            facts = llm.structured_call(SYSTEM, (
+                f"Protocol criterion: {source_text}\nScreening date: {screening}.\nPatient's words: \"{text}\"\n"
+                f"Your previous answer left out these products mentioned in the text: {names}. "
+                f"List every product the text mentions, including these, with its last use date."), ExposureFacts, model)
+            trace.add(v.trace, "interpret_free_text", f"second pass reported: {', '.join(x.substance for x in facts.exposures) or 'nothing'}")
+        except Exception as e:  # noqa: BLE001
+            trace.add(v.trace, "agent:error", f"{type(e).__name__}: {str(e)[:160]}")
     counted, unclear, outside, weak = [], [], [], []
     for x in facts.exposures:
         if not llm.quote_found(x.quote, text):
@@ -176,16 +206,12 @@ def interpret(case, cid: str, rule: dict, source_text: str, prior: Verdict, mode
         else:
             # in class but OTC / prescription unclear, class unclear, or no date: a person decides
             unclear.append(label)
-    # Safety net independent of the model: drug names RxNorm finds in the text that belong to the class.
-    # The model has left out a drug it wrongly thought irrelevant (Leqvio); such a drug can never vanish.
-    reported = " ".join(f"{x.substance} {' '.join(rxnav.lookup(x.substance).get('ingredients', []))}" for x in facts.exposures).lower()
-    for hit in rxnav.scan_text(text, cid):
-        names = [hit["phrase"]] + hit["ingredients"]
-        if not any(n.lower() in reported for n in names):
-            label = (f"{hit['phrase']} (RxNorm: {', '.join(hit['ingredients'][:1])} -> {rxnav.matched_class(hit, cid)}; "
-                     f"found in the text but not reported by the model)")
-            unclear.append(label)
-            trace.add(v.trace, "rule:terminology_scan", label, "unknown")
+    # Safety net independent of the model: an in-class drug still missing after the second pass can never vanish.
+    for hit in missed(facts):
+        label = (f"{hit['phrase']} (RxNorm: {', '.join(hit['ingredients'][:1])} -> {rxnav.matched_class(hit, cid)}; "
+                 f"found in the text but not reported by the model)")
+        unclear.append(label)
+        trace.add(v.trace, "rule:terminology_scan", label, "unknown")
     trace.add(v.trace, "interpret_free_text",
               f"{len(facts.exposures)} substance(s): in class & in window {len(counted)}, unclear {len(unclear)}, "
               f"not counted {len(outside)}; window {start}..{screening}")

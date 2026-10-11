@@ -31,8 +31,15 @@ class ConflictNote(BaseModel):
 
 
 def _candidates(case, v: Verdict) -> list[dict]:
+    """The competing results: observations in the evidence whose code occurs more than once
+    (for E1, two ALT results compete; the single AST result is context, not a candidate)."""
     ids = {e["resource_id"].split("/")[-1] for e in v.evidence if e["resource_id"].startswith("Observation/")}
-    return [e["resource"] for e in case.bundle["entry"] if e["resource"].get("id") in ids]
+    obs = [e["resource"] for e in case.bundle["entry"] if e["resource"].get("id") in ids]
+    code = lambda o: o["code"]["coding"][0]["code"]  # noqa: E731
+    counts = {}
+    for o in obs:
+        counts[code(o)] = counts.get(code(o), 0) + 1
+    return [o for o in obs if counts[code(o)] > 1]
 
 
 def _describe(o: dict) -> dict:
@@ -75,7 +82,7 @@ def explain(case, spec: dict, v: Verdict, engine, model=None) -> Verdict:
     impact = ("choosing either result changes the outcome" if material
               else f"every candidate gives {next(iter(outcomes.values()))}, so the choice does not change the outcome")
     v.recovery = f"conflict: {summary}; {impact}. {text}"
-    if not material and config.IMMATERIAL_CONFLICT_RESOLVES:
+    if not material and config.IMMATERIAL_CONFLICT_RESOLVES and next(iter(outcomes.values())) != "unknown":
         v.status = next(iter(outcomes.values()))
         v.note += f"; conflict immaterial (all candidates {v.status}), resolved by rule"
         v.conflict = False
