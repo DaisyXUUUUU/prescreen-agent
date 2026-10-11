@@ -8,5 +8,8 @@
   "history_id": "e74986ec-fac0-589c-bd10-133138c72c09",
   "FHIR_file": "cases/ENG02.json",
   "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
-  "purpose": "smoking described only in free text, clearly daily"
+  "purpose": "smoking described only in free text, clearly daily",
+  "design_category": "excluded",
+  "design_target": "E3",
+  "design_target_status": "met"
 }

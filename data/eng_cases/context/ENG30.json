@@ -1,0 +1,15 @@
+{
+  "case_id": "ENG30",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "134f2032-c0b2-553e-8f55-d12006082ab2",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "286f77fb-7b58-5297-b052-20f3aaf5b793",
+  "history_id": "315f9c64-26ec-5d6e-bd0b-066867bdb8c1",
+  "FHIR_file": "cases/ENG30.json",
+  "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
+  "purpose": "Lp(a) exactly 25 nmol/L",
+  "design_category": "likely_eligible",
+  "design_target": "I3",
+  "design_target_status": "met"
+}

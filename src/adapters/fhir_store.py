@@ -40,7 +40,7 @@ SYSTEM_ALIASES = {
 }
 
 QUERYABLE = {"Patient", "Condition", "Observation", "MedicationRequest", "AllergyIntolerance"}
-LOADED = QUERYABLE | {"DocumentReference", "Medication"}
+LOADED = QUERYABLE | {"DocumentReference", "Medication", "Specimen", "QuestionnaireResponse", "Encounter"}
 
 
 @dataclass

@@ -1,0 +1,15 @@
+{
+  "case_id": "ENG36",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "0bc59f95-d058-5ed3-ae0b-3c3484aae284",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "2d7646c6-f4f0-5a81-9f4d-927fe07ed3a2",
+  "history_id": "14c9002e-61d4-57d3-8ae1-5e48c2000d66",
+  "FHIR_file": "cases/ENG36.json",
+  "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
+  "purpose": "HbA1c exactly 6.5 %",
+  "design_category": "excluded",
+  "design_target": "E2",
+  "design_target_status": "met"
+}

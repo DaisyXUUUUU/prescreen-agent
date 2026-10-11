@@ -1,0 +1,15 @@
+{
+  "case_id": "ENG47",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "75bea648-a1cb-5954-b093-4b98cd12b33b",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "52a8d2d7-e6fa-5533-919d-bf570fed39f3",
+  "history_id": "98839829-9d45-56df-8f00-eb4d55e28b66",
+  "FHIR_file": "cases/ENG47.json",
+  "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
+  "purpose": "I5: normal creatinine and eGFR present (should not be flagged)",
+  "design_category": "likely_eligible",
+  "design_target": "I5",
+  "design_target_status": null
+}

@@ -8,5 +8,8 @@
   "history_id": "45c005a2-4995-5a03-84fe-76107d136d65",
   "FHIR_file": "cases/ENG01.json",
   "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
-  "purpose": "smoking described only in free text, intermittent weekend smoking (boundary of 'regular')"
+  "purpose": "smoking described only in free text, intermittent weekend smoking (boundary of 'regular')",
+  "design_category": "pending",
+  "design_target": "E3",
+  "design_target_status": null
 }

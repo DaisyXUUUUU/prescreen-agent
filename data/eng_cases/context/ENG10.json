@@ -1,0 +1,15 @@
+{
+  "case_id": "ENG10",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "f0756b4b-ebd1-5288-9feb-d81243001aee",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "b2eaa006-b9f7-54a7-944c-2ddb6e7e2019",
+  "history_id": "50b64dbb-0baf-570f-9362-8c809d5235c6",
+  "FHIR_file": "cases/ENG10.json",
+  "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
+  "purpose": "smoking free text: vapes nicotine daily, no cigarettes (protocol counts cigarettes)",
+  "design_category": null,
+  "design_target": "E3",
+  "design_target_status": null
+}

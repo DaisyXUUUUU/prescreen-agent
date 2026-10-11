@@ -32,6 +32,90 @@ CASES = {
 }
 
 
+# ENG08+ : (purpose, design-intended patient category under the current rules with the agent on,
+#          target criterion, its design-intended status or None when the truth is genuinely ambiguous,
+#          modifications). The intent is written down before running anything; it is engineering's
+#          design intent, not clinical ground truth.
+SCENARIOS = {
+    # free text: smoking (E3)
+    "ENG08": ("smoking free text: about a pack a week, most days", "excluded", "E3", "met",
+              {"smoking": "Smokes roughly a pack a week, a few cigarettes most days after work."}),
+    "ENG09": ("smoking free text: quit years ago", "likely_eligible", "E3", "not_met",
+              {"smoking": "Quit smoking in 2019 and has not had a cigarette since."}),
+    "ENG10": ("smoking free text: vapes nicotine daily, no cigarettes (protocol counts cigarettes)", None, "E3", None,
+              {"smoking": "Uses a nicotine vape every day; stopped cigarettes two years ago."}),
+    "ENG11": ("smoking free text: one or two every day (<=2/day but >10/week)", "excluded", "E3", "met",
+              {"smoking": "One or two cigarettes a day, every day."}),
+    "ENG12": ("smoking free text: one cigar at a wedding", "likely_eligible", "E3", "not_met",
+              {"smoking": "Smoked one cigar at a wedding last month; otherwise does not smoke."}),
+    # free text: lipid-lowering drugs (E5, 30 days, prescription)
+    "ENG13": ("drug free text: brand statin stopped inside the 30-day window", "excluded", "E5", "met",
+              {"lipid": "Was on Lipitor 20 mg until 2026-09-25, then stopped on own."}),
+    "ENG14": ("drug free text: ezetimibe ongoing", "excluded", "E5", "met",
+              {"lipid": "Takes ezetimibe 10 mg every day."}),
+    "ENG15": ("drug free text: statin stopped well before the window", "likely_eligible", "E5", "not_met",
+              {"lipid": "Stopped simvastatin in May 2026 and has taken nothing for cholesterol since."}),
+    "ENG16": ("drug free text: 'a cholesterol tablet', name unknown", "pending", "E5", None,
+              {"lipid": "Takes a cholesterol tablet every morning but cannot remember the name."}),
+    "ENG17": ("drug free text: Repatha (evolocumab, a PCSK9 antibody) inside the window", "excluded", "E5", "met",
+              {"lipid": "Gets Repatha injections every two weeks; the last one was on 2026-10-01."}),
+    # free text: advanced therapies (E4, 12 months)
+    "ENG18": ("drug free text: gene therapy trial in 2023 (outside 12 months)", "likely_eligible", "E4", "not_met",
+              {"advanced": "Took part in a gene therapy study for a blood disorder in 2023; nothing since."}),
+    "ENG19": ("drug free text: Kynamro (mipomersen, an ASO) until January 2026", "excluded", "E4", "met",
+              {"advanced": "Was given Kynamro injections until January 2026."}),
+    "ENG20": ("drug free text: explicitly none", "likely_eligible", "E4", "not_met",
+              {"advanced": "No injections or experimental treatments in the past year."}),
+    # structured values
+    "ENG21": ("clean pass, LDL 120", "likely_eligible", "I2", "met", {"obs": {"18262-6": 120, "43583-4": 80}}),
+    "ENG22": ("clean pass, LDL 85", "likely_eligible", "I2", "met", {"obs": {"18262-6": 85}}),
+    "ENG23": ("clean pass, age 30, LDL 140", "likely_eligible", "I2", "met", {"obs": {"18262-6": 140}, "birth": "1996-04-02"}),
+    "ENG24": ("BMI 36 (above 35)", "excluded", "I1", "not_met", {"obs": {"39156-5": 36}}),
+    "ENG25": ("BMI 17.5 (below 18)", "excluded", "I1", "not_met", {"obs": {"39156-5": 17.5}}),
+    "ENG26": ("BMI exactly 35 (inclusive)", "likely_eligible", "I1", "met", {"obs": {"39156-5": 35}}),
+    "ENG27": ("BMI exactly 18 (inclusive)", "likely_eligible", "I1", "met", {"obs": {"39156-5": 18}}),
+    "ENG28": ("LDL 1.81 mmol/L = protocol's own equivalent of 70 mg/dL", "likely_eligible", "I2", "met",
+              {"obs_unit": {"18262-6": (1.81, "mmol/L")}}),
+    "ENG29": ("LDL 1.80 mmol/L, just below", "excluded", "I2", "not_met", {"obs_unit": {"18262-6": (1.80, "mmol/L")}}),
+    "ENG30": ("Lp(a) exactly 25 nmol/L", "likely_eligible", "I3", "met", {"obs": {"43583-4": 25}}),
+    "ENG31": ("Lp(a) 24 nmol/L", "excluded", "I3", "not_met", {"obs": {"43583-4": 24}}),
+    "ENG32": ("TG exactly 400 mg/dL (must be <400)", "excluded", "I4", "not_met", {"obs": {"2571-8": 400}}),
+    "ENG33": ("TG 4.5 mmol/L = 398.6 mg/dL", "likely_eligible", "I4", "met", {"obs_unit": {"2571-8": (4.5, "mmol/L")}}),
+    "ENG34": ("ALT 61 U/L > 1.5 x ULN 40", "excluded", "E1", "met", {"obs": {"1742-6": 61}}),
+    "ENG35": ("AST 55 U/L > 1.5 x ULN 35", "excluded", "E1", "met", {"obs": {"1920-8": 55}}),
+    "ENG36": ("HbA1c exactly 6.5 %", "excluded", "E2", "met", {"obs": {"4548-4": 6.5}}),
+    "ENG37": ("HbA1c 6.4 %", "likely_eligible", "E2", "not_met", {"obs": {"4548-4": 6.4}}),
+    "ENG38": ("age 66 at screening", "excluded", "AGE", "not_met", {"birth": "1960-06-15"}),
+    "ENG39": ("turns 65 on the screening day (inclusive)", "likely_eligible", "AGE", "met", {"birth": "1961-10-09"}),
+    "ENG40": ("age 17", "excluded", "AGE", "not_met", {"birth": "2009-02-11"}),
+    # missing data, recovery, guards
+    "ENG41": ("fasting state not recorded for the lipid specimen", "pending", "I2", None, {"fasting": None}),
+    "ENG42": ("HbA1c not drawn", "pending", "E2", None, {"drop": ["4548-4"]}),
+    "ENG43": ("LDL recorded only as calculated LDL (13457-7), 95 mg/dL", "likely_eligible", "I2", "met",
+              {"recode": {"18262-6": ("13457-7", 95)}}),
+    "ENG44": ("LDL 900 mg/dL (data-entry error)", "pending", "I2", None, {"obs": {"18262-6": 900}}),
+    # I5 evidence
+    "ENG45": ("I5: total bilirubin 3.1 mg/dL (range 0.1-1.2)", "needs_review", "I5", None,
+              {"lab": ("1975-2", "Bilirubin.total [Mass/volume] in Serum or Plasma", 3.1, "mg/dL", 0.1, 1.2)}),
+    "ENG46": ("I5: cirrhosis on the problem list", "needs_review", "I5", None,
+              {"condition": ("19943007", "Cirrhosis of liver")}),
+    "ENG47": ("I5: normal creatinine and eGFR present (should not be flagged)", "likely_eligible", "I5", None,
+              {"lab": ("2160-0", "Creatinine [Mass/volume] in Serum or Plasma", 0.9, "mg/dL", 0.6, 1.2),
+               "lab2": ("33914-3", "Glomerular filtration rate/1.73 sq M.predicted", 95, "mL/min/{1.73_m2}", 60, None)}),
+    # conflicts
+    "ENG48": ("two TG results 150 and 410 (choice changes I4)", "needs_review", "I4", None, {"dup": ("2571-8", 410)}),
+    "ENG49": ("two BMI results 22 and 24 (choice does not matter)", "likely_eligible", "I1", "met", {"dup": ("39156-5", 24)}),
+    "ENG50": ("two ALT results 25 and 30 (choice does not matter)", "likely_eligible", "E1", "not_met", {"dup": ("1742-6", 30)}),
+}
+DESIGN_ENG = {  # design intent for the original seven
+    "ENG01": ("pending", "E3", None), "ENG02": ("excluded", "E3", "met"), "ENG03": ("pending", "E5", None),
+    "ENG04": ("excluded", "E4", "met"), "ENG05": ("likely_eligible", "E5", "not_met"),
+    "ENG06": ("needs_review", "I5", None), "ENG07": ("needs_review", "I2", None),
+}
+GIVEN = ["Ana", "Ben", "Chen", "Dara", "Eli", "Fatima", "Gus", "Hana", "Ivan", "Jade", "Kofi", "Lena", "Mateo", "Nia"]
+FAMILY = ["Okafor", "Silva", "Novak", "Haddad", "Tanaka", "Moreau", "Lindqvist", "Reyes", "Kowalski", "Osei"]
+
+
 def remap(bundle: dict, ctx: dict, case_id: str) -> tuple[dict, dict]:
     """Replace every UUID with a deterministic new one so cases never collide with Ming's."""
     text = json.dumps(bundle)
@@ -127,22 +211,111 @@ def build(case_id: str, bundle: dict, ctx: dict) -> None:
         add(bundle, second, case_id)
 
 
+def obs_by_code(bundle: dict, code: str) -> list[dict]:
+    return [o for o in resource(bundle, "Observation") if o["code"]["coding"][0]["code"] == code]
+
+
+def apply(case_id: str, bundle: dict, ctx: dict, mods: dict) -> None:
+    qr = questionnaire(bundle)
+    patient, encounter = f"urn:uuid:{ctx['patient_id']}", f"urn:uuid:{ctx['encounter_id']}"
+    when = ctx["screening_at"]
+    n = int(case_id[3:])
+    p = resource(bundle, "Patient")[0]
+    p["name"] = [{"given": [GIVEN[n % len(GIVEN)]], "family": FAMILY[n % len(FAMILY)]}]
+    p["gender"] = "female" if n % 2 else "male"
+    if "birth" in mods:
+        p["birthDate"] = mods["birth"]
+    for key, field, drop in [("smoking", "smoking_free_text", ["current_smoker", "smoking_pattern", "cigarettes_day", "cigarettes_week"]),
+                             ("lipid", "lipid_free_text", ["lipid_exposure"]),
+                             ("advanced", "advanced_free_text", ["advanced_exposure"])]:
+        if key in mods:
+            extra = {"smoking_pattern": "see_free_text"} if key == "smoking" else {}
+            set_answers(qr, drop, {**extra, field: mods[key]})
+    for code, value in mods.get("obs", {}).items():
+        obs_by_code(bundle, code)[0]["valueQuantity"]["value"] = value
+    for code, (value, unit) in mods.get("obs_unit", {}).items():
+        obs_by_code(bundle, code)[0]["valueQuantity"].update(value=value, unit=unit, code=unit)
+    for code, (new_code, value) in mods.get("recode", {}).items():
+        o = obs_by_code(bundle, code)[0]
+        o["code"] = {"coding": [{"system": LOINC, "code": new_code, "display": "Cholesterol in LDL [Mass/volume] in Serum or Plasma by calculation"}]}
+        o["valueQuantity"]["value"] = value
+    for code in mods.get("drop", []):
+        ids = {o["id"] for o in obs_by_code(bundle, code)}
+        bundle["entry"] = [e for e in bundle["entry"] if e["resource"].get("id") not in ids]
+    if "fasting" in mods:
+        resource(bundle, "Specimen")[0]["collection"].pop("fastingStatusDuration", None)
+    for key in ("lab", "lab2"):
+        if key in mods:
+            code, display, value, unit, low, high = mods[key]
+            add(bundle, lab(patient, encounter, when, code, display, value, unit, low, high), case_id)
+    if "condition" in mods:
+        code, display = mods["condition"]
+        add(bundle, {"resourceType": "Condition", "clinicalStatus": {"coding": [{"code": "active"}]},
+                     "code": {"coding": [{"system": SNOMED, "code": code, "display": display}]},
+                     "subject": {"reference": patient}, "onsetDateTime": "2025-02-14"}, case_id)
+    if "dup" in mods:
+        code, value = mods["dup"]
+        second = copy.deepcopy(obs_by_code(bundle, code)[0])
+        second["valueQuantity"]["value"] = value
+        add(bundle, second, case_id)
+
+
 def main() -> None:
     template = json.loads((SRC / "cases" / "SAD01.json").read_text(encoding="utf-8"))
     template_ctx = json.loads((SRC / "context" / "SAD01.json").read_text(encoding="utf-8"))
     for d in ("cases", "context"):
         (OUT / d).mkdir(parents=True, exist_ok=True)
-    for case_id, purpose in CASES.items():
+    design = []
+    for case_id in list(CASES) + list(SCENARIOS):
         bundle, ctx = remap(copy.deepcopy(template), dict(template_ctx), case_id)
-        ctx["purpose"] = purpose
-        build(case_id, bundle, ctx)
+        if case_id in CASES:
+            ctx["purpose"] = CASES[case_id]
+            build(case_id, bundle, ctx)
+            category, target, status = DESIGN_ENG[case_id]
+        else:
+            ctx["purpose"], category, target, status, mods = SCENARIOS[case_id]
+            apply(case_id, bundle, ctx, mods)
+        ctx["design_category"], ctx["design_target"], ctx["design_target_status"] = category, target, status
+        design.append((case_id, ctx["purpose"], category, target, status))
         (OUT / "cases" / f"{case_id}.json").write_text(json.dumps(bundle, indent=2), encoding="utf-8")
         (OUT / "context" / f"{case_id}.json").write_text(json.dumps(ctx, indent=2), encoding="utf-8")
+
+    # Design-intent labels in the evaluation format (eval/evaluate.py). Only what the design settles:
+    # the target criterion when its truth is unambiguous, and the patient when the intended category
+    # is excluded or likely eligible.
+    with (OUT / "design_labels.csv").open("w", encoding="utf-8") as f:
+        f.write("patient_id,criterion_id,expected\n")
+        for case_id, _, category, target, status in design:
+            if status:
+                f.write(f"{case_id},{target},{status}\n")
+            if category in ("excluded", "likely_eligible"):
+                f.write(f"{case_id},PATIENT,{'not_eligible' if category == 'excluded' else 'eligible'}\n")
+    # Planted flips under the sample amendment (SAD LDL-C threshold 70 -> 100): every case designed to be
+    # likely eligible whose LDL-C (mg/dL, after conversion) is below 100.
+    def ldl(case_id):
+        mods = SCENARIOS.get(case_id, (None,) * 5)[4] or {}
+        if "18262-6" in mods.get("obs_unit", {}):
+            v, unit = mods["obs_unit"]["18262-6"]
+            return round(v * 38.67, 1)
+        if "18262-6" in mods.get("recode", {}):
+            return mods["recode"]["18262-6"][1]
+        return mods.get("obs", {}).get("18262-6", 90)
+    flips = [c for c, _, cat, _, _ in design if cat == "likely_eligible" and ldl(c) < 100]
+    (OUT / "design_amendment_flips.txt").write_text("\n".join(flips) + "\n", encoding="utf-8")
     (OUT / "README.md").write_text(
-        "# Engineering-authored SAD cases\n\nNot Ming's data and not ground truth. Built by "
-        "`scripts/build_eng_cases.py` from Ming's SAD01 to exercise what her 8 cases do not cover.\n\n"
-        + "\n".join(f"- **{k}**: {v}" for k, v in CASES.items()) + "\n", encoding="utf-8")
-    print(f"wrote {len(CASES)} cases to {OUT}")
+        "# Engineering-authored SAD cases\n\n"
+        "Not Ming's data and not clinical ground truth. Generated deterministically by `scripts/build_eng_cases.py` "
+        "from Ming's case SAD01 (structure, encounter, specimen, questionnaire), with fresh IDs and one deliberate "
+        "change per case, to cover what her 8 cases do not: every criterion on both sides of its threshold, exact "
+        "boundaries, unit conversion, missing data, free text written in different ways, I5 evidence and conflicts. "
+        "Free text was written by hand, not by a model, so the agent is not graded on its own phrasing.\n\n"
+        "`design_labels.csv` holds the design intent, written before any run: the target criterion's expected status "
+        "(when unambiguous) and the patient's expected eligibility (when the intended category is excluded or likely "
+        "eligible). It measures whether the pipeline does what the cases were built to test.\n\n"
+        "| Case | Purpose | Intended category | Target | Intended status |\n|---|---|---|---|---|\n"
+        + "\n".join(f"| {c} | {p} | {cat or 'ambiguous'} | {t} | {st or '-'} |" for c, p, cat, t, st in design) + "\n",
+        encoding="utf-8")
+    print(f"wrote {len(design)} cases to {OUT}")
 
 
 if __name__ == "__main__":

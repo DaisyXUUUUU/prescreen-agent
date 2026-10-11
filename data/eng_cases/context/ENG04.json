@@ -8,5 +8,8 @@
   "history_id": "6ed413dd-2b39-562e-99ac-a6cb3ad448e2",
   "FHIR_file": "cases/ENG04.json",
   "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
-  "purpose": "advanced-therapy history in free text naming a brand (Leqvio = inclisiran, an siRNA)"
+  "purpose": "advanced-therapy history in free text naming a brand (Leqvio = inclisiran, an siRNA)",
+  "design_category": "excluded",
+  "design_target": "E4",
+  "design_target_status": "met"
 }

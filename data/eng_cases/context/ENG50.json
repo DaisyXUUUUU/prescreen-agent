@@ -1,0 +1,15 @@
+{
+  "case_id": "ENG50",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "0924183e-6831-5adf-96f4-555416a6c6c6",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "9afa3898-5537-5caf-9180-aa40e1259e0b",
+  "history_id": "d86cce0c-95f2-5c7c-9977-62f5264e119e",
+  "FHIR_file": "cases/ENG50.json",
+  "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
+  "purpose": "two ALT results 25 and 30 (choice does not matter)",
+  "design_category": "likely_eligible",
+  "design_target": "E1",
+  "design_target_status": "not_met"
+}

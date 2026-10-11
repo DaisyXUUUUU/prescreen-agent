@@ -110,7 +110,7 @@ def _valid_ids(store: FhirStore, pid: str) -> set[str]:
     ids = {pid}
     for resources in store.index.get(pid, {}).values():
         ids |= {r.get("id") for r in resources}
-    return ids
+    return ids | {f"{r.get('resourceType')}/{r.get('id')}" for rs in store.index.get(pid, {}).values() for r in rs}
 
 
 def evidence_coverage(rows: list[dict], trace: dict, store: FhirStore) -> dict:
@@ -200,7 +200,8 @@ def failure_paths(runs: dict) -> dict:
 # ---------- orchestration ----------
 
 def run_all(args, out_root: Path) -> dict:
-    runs = {}
+    """Runs the baseline and every switch in parallel (independent processes, separate output folders)."""
+    procs = {}
     for name in RUNS:
         out = out_root / name
         if not (args.reuse and (out / f"run_{args.trial}_{args.date}.json").exists()):
@@ -216,11 +217,15 @@ def run_all(args, out_root: Path) -> dict:
                 for flag in ("v1_snapshot", "v2_snapshot", "v2_predicates"):
                     if getattr(args, flag):
                         cmd += [f"--{flag.replace('_', '-')}", str(getattr(args, flag))]
-            print(f"[eval] running {name} ...", flush=True)
-            proc = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
-            if proc.returncode != 0:
-                print(f"[eval] {name} failed (exit {proc.returncode}):\n{proc.stderr[-800:]}")
-        runs[name] = load_run(out, args.trial, args.date)
+            print(f"[eval] starting {name} ...", flush=True)
+            out.mkdir(parents=True, exist_ok=True)
+            log = open(out / "console.txt", "w")
+            procs[name] = (subprocess.Popen(cmd, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT, text=True), log)
+    for name, (proc, log) in procs.items():
+        code = proc.wait()
+        log.close()
+        print(f"[eval] {name} finished (exit {code})", flush=True)
+    runs = {name: load_run(out_root / name, args.trial, args.date) for name in RUNS}
     return {k: v for k, v in runs.items() if v}
 
 
@@ -328,7 +333,13 @@ def main() -> int:
     crit_labels, patient_labels = load_labels(args.labels)
     flips_path = args.flips or config.DATA_DIR / "ground_truth" / f"trial_{args.trial}_amendment_flips.txt"
     planted = [l.strip() for l in flips_path.read_text().splitlines() if l.strip()] if flips_path.exists() else None
-    store = FhirStore(args.patients or config.PATIENT_DIR)
+    if args.trial == "SAD":
+        from src.engine import sad_adapter as sa
+        cases = sa.load_cases(args.patients) if args.patients else sa.load_cases() + sa.load_cases(config.DATA_DIR / "eng_cases" / "cases")
+        store = FhirStore.from_bundles({c.case_id: c.bundle for c in cases})
+        store.index = {c.case_id: store.index[c.patient_id] for c in cases}  # log IDs are case IDs
+    else:
+        store = FhirStore(args.patients or config.PATIENT_DIR)
 
     metrics = evaluate(runs, crit_labels, patient_labels, store, planted)
     report = render(args, args.labels, metrics, runs)

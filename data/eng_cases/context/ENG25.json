@@ -1,0 +1,15 @@
+{
+  "case_id": "ENG25",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "c89797ae-6549-57c4-b0c5-a9a091a7ae8a",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "b548712c-bfa5-55bc-9115-1019e270d7ea",
+  "history_id": "55dcedbd-bd64-58ae-9634-721225915032",
+  "FHIR_file": "cases/ENG25.json",
+  "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
+  "purpose": "BMI 17.5 (below 18)",
+  "design_category": "excluded",
+  "design_target": "I1",
+  "design_target_status": "not_met"
+}

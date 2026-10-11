@@ -1,0 +1,15 @@
+{
+  "case_id": "ENG39",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "4b0016a3-180c-5fa5-915f-13ad7d86e311",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "5933887d-7e8d-58ab-b508-d31f8b97327f",
+  "history_id": "12730e50-7841-5448-8080-cbeb27525831",
+  "FHIR_file": "cases/ENG39.json",
+  "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
+  "purpose": "turns 65 on the screening day (inclusive)",
+  "design_category": "likely_eligible",
+  "design_target": "AGE",
+  "design_target_status": "met"
+}

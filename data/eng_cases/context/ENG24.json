@@ -1,0 +1,15 @@
+{
+  "case_id": "ENG24",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "c536f574-c0c8-55c1-b2a1-0634580281df",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "13ce7bb3-8372-5cc3-9d4b-dd1c860dd7b9",
+  "history_id": "d6dc77f6-e5a8-5202-a236-123ef704d05e",
+  "FHIR_file": "cases/ENG24.json",
+  "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
+  "purpose": "BMI 36 (above 35)",
+  "design_category": "excluded",
+  "design_target": "I1",
+  "design_target_status": "not_met"
+}

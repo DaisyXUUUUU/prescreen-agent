@@ -8,5 +8,8 @@
   "history_id": "4349fc18-0ace-510b-bd68-da58084851a5",
   "FHIR_file": "cases/ENG06.json",
   "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
-  "purpose": "I5 evidence: normal ALT/AST but reduced kidney function, CKD diagnosis and hepatic steatosis note"
+  "purpose": "I5 evidence: normal ALT/AST but reduced kidney function, CKD diagnosis and hepatic steatosis note",
+  "design_category": "needs_review",
+  "design_target": "I5",
+  "design_target_status": null
 }

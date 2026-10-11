@@ -13,6 +13,7 @@ import argparse
 import hashlib
 import json
 import logging
+import os
 import re
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
@@ -157,10 +158,9 @@ def ctgov_fetch(nct_id: str, *, cache_dir: Path | None = None, snapshot_dir: Pat
 
     fetched = _now()
     cache_dir.mkdir(parents=True, exist_ok=True)
-    cache_path.write_text(
-        json.dumps({"fetched_at": fetched.isoformat(), "criteria": criteria}, indent=2),
-        encoding="utf-8",
-    )
+    tmp = cache_path.with_suffix(f".{os.getpid()}.tmp")  # atomic: parallel runs share the cache
+    tmp.write_text(json.dumps({"fetched_at": fetched.isoformat(), "criteria": criteria}, indent=2), encoding="utf-8")
+    os.replace(tmp, cache_path)
     path, digest = _write_snapshot(nct_id, criteria, fetched, snapshot_dir)
     result = FetchResult(
         "ok", nct_id, criteria=criteria, fetched_at=fetched.isoformat(),

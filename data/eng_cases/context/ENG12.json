@@ -1,0 +1,15 @@
+{
+  "case_id": "ENG12",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "f9c3e691-938d-5403-9cfb-d503c9b1468a",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "db404a9f-0eeb-5a75-be4f-36f1d2441e22",
+  "history_id": "cc1d994f-8b8e-58bb-900c-08005a36d476",
+  "FHIR_file": "cases/ENG12.json",
+  "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
+  "purpose": "smoking free text: one cigar at a wedding",
+  "design_category": "likely_eligible",
+  "design_target": "E3",
+  "design_target_status": "not_met"
+}

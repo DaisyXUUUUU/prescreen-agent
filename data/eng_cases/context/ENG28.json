@@ -1,0 +1,15 @@
+{
+  "case_id": "ENG28",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "dca780c2-a3b8-50cf-9f13-50a590d2a0c2",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "ef1b2139-31f0-593c-9dbf-46dfc1eeab45",
+  "history_id": "5e9de989-7712-58b9-bd4c-6811bdb0f8ba",
+  "FHIR_file": "cases/ENG28.json",
+  "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
+  "purpose": "LDL 1.81 mmol/L = protocol's own equivalent of 70 mg/dL",
+  "design_category": "likely_eligible",
+  "design_target": "I2",
+  "design_target_status": "met"
+}

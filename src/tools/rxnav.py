@@ -7,6 +7,7 @@ Used so that drug-class membership comes from a terminology service, not from th
 
 import json
 import logging
+import os
 import re
 import urllib.parse
 
@@ -51,7 +52,9 @@ def _cached(kind: str, name: str, find_rxcui) -> dict:
         log.warning("rxnav %s lookup failed for %r: %s", kind, name, e)
         return {**out, "status": "error", "error": f"{type(e).__name__}: {e}"}
     cache.parent.mkdir(parents=True, exist_ok=True)
-    cache.write_text(json.dumps(out, indent=2))
+    tmp = cache.with_suffix(f".{os.getpid()}.tmp")  # atomic: parallel runs share the cache
+    tmp.write_text(json.dumps(out, indent=2))
+    os.replace(tmp, cache)
     return out
 
 

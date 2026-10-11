@@ -8,5 +8,8 @@
   "history_id": "687987bc-8c9f-550f-afbb-beeae870452f",
   "FHIR_file": "cases/ENG07.json",
   "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
-  "purpose": "two conflicting LDL results that straddle the 70 mg/dL threshold"
+  "purpose": "two conflicting LDL results that straddle the 70 mg/dL threshold",
+  "design_category": "needs_review",
+  "design_target": "I2",
+  "design_target_status": null
 }

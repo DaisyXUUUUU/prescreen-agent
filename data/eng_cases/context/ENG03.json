@@ -8,5 +8,8 @@
   "history_id": "9b5a673b-1155-5a2e-a506-28b7437615a2",
   "FHIR_file": "cases/ENG03.json",
   "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
-  "purpose": "lipid-lowering history in free text: statin stopped before the window, OTC red yeast rice inside it"
+  "purpose": "lipid-lowering history in free text: statin stopped before the window, OTC red yeast rice inside it",
+  "design_category": "pending",
+  "design_target": "E5",
+  "design_target_status": null
 }

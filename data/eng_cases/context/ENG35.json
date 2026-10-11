@@ -1,0 +1,15 @@
+{
+  "case_id": "ENG35",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "eded8c6b-c5e8-5a6e-84a2-6445f006a266",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "257460d5-067f-55cd-9de3-f7cab83e7e2a",
+  "history_id": "86c9cb22-2527-5147-9a87-5c0f62602684",
+  "FHIR_file": "cases/ENG35.json",
+  "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
+  "purpose": "AST 55 U/L > 1.5 x ULN 35",
+  "design_category": "excluded",
+  "design_target": "E1",
+  "design_target_status": "met"
+}

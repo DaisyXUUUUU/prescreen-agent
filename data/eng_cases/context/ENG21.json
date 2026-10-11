@@ -1,0 +1,15 @@
+{
+  "case_id": "ENG21",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "5d5904b0-9fd5-5206-8d24-32dea4a4dcd7",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "73fd70e4-a5e2-58c8-a1b7-e22177e20d40",
+  "history_id": "7b0fbeea-6b4e-5d8a-978f-67a5c5c4ef24",
+  "FHIR_file": "cases/ENG21.json",
+  "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
+  "purpose": "clean pass, LDL 120",
+  "design_category": "likely_eligible",
+  "design_target": "I2",
+  "design_target_status": "met"
+}

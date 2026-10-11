@@ -1,0 +1,15 @@
+{
+  "case_id": "ENG11",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "82a39ed6-0ba6-5752-97b5-e3256a2b2b20",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "d3380ab7-db02-52ae-980e-ff32b119b7fd",
+  "history_id": "fc265602-8c4c-534a-b92c-ab8005ee2d27",
+  "FHIR_file": "cases/ENG11.json",
+  "data_scope": "Engineering-authored synthetic case derived from Ming's SAD01; not Ming's data",
+  "purpose": "smoking free text: one or two every day (<=2/day but >10/week)",
+  "design_category": "excluded",
+  "design_target": "E3",
+  "design_target_status": "met"
+}
