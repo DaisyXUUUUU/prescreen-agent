@@ -13,7 +13,6 @@ import argparse
 import hashlib
 import json
 import logging
-import os
 import re
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
@@ -22,6 +21,7 @@ from pathlib import Path
 import requests
 
 from src import config
+from src.tools.local_io import atomic_write, read_utf8
 
 log = logging.getLogger(__name__)
 
@@ -77,7 +77,7 @@ def snapshot_text(criteria: dict) -> str:
         f"Maximum age: {criteria.get('maximum_age')}\n"
         f"Sex: {criteria.get('sex')}\n\n"
     )
-    return header + criteria["eligibility_criteria"].strip() + "\n"
+    return (header + criteria["eligibility_criteria"].strip() + "\n").replace('\r\n', '\n').replace('\r', '\n')
 
 
 def _write_snapshot(nct_id: str, criteria: dict, fetched: datetime, snapshot_dir: Path) -> tuple[Path, str]:
@@ -85,7 +85,7 @@ def _write_snapshot(nct_id: str, criteria: dict, fetched: datetime, snapshot_dir
     digest = hashlib.sha256(text.encode("utf-8")).hexdigest()
     path = snapshot_dir / nct_id / f"{fetched.date().isoformat()}.txt"
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(text, encoding="utf-8")
+    atomic_write(path, text)
     return path, digest
 
 
@@ -109,10 +109,10 @@ def _from_cache(nct_id: str, cache_path: Path, reason: str) -> FetchResult:
     if not cache_path.exists():
         return FetchResult("error", nct_id, error=f"{reason}; no cache")
     try:
-        cached = json.loads(cache_path.read_text(encoding="utf-8"))
+        cached = json.loads(read_utf8(cache_path))
         fetched = datetime.fromisoformat(cached["fetched_at"])
         criteria = cached["criteria"]
-    except (ValueError, KeyError) as e:
+    except (OSError, ValueError, KeyError, TypeError) as e:
         return FetchResult("error", nct_id, error=f"{reason}; cache unreadable: {e}")
 
     age_days = round((_now() - fetched).total_seconds() / 86400, 2)
@@ -157,11 +157,11 @@ def ctgov_fetch(nct_id: str, *, cache_dir: Path | None = None, snapshot_dir: Pat
         return _from_cache(nct_id, cache_path, reason)
 
     fetched = _now()
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    tmp = cache_path.with_suffix(f".{os.getpid()}.tmp")  # atomic: parallel runs share the cache
-    tmp.write_text(json.dumps({"fetched_at": fetched.isoformat(), "criteria": criteria}, indent=2), encoding="utf-8")
-    os.replace(tmp, cache_path)
-    path, digest = _write_snapshot(nct_id, criteria, fetched, snapshot_dir)
+    try:
+        atomic_write(cache_path, json.dumps({"fetched_at": fetched.isoformat(), "criteria": criteria}, indent=2))
+        path, digest = _write_snapshot(nct_id, criteria, fetched, snapshot_dir)
+    except OSError as e:
+        return FetchResult('error', nct_id, error=f'cannot persist criteria evidence: {e}')
     result = FetchResult(
         "ok", nct_id, criteria=criteria, fetched_at=fetched.isoformat(),
         cache_age_days=0.0, sha256=digest, snapshot_path=str(path),

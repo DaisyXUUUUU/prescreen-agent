@@ -25,9 +25,14 @@ def _rel(p: Path) -> str:
         return str(p)
 
 
+def unchanged_verdicts(results, old_predicates, new_predicates):
+    changed = monitor.predicate_changes(old_predicates, new_predicates)
+    return {(r.patient_id, v.criterion_id):v for r in results for v in r.verdicts if v.criterion_id not in changed}
+
+
 def run_amendment(trial: str, nct: str, fetch, screening_date: str, predicates_v1: list[dict], results_v1, out_dir: Path,
                   use_agent: bool = True, v1_snapshot: Path | None = None, v2_snapshot: Path | None = None,
-                  v2_predicates: Path | None = None, rescreen_fn=None) -> Path | None:
+                  v2_predicates: Path | None = None, rescreen_fn=None, model=None, preflight_done=False) -> Path | None:
     """rescreen_fn(v2_path) -> (results, predicates) overrides the generic re-screen (SAD uses the SAD evaluator)."""
     if config.failure_enabled("amendment_v2"):
         new_path = v2_snapshot or config.SNAPSHOT_DIR / nct / "amendment_v2.txt"
@@ -47,7 +52,8 @@ def run_amendment(trial: str, nct: str, fetch, screening_date: str, predicates_v
         print("amendment: no earlier snapshot to compare with; this run's snapshot is the baseline")
         return None
 
-    chk = monitor.check(old_path.read_text(encoding="utf-8"), new_text, _rel(old_path), new_source)
+    chk = monitor.check(old_path.read_text(encoding="utf-8"), new_text, _rel(old_path), new_source,
+                        model=model, use_agent=use_agent)
     if not chk.changed:
         print(f"amendment: criteria unchanged since {old_path.name} (SHA-256 match)")
         return None
@@ -66,9 +72,18 @@ def run_amendment(trial: str, nct: str, fetch, screening_date: str, predicates_v
         else:
             data = json.loads(v2_path.read_text(encoding="utf-8"))
             preds_v2 = data["predicates"] if isinstance(data, dict) else data
-            results_v2, _, _ = screen(preds_v2, screening_date, use_agent=use_agent, label=" (v2)")
-        patients = monitor.compare(results_v1, results_v2)
-        rescreened = True
+            results_v2, _, _ = screen(preds_v2, screening_date, use_agent=use_agent, label=" (v2)",
+                                      model=model, preflight_done=preflight_done,
+                                      reused_verdicts=unchanged_verdicts(results_v1, predicates_v1, preds_v2))
+        errors = [f'{label}:{r.patient_id}/{v.criterion_id}' for label, rs in [('v1',results_v1),('v2',results_v2)]
+                  for r in rs for v in r.verdicts if any(t.get('tool') == 'agent:error' for t in v.trace)]
+        errors += ['amendment classification' for c in chk.changes
+                   if any(t.get('tool') == 'agent:error' for t in c.trace)]
+        if errors:
+            blocked = 'agent errors make amendment attribution unreliable: ' + ', '.join(errors)
+        else:
+            patients = monitor.compare(results_v1, results_v2)
+            rescreened = True
         pred_changes = monitor.predicate_changes(predicates_v1, preds_v2)
         amended_fetch = dataclasses.replace(fetch, sha256=chk.new_sha)
         write_log(f"{trial}-amended", nct, amended_fetch, screening_date, results_v2, preds_v2, out_dir,
@@ -83,6 +98,8 @@ def run_amendment(trial: str, nct: str, fetch, screening_date: str, predicates_v
         "old_source": chk.old_source, "new_source": chk.new_source, "old_sha": chk.old_sha, "new_sha": chk.new_sha,
         "changes": [dataclasses.asdict(c) for c in chk.changes],
         "rescreened": rescreened, "blocked": blocked, "predicate_changes": pred_changes,
+        "execution_mode": 'agent' if use_agent else 'rules_only',
+        "comparison_valid": rescreened,
         "patients": [dataclasses.asdict(p) for p in patients],
         "flips": [p.patient_id for p in patients if p.old_category != p.new_category],
     }

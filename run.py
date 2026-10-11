@@ -13,12 +13,13 @@ import argparse
 import json
 import logging
 import sys
+from datetime import date
 from pathlib import Path
 
 from src import config, failures
 from src.adapters import fhir_store
 from src.agent import trace
-from src.amendment.rescreen import run_amendment
+from src.amendment.rescreen import run_amendment, unchanged_verdicts
 from src.engine.aggregate import CATEGORIES, LABELS
 from src.pipeline import screen
 from src.report.log_writer import write_log
@@ -31,6 +32,9 @@ def load_predicates(path: Path) -> list[dict]:
 
 
 def main() -> int:
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, 'reconfigure'):
+            stream.reconfigure(encoding='utf-8')
     parser = argparse.ArgumentParser(description="Pre-screen every patient for one trial and write the CRC log")
     parser.add_argument("--trial", required=True, help="trial key from src/config.py, e.g. SAD")
     parser.add_argument("--date", default=config.SCREENING_DATE, help="screening date YYYY-MM-DD (default today)")
@@ -50,6 +54,10 @@ def main() -> int:
     parser.add_argument("--fail", action="append", default=[], choices=sorted(config.FAILURES),
                         help="enable a failure-injection switch (repeatable)")
     args = parser.parse_args()
+    try:
+        date.fromisoformat(args.date)
+    except ValueError:
+        parser.error('--date must be YYYY-MM-DD')
     logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(name)s: %(message)s")
     for name in args.fail:
         config.enable_failure(name)
@@ -69,13 +77,8 @@ def main() -> int:
         print(f"error: predicate file {pred_path} not found", file=sys.stderr)
         return 2
 
-    fetch = ctgov_fetch(nct)
-    if fetch.status == "error":
-        # brief section 6: no log on criteria we cannot vouch for
-        print(f"error: cannot issue a log, eligibility criteria unavailable: {fetch.error}", file=sys.stderr)
-        return 3
-
     use_agent = not args.no_agent
+    model, mode_reason = None, ''
     input_problems = []
     if sad:
         # SAD rule pack and core cases, evaluated by the SAD evaluator through the adapter.
@@ -86,6 +89,14 @@ def main() -> int:
         ext_dir = config.DATA_DIR / "extended_cases" / "cases"
         if not args.patients and not args.no_extended_cases and ext_dir.exists():
             cases += sa.load_cases(ext_dir)
+        if not cases or any(c.screening_date != args.date for c in cases):
+            print('error: SAD is a fixed-encounter replay; --date must match every case screening_at. '
+                  'Provide new contexts for a new screening date.', file=sys.stderr)
+            return 2
+        fetch = ctgov_fetch(nct)
+        if fetch.status == 'error':
+            print(f'error: cannot issue a log, eligibility criteria unavailable: {fetch.error}', file=sys.stderr)
+            return 3
         predicates = sa.predicates(spec)
         store = sa.install_store(cases)
         if not config.FAILURE_TARGETS:
@@ -97,11 +108,16 @@ def main() -> int:
             if i.get("patient_id") in names:
                 i["case_id"] = names[i["patient_id"]]
                 i["text"] = i["text"].replace(i["patient_id"], i["case_id"])
-        results, attempted, recovered, _ = sa.screen(cases, spec, use_agent=use_agent)
+        if use_agent:
+            from src.agent.agent import preflight
+            model, mode_reason = preflight()
+            use_agent = model is not None
+        results, attempted, recovered, _ = sa.screen(cases, spec, use_agent=use_agent, model=model, preflight_done=True)
 
         def rescreen(v2_path):
             spec2 = sa.load_spec(v2_path)
-            res, _, _, _ = sa.screen(cases, spec2, use_agent=use_agent, label=" (v2)")
+            res, _, _, _ = sa.screen(cases, spec2, use_agent=use_agent, label=" (v2)", model=model, preflight_done=True,
+                                      reused_verdicts=unchanged_verdicts(results, predicates, sa.predicates(spec2)))
             return res, sa.predicates(spec2)
     else:
         predicates = load_predicates(pred_path)
@@ -111,8 +127,18 @@ def main() -> int:
         if not fhir_store.list_patients():
             print(f"error: no patients loaded from {args.patients or config.PATIENT_DIR}", file=sys.stderr)
             return 2
-        results, attempted, recovered = screen(predicates, args.date, use_agent=use_agent)
+        fetch = ctgov_fetch(nct)
+        if fetch.status == 'error':
+            print(f'error: cannot issue a log, eligibility criteria unavailable: {fetch.error}', file=sys.stderr)
+            return 3
+        if use_agent:
+            from src.agent.agent import preflight
+            model, mode_reason = preflight()
+            use_agent = model is not None
+        results, attempted, recovered = screen(predicates, args.date, use_agent=use_agent, model=model, preflight_done=True)
         rescreen = None
+    if mode_reason:
+        print(f'agent unavailable; entire run uses rules_only: {mode_reason}')
     if config.failure_enabled("ctgov_timeout"):
         injections.insert(0, {"switch": "ctgov_timeout", "patient_id": None, "resource_ids": [],
                               "text": f"ctgov_timeout: ClinicalTrials.gov call forced to time out; criteria {fetch.status}"})
@@ -123,7 +149,7 @@ def main() -> int:
                                        injections=[i["text"] for i in injections])
     impact = run_amendment(args.trial, nct, fetch, args.date, predicates, results, args.out, use_agent=use_agent,
                            v1_snapshot=args.v1_snapshot, v2_snapshot=args.v2_snapshot, v2_predicates=args.v2_predicates,
-                           rescreen_fn=rescreen)
+                           rescreen_fn=rescreen, model=model, preflight_done=True)
     trace_path = trace.write_jsonl(args.out / f"trace_{args.trial}_{args.date}.jsonl", args.trial, args.date, results)
 
     counts = {c: sum(r.category == c for r in results) for c in CATEGORIES}
@@ -133,6 +159,8 @@ def main() -> int:
         "criteria_status": fetch.status, "criteria_cache_age_days": fetch.cache_age_days,
         "injections": injections, "agent": None if args.no_agent else {"attempted": attempted, "recovered": recovered},
         "input_problems": input_problems,
+        "execution_mode": 'agent' if use_agent else 'rules_only', 'mode_reason': mode_reason,
+        "requested_agent": not args.no_agent,
         "counts": counts, "patients": len(results),
         "files": {"log": str(md), "csv": str(csv_path), "trace": str(trace_path),
                   "impact": str(impact) if impact else None,

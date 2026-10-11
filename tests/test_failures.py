@@ -33,7 +33,7 @@ def test_all_switches_off_changes_nothing(store):
 def test_drop_codes_empties_rule_query_and_agent_recovers(store):
     config.enable_failure("drop_codes")
     lines = [i["text"] for i in failures.inject(store)]
-    assert lines == ["drop_codes: fixture-complete LDL-C o-101, o-102 recoded 18262-6 -> 13457-7"]
+    assert lines == ["drop_codes: fixture-complete LDL-C o-101, o-102 recoded 18262-6 -> 2089-1"]
 
     v = evaluate(PREDS["S-I5"], "fixture-complete", DATE)
     assert v.status == "unknown" and v.needs_recovery
@@ -41,7 +41,7 @@ def test_drop_codes_empties_rule_query_and_agent_recovers(store):
     case = ag.RecoveryCase("fixture-complete", PREDS["S-I5"], DATE)
     t = {x.tool_spec["name"]: x for x in ag.build_tools(case)}
     t["lookup_equivalent_codes"]()
-    q = t["fhir_query_codes"](codes=["13457-7"])
+    q = t["fhir_query_codes"](codes=["2089-1"])
     t["evaluate_with_records"](resource_ids=[q["records"][0]["resource_id"]])
     r = ag.finalize(v, case, "")
     assert r.status == "met" and r.evidence[0]["resource_id"] == "o-101"

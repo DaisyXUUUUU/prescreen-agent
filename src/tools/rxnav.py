@@ -7,13 +7,13 @@ Used so that drug-class membership comes from a terminology service, not from th
 
 import json
 import logging
-import os
 import re
 import urllib.parse
 
 import requests
 
 from src import config
+from src.tools.local_io import atomic_write, read_utf8
 
 log = logging.getLogger(__name__)
 
@@ -42,7 +42,10 @@ def _cached(kind: str, name: str, find_rxcui) -> dict:
     key = re.sub(r"[^a-z0-9]+", "_", name.lower()).strip("_")
     cache = config.CACHE_DIR / "rxnav" / f"{kind}_{key}.json"
     if cache.exists():
-        return json.loads(cache.read_text())
+        try:
+            return json.loads(read_utf8(cache))
+        except (OSError, ValueError) as e:
+            log.warning('ignoring unreadable RxNav cache %s: %s', cache, e)
     out = {"status": "not_found", "query": name, "rxcui": None, "ingredients": [], "classes": []}
     try:
         rxcui = find_rxcui(name)
@@ -51,10 +54,11 @@ def _cached(kind: str, name: str, find_rxcui) -> dict:
     except (requests.RequestException, ValueError, KeyError) as e:
         log.warning("rxnav %s lookup failed for %r: %s", kind, name, e)
         return {**out, "status": "error", "error": f"{type(e).__name__}: {e}"}
-    cache.parent.mkdir(parents=True, exist_ok=True)
-    tmp = cache.with_suffix(f".{os.getpid()}.tmp")  # atomic: parallel runs share the cache
-    tmp.write_text(json.dumps(out, indent=2))
-    os.replace(tmp, cache)
+    try:
+        atomic_write(cache, json.dumps(out, indent=2))
+    except OSError as e:
+        log.warning('RxNav result not cached: %s', e)
+        out['cache_warning'] = str(e)
     return out
 
 

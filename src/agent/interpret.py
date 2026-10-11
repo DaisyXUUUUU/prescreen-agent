@@ -10,13 +10,14 @@ returns structured facts. It does not decide the criterion:
     or days, date arithmetic) to those facts;
   - anything the model marks unclear stays `unknown`, with the model's explanation for the CRC.
 
-The resulting verdict is marked `interpreted`. When it settles an exclusion (verified quote,
-code-applied threshold or window, drug class confirmed by RxNav) the patient is excluded like any
-other exclusion, with the quote shown (decided 2026-10-09). A class vouched for only by the model
-sets `review_reason` and goes to review instead.
+The resulting verdict is marked `interpreted`. Aggregation routes interpreted failures to
+review: quote existence and terminology do not verify the extracted amount, date or negation.
+Ranges and uncertain facts stay unknown rather than becoming a point estimate.
 """
 
 import calendar
+import math
+import re
 from datetime import date, timedelta
 from typing import Literal
 
@@ -31,7 +32,15 @@ FREE_TEXT_FIELD = {"E3": "smoking_free_text", "E4": "advanced_free_text", "E5": 
 SYSTEM = """You help a clinical research coordinator read a patient's own words from a screening interview.
 Extract facts only. Do not decide eligibility and do not compare numbers with any threshold.
 For every fact give a short exact quote copied from the text that supports it.
-If the text does not say something, use null or "unclear"; never guess."""
+If the text does not say something, use null only for nullable fields, or "unclear"; never guess.
+The uncertain field must be true or false, never null. Mark approximate or uncertain amounts true.
+Range fields must be null or an object with lower and upper numbers, never a single number.
+Put a single quantity in the corresponding cigarettes quantity field, not in a range field."""
+
+
+class NumericRange(BaseModel):
+    lower: float
+    upper: float
 
 
 class SmokingFacts(BaseModel):
@@ -42,16 +51,20 @@ class SmokingFacts(BaseModel):
     cigarettes_per_week: float | None = Field(default=None, description="Cigarettes per week if stated or directly implied (a pack = 20)")
     quotes: list[str] = Field(description="Exact quotes from the text supporting the facts")
     explanation: str = Field(description="One or two sentences for the CRC")
+    uncertain: bool = Field(description="True for uncertain, conflicting or approximate amounts; never replace a range with its midpoint or upper bound")
+    daily_range: NumericRange | None = Field(description="Inclusive lower and upper cigarettes/day when a range is stated; otherwise null, never a scalar")
+    weekly_range: NumericRange | None = Field(description="Inclusive lower and upper cigarettes/week when a range is stated; otherwise null, never a scalar")
 
 
 class Exposure(BaseModel):
     substance: str
     in_class: Literal["yes", "no", "unclear"] = Field(description="Belongs to the drug class named in the criterion")
     prescription: Literal["yes", "no", "unclear"] = Field(description="Prescription medicine (not OTC or a supplement)")
-    last_use_date: str | None = Field(description="ISO date of last use if stated (YYYY-MM-DD; month only -> first of month)")
+    last_use_date: str | None = Field(description="Exact ISO date only (YYYY-MM-DD). Month-only, approximate or uncertain dates must be null; never invent the first day")
     ongoing: bool = Field(description="Still taking it at screening")
     quote: str = Field(description="Exact quote from the text about this substance")
     why: str = Field(description="Why it is or is not in the class, e.g. brand name -> generic -> class")
+    uncertain: bool = Field(description="True if exposure, prescription status or date is uncertain")
 
 
 class ExposureFacts(BaseModel):
@@ -85,9 +98,26 @@ def _window_start(screening: date, rule: dict) -> date:
 
 def _date(s: str | None) -> date | None:
     try:
-        return date.fromisoformat(s[:10]) if s else None
-    except ValueError:
+        return date.fromisoformat(s) if s and re.fullmatch(r'\d{4}-\d{2}-\d{2}', s) else None
+    except (ValueError, TypeError):
         return None
+
+
+def _uncertain_smoking_source(text):
+    # Independent source guard: a model must not collapse "one or two" into 14/week.
+    number = r'(?:\d+(?:\.\d+)?|one|two|three|four|five|six|seven|eight|nine|ten)'
+    without_dates = re.sub(r'\d{4}-\d{2}-\d{2}', '', text.lower())
+    ranged = re.search(rf'\b{number}\s*(?:or|to|[-–—])\s*{number}\b|\bbetween\s+{number}\s+and\s+{number}\b', without_dates)
+    approximate = re.search(rf'\b(?:about|around|roughly|approximately|up to|at least|less than|more than)\s+(?:{number}|half|a\b)', without_dates)
+    return bool(ranged or approximate)
+
+
+def _uncertain_smoking(facts, text):
+    values = [facts.cigarettes_on_a_smoking_day, facts.smoking_days_per_week, facts.cigarettes_per_week]
+    invalid = any(x is not None and (not math.isfinite(x) or x < 0) for x in values)
+    invalid |= facts.smoking_days_per_week is not None and facts.smoking_days_per_week > 7
+    return bool(facts.uncertain or facts.daily_range is not None or facts.weekly_range is not None
+                or _uncertain_smoking_source(text) or invalid)
 
 
 def interpret(case, cid: str, rule: dict, source_text: str, prior: Verdict, model=None) -> Verdict:
@@ -97,6 +127,11 @@ def interpret(case, cid: str, rule: dict, source_text: str, prior: Verdict, mode
     v = Verdict(prior.patient_id, cid, status="unknown", trace=[dict(t) for t in prior.trace], blocking=prior.blocking)
     v.evidence = [{"resource_id": ref, "value": f"{FREE_TEXT_FIELD[cid]}: \"{text}\"", "date": case.ctx.get("screening_at")}]
     v.interpreted = True
+
+    if cid == 'E3' and _uncertain_smoking_source(text):
+        v.note = 'source smoking amount is a range or approximate; CRC to judge; do not substitute a point estimate'
+        trace.add(v.trace, 'rule:uncertain_fact', v.note, 'unknown')
+        return v
 
     try:
         if cid == "E3":
@@ -114,6 +149,10 @@ def interpret(case, cid: str, rule: dict, source_text: str, prior: Verdict, mode
 
     if cid == "E3":
         verified = [q for q in facts.quotes if llm.quote_found(q, text)]
+        if verified and _uncertain_smoking(facts, text):
+            v.note = 'smoking amount is a range, uncertain or invalid; CRC to judge; do not substitute a point estimate'
+            trace.add(v.trace, 'rule:uncertain_fact', v.note, 'unknown')
+            return v
         per_day, days = facts.cigarettes_on_a_smoking_day, facts.smoking_days_per_week
         if facts.smokes_every_day == "yes" and days is None:
             days = 7
@@ -182,6 +221,9 @@ def interpret(case, cid: str, rule: dict, source_text: str, prior: Verdict, mode
     for x in facts.exposures:
         if not llm.quote_found(x.quote, text):
             trace.add(v.trace, "rule:quote_check", f"dropped {x.substance!r}: quote not found in source")
+            continue
+        if x.uncertain:
+            unclear.append(f'{x.substance}: uncertain exposure facts')
             continue
         last = screening if x.ongoing else _date(x.last_use_date)
         # Drug class from the terminology service, not from the model's memory.

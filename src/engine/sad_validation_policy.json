@@ -1,0 +1,12 @@
+{
+  "version": "sad-guards-1.0.0",
+  "scope": "Synthetic demonstration evidence checks, not sponsor-approved clinical requirements",
+  "fasting": {"criteria": ["I2", "I4"], "minimum_hours": 6},
+  "methods": {
+    "I2": {
+      "18262-6": ["Synthetic direct LDL laboratory result"],
+      "2089-1": ["Synthetic direct LDL laboratory result"],
+      "13457-7": ["Synthetic calculated LDL laboratory result"]
+    }
+  }
+}

@@ -4,18 +4,19 @@ Used by run.py for the weekly log and by the amendment monitor (T10) to
 re-screen under the amended predicates.
 """
 
+import copy
+from src.agent import trace
 from src.adapters import fhir_store
 from src.engine.aggregate import PatientResult, aggregate
 from src.engine.evaluate import evaluate
 
 
 def screen(predicates: list[dict], screening_date: str, use_agent: bool = True,
-           label: str = "") -> tuple[list[PatientResult], int, int]:
+           label: str = "", *, model=None, preflight_done=False, reused_verdicts=None) -> tuple[list[PatientResult], int, int]:
     """Returns (results, empty queries sent to the agent, of which resolved)."""
     by_id = {p["criterion_id"]: p for p in predicates}
     results, attempted, recovered = [], 0, 0
-    model = None
-    if use_agent:
+    if use_agent and not preflight_done:
         # One preflight instead of failing once per case when Bedrock is not reachable.
         from src.agent.agent import preflight
         model, reason = preflight()
@@ -24,10 +25,13 @@ def screen(predicates: list[dict], screening_date: str, use_agent: bool = True,
             use_agent = False
     for pid in fhir_store.list_patients():
         verdicts = [evaluate(p, pid, screening_date) for p in predicates]
-        if use_agent:
-            # T7: only empty queries left as `unknown` go to the agent; settled verdicts are untouched.
-            from src.agent.agent import recover
-            for i, v in enumerate(verdicts):
+        from src.agent.agent import recover
+        for i, v in enumerate(verdicts):
+            if (pid, v.criterion_id) in (reused_verdicts or {}):
+                verdicts[i] = copy.deepcopy(reused_verdicts[(pid, v.criterion_id)])
+                trace.add(verdicts[i].trace, 'rule:amendment_reuse', 'same criterion and same input; reused v1 evidence interpretation', verdicts[i].status)
+                continue
+            if use_agent:
                 if v.needs_recovery and v.status == "unknown":
                     attempted += 1
                     print(f"  agent{label}: {pid} {v.criterion_id} ...", end="", flush=True)

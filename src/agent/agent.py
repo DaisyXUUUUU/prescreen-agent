@@ -25,6 +25,7 @@ from src import config
 from src.adapters import fhir_store
 from src.adapters.fhir_store import LOINC, SNOMED, QueryResult, norm_system
 from src.agent import trace
+from src.agent.invocation import invoke
 from src.engine.evaluate import Verdict, _resource, judge
 
 log = logging.getLogger(__name__)
@@ -77,6 +78,18 @@ def load_equivalents() -> tuple[list[dict], str]:
     return PLACEHOLDER_EQUIVALENTS, "default equivalence table"
 
 
+def allowed_equivalents(pred: dict) -> set[tuple[str, str]]:
+    """One-hop, system-qualified allowlist anchored in the predicate, never model input."""
+    seeds = {(norm_system(c.get('system', '')), str(c['code'])) for c in pred.get('codes') or []}
+    allowed = set(seeds)
+    groups, _ = load_equivalents()
+    for group in groups:
+        members = {(norm_system(c.get('system', '')), str(c['code'])) for c in group['codes']}
+        if seeds & members:
+            allowed.update(members)
+    return allowed
+
+
 @dataclass
 class RecoveryCase:
     patient_id: str
@@ -109,6 +122,10 @@ def build_tools(case: RecoveryCase) -> list:
     case.tried_codes = {str(c.get("code")) for c in pred.get("codes") or []}
     systems = {str(c.get("code")): norm_system(c.get("system", "")) for c in pred.get("codes") or []}
     groups, source = load_equivalents()
+    allowed = allowed_equivalents(pred)
+    seeds = {(norm_system(c.get('system', '')), str(c['code'])) for c in pred.get('codes') or []}
+    for system, code in allowed:
+        systems[code] = system
 
     @tool
     def get_predicate() -> dict:
@@ -123,8 +140,7 @@ def build_tools(case: RecoveryCase) -> list:
         """Codes that mean the same concept as the criterion's codes, from the site's local mapping table."""
         found = []
         for g in groups:
-            g_codes = {str(c["code"]) for c in g["codes"]}
-            if g_codes & case.tried_codes:
+            if any((norm_system(c.get('system', '')), str(c['code'])) in seeds for c in g['codes']):
                 for c in g["codes"]:
                     if str(c["code"]) not in case.tried_codes and c not in found:
                         found.append(c)
@@ -141,12 +157,16 @@ def build_tools(case: RecoveryCase) -> list:
             codes: Codes to try, e.g. ["13457-7"]. Use codes from lookup_equivalent_codes.
         """
         codes = [str(c).strip() for c in codes if str(c).strip()]
+        if not codes or any((systems.get(c), c) not in allowed for c in codes):
+            case.log('fhir_query_codes', 'rejected: codes outside criterion allowlist', 'unknown')
+            return {'status': 'malformed', 'records': [], 'detail': 'codes must belong to the criterion equivalence allowlist'}
         query = [{"system": systems.get(c, LOINC if resource == "Observation" else SNOMED), "code": c} for c in codes]
         q = fhir_store.fhir_query(case.fhir_id, resource, query, window_days=pred.get("window_days"),
                                   anchor_date=case.screening_date)
         case.tried_codes.update(codes)
         for r in q.records:
-            case.retrieved[r["resource_id"]] = r
+            if (norm_system(r.get('system', '')), str(r.get('code'))) in allowed:
+                case.retrieved[r["resource_id"]] = r
         rows = [{k: r.get(k) for k in ("resource_id", "code", "value", "unit", "date")} for r in q.records[:5]]
         case.log("fhir_query_codes", f"{resource} [{','.join(codes)}] -> {q.status} ({len(q.records)})")
         return {"status": q.status, "records": rows, "detail": q.detail}
@@ -205,11 +225,11 @@ def build_tools(case: RecoveryCase) -> list:
 # fast and the run continues rules-only), while a per-minute request limit hit during a run does
 # (parallel runs hit it), so in-run calls back off and retry.
 PREFLIGHT_CONFIG = {"retries": {"max_attempts": 2, "mode": "standard"}, "connect_timeout": 10, "read_timeout": 30}
-BOTO_CONFIG = {"retries": {"max_attempts": 5, "mode": "adaptive"}, "connect_timeout": 10, "read_timeout": 90}
+BOTO_CONFIG = {"retries": {"max_attempts": 1, "mode": "standard"}, "connect_timeout": 5, "read_timeout": 30}
 
 
 def retry_strategy() -> ModelRetryStrategy:
-    return ModelRetryStrategy(max_attempts=6, initial_delay=3, max_delay=20)
+    return ModelRetryStrategy(max_attempts=2, initial_delay=3, max_delay=6)
 
 
 def _session():
@@ -260,7 +280,7 @@ def recover(verdict: Verdict, predicate: dict, screening_date: str, model=None,
     try:
         agent = Agent(model=model or make_model(), tools=build_tools(case), system_prompt=RECOVERY_PROMPT,
                       hooks=[_budget_hook(case)], callback_handler=None, retry_strategy=retry_strategy())
-        result = agent(f"Patient {verdict.patient_id}: the query for criterion {predicate['criterion_id']} "
+        result = invoke(agent, f"Patient {verdict.patient_id}: the query for criterion {predicate['criterion_id']} "
                        f"({predicate.get('concept')}) returned no records. Try to recover it.")
         final_text = " ".join(str(result).split())
     except Exception as e:  # noqa: BLE001 - a model outage must not break the run

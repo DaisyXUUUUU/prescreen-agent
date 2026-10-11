@@ -19,6 +19,7 @@ from strands import Agent, tool
 from strands.hooks import BeforeToolCallEvent
 
 from src.agent import trace
+from src.agent.invocation import invoke
 from src.engine.evaluate import Verdict
 
 MAX_TOOL_CALLS = 8
@@ -172,7 +173,7 @@ def evidence_pack(case, v: Verdict, model=None) -> Verdict:
         agent = Agent(model=model or make_model(), system_prompt=PROMPT, callback_handler=None, hooks=[budget],
                       tools=[overview, get_labs, get_diagnoses, search_notes, flag_concern],
                       retry_strategy=retry_strategy())
-        summary = " ".join(str(agent(f"Assemble I5 evidence for patient {case.case_id}.")).split())
+        summary = " ".join(str(invoke(agent, f"Assemble I5 evidence for patient {case.case_id}.")).split())
     except Exception as e:  # noqa: BLE001
         log("agent:error", f"{type(e).__name__}: {str(e)[:160]}")
 

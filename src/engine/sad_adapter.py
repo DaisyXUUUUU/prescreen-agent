@@ -9,8 +9,8 @@ evaluator; it is never edited here. This module connects it:
     the recovery agent see exactly what the evaluator sees;
   - converts its per-criterion rows into pipeline Verdicts (evidence, note, conflict,
     trace) and the rule pack into predicate dicts for aggregation and the log;
-  - adds two guards before the evaluator runs, both traced as rules: unit conversion where unambiguous (e.g. LDL mmol/L -> mg/dL) and
-    plausibility ranges (src/engine/units.py), which the evaluator does not check;
+  - adds traced guards for unambiguous unit conversion, plausibility ranges, minimum
+    fasting duration and the versioned synthetic LDL method policy;
   - lets the recovery agent hand an equivalently coded record back to the evaluator.
 """
 
@@ -18,6 +18,7 @@ import copy
 import hashlib
 import importlib.util
 import json
+import math
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -86,13 +87,13 @@ def load_spec(path: Path | None = None) -> dict:
 def verify_inputs(spec_path: Path, cases_dir: Path) -> list[str]:
     """Hash checks against the SAD manifests. Returns problems (empty = all inputs as frozen)."""
     problems = []
-    manifest = json.loads((SAD_DIR / "rules" / "manifest.json").read_text())
+    manifest = json.loads((SAD_DIR / "rules" / "manifest.json").read_text(encoding="utf-8"))
     if Path(spec_path).resolve() == SPEC_PATH.resolve() and _sha(SPEC_PATH) != manifest["sha256"]:
         problems.append("rule pack sad-1.0.0.json differs from its manifest hash")
     if _sha(SAD_DIR / "source" / "NCT07347678.json") != manifest["source_sha256"]:
         problems.append("source registry snapshot differs from its manifest hash")
     if Path(cases_dir).resolve() == (SAD_DIR / "data" / "cases").resolve():
-        for c in json.loads((SAD_DIR / "data" / "case_manifest.json").read_text())["cases"]:
+        for c in json.loads((SAD_DIR / "data" / "case_manifest.json").read_text(encoding="utf-8"))["cases"]:
             for path, key in [(SAD_DIR / "data" / "cases" / f"{c['case_id']}.json", "case_sha256"),
                               (SAD_DIR / "data" / "context" / f"{c['case_id']}.json", "context_sha256")]:
                 if _sha(path) != c[key]:
@@ -237,12 +238,65 @@ def to_verdicts(case: SadCase, result: dict, guard: dict | None = None) -> list[
     return verdicts
 
 
-def evaluate_case(case: SadCase, spec: dict, engine=None) -> tuple[list[Verdict], dict]:
+def evaluate_case(case: SadCase, spec: dict, engine=None, *, original_codes=None) -> tuple[list[Verdict], dict]:
     engine = engine or load_engine()
     bundle = copy.deepcopy(case.bundle)  # guards rewrite units on a copy; injected changes are already in case.bundle
     guard = _normalise(bundle)
+    issues = _validate_evidence(bundle, case, original_codes or {})
     result = engine.evaluate(bundle, case.ctx, spec)
-    return to_verdicts(case, result, guard), result
+    verdicts = to_verdicts(case, result, guard)
+    for v in verdicts:
+        if v.criterion_id in issues:
+            v.status, v.needs_recovery = "unknown", False
+            v.note = "; ".join(issues[v.criterion_id])
+            trace.add(v.trace, "rule:evidence_policy", v.note, "unknown")
+    return verdicts, result
+
+
+def _validate_evidence(bundle, case, original_codes):
+    """Validate the bound encounter before the frozen evaluator; sanitize invalid duration types.
+
+    Method strings are an explicit synthetic allowlist, never general clinical validation.
+    No unapproved upper fasting cutoff is invented here.
+    """
+    policy = json.loads(Path(__file__).with_name('sad_validation_policy.json').read_text(encoding="utf-8"))
+    index = {e['fullUrl']: e['resource'] for e in bundle['entry']}
+    issues = {}
+    for e in bundle['entry']:
+        r = e['resource']
+        if (r.get('resourceType') != 'Observation' or
+                r.get('subject', {}).get('reference') != 'urn:uuid:' + case.patient_id or
+                r.get('encounter', {}).get('reference') != 'urn:uuid:' + case.ctx['encounter_id']):
+            continue
+        codes = {c.get('code') for c in r.get('code', {}).get('coding', []) if c.get('system') == LOINC}
+        for cid, obs in OBSERVATIONS.items():
+            if not codes.intersection(c for c, _, _ in obs):
+                continue
+            problems = []
+            if cid in policy['fasting']['criteria']:
+                specimen = index.get(r.get('specimen', {}).get('reference'), {})
+                collection = specimen.get('collection')
+                if not isinstance(collection, dict):
+                    collection = specimen['collection'] = {}
+                duration = collection.get('fastingStatusDuration')
+                if not isinstance(duration, dict):
+                    duration = collection['fastingStatusDuration'] = {}
+                value = duration.get('value')
+                valid = type(value) in (int, float) and math.isfinite(value)
+                if not valid or duration.get('code') != 'h' or value < policy['fasting']['minimum_hours']:
+                    problems.append('fasting duration must be a finite number >= 6 hours')
+                    # Frozen evaluator compares this field without checking its type.
+                    if isinstance(duration, dict):
+                        duration['value'] = 0
+            if cid in policy['methods']:
+                original = original_codes.get(r['id']) or next(iter(codes), '')
+                allowed = policy['methods'][cid].get(original, [])
+                method = r.get('method') or {}
+                if not isinstance(method, dict) or method.get('text') not in allowed or method.get('coding'):
+                    problems.append('missing or unsupported synthetic LDL method for code ' + original)
+            if problems:
+                issues.setdefault(cid, []).append(f"Observation/{r['id']}: " + '; '.join(problems))
+    return issues
 
 
 def evaluate_with_records(case: SadCase, spec: dict, cid: str, records: list[dict], engine=None) -> Verdict:
@@ -254,17 +308,31 @@ def evaluate_with_records(case: SadCase, spec: dict, cid: str, records: list[dic
     target = OBSERVATIONS[cid][0]
     bundle = copy.deepcopy(case.bundle)
     ids = {r["resource_id"] for r in records}
+    from src.agent.agent import allowed_equivalents
+    pred = next(p for p in predicates(spec) if p['criterion_id'] == cid)
+    allowed = allowed_equivalents(pred)
+    selected = [e['resource'] for e in bundle['entry'] if e['resource'].get('id') in ids]
+    if not ids or len(selected) != len(ids) or any(
+            r.get('resourceType') != 'Observation' or
+            r.get('subject', {}).get('reference') != 'urn:uuid:' + case.patient_id or
+            r.get('encounter', {}).get('reference') != 'urn:uuid:' + case.ctx['encounter_id'] or not any(
+                (c.get('system'), c.get('code')) in allowed for c in r.get('code', {}).get('coding', []))
+            for r in selected):
+        v = Verdict(case.case_id, cid, status='unknown', note='recovery rejected: record is not an allowed equivalent observation')
+        trace.add(v.trace, 'rule:equivalent_code_allowlist', v.note, 'unknown')
+        return v
     swapped = []
+    original_codes = {}
     for e in bundle["entry"]:
         r = e["resource"]
         if r.get("resourceType") == "Observation" and r.get("id") in ids:
-            original = next((c.get("code") for c in r.get("code", {}).get("coding", [])), None)
+            original = next(c['code'] for c in r['code']['coding'] if (c.get('system'), c.get('code')) in allowed)
             if original not in canonical:
+                original_codes[r['id']] = original
                 r["code"] = {"coding": [{"system": LOINC, "code": target[0], "display": target[2]}]}
                 swapped.append(f"{r['id']} {original} -> {target[0]}")
-    guard = _normalise(bundle)
-    result = engine.evaluate(bundle, case.ctx, spec)
-    v = next(v for v in to_verdicts(case, result, guard) if v.criterion_id == cid)
+    recovered_case = SadCase(case.case_id, case.ctx, bundle)
+    v = next(v for v in evaluate_case(recovered_case, spec, engine, original_codes=original_codes)[0] if v.criterion_id == cid)
     v.note = f"{v.note} (record found under an equivalent code: {', '.join(swapped) or 'none'}; evaluated by the SAD engine)"
     v.needs_recovery = False
     return v
@@ -272,20 +340,20 @@ def evaluate_with_records(case: SadCase, spec: dict, cid: str, records: list[dic
 
 # ---------- screening ----------
 
-def screen(cases: list[SadCase], spec: dict, use_agent: bool = True, label: str = "") -> tuple[list[PatientResult], int, int, dict]:
+def screen(cases: list[SadCase], spec: dict, use_agent: bool = True, label: str = "", *, model=None,
+           preflight_done=False, reused_verdicts=None) -> tuple[list[PatientResult], int, int, dict]:
     """Returns (results, agent tasks, tasks that changed the rule result, engine decisions by case).
 
     With the agent on, each case goes through: recovery of empty queries, free-text interpretation of
-    history criteria, conflict explanation, and the I5 evidence pack. With it off, results equal
-    the rules-only SAD evaluator exactly."""
+    history criteria, conflict explanation, and the I5 evidence pack. With it off, the frozen
+    evaluator remains subject to the adapter's evidence guards."""
     from src.agent import conflict, evidence, interpret
 
     engine = load_engine()
     preds = predicates(spec)
     by_id = {p["criterion_id"]: p for p in preds}
     rules = {r["id"]: r for r in spec["rules"]}
-    model = None
-    if use_agent:
+    if use_agent and not preflight_done:
         from src.agent.agent import preflight
         model, reason = preflight()
         if model is None:
@@ -306,10 +374,14 @@ def screen(cases: list[SadCase], spec: dict, use_agent: bool = True, label: str 
     for case in cases:
         verdicts, raw = evaluate_case(case, spec, engine)
         decisions[case.case_id] = raw["decision"]
-        if use_agent:
-            from src.agent.agent import recover
-            for i, v in enumerate(verdicts):
-                cid = v.criterion_id
+        from src.agent.agent import recover
+        for i, v in enumerate(verdicts):
+            cid = v.criterion_id
+            if (case.case_id, cid) in (reused_verdicts or {}):
+                verdicts[i] = copy.deepcopy(reused_verdicts[(case.case_id, cid)])
+                trace.add(verdicts[i].trace, 'rule:amendment_reuse', 'same criterion and same input; reused v1 evidence interpretation', verdicts[i].status)
+                continue
+            if use_agent:
                 if v.needs_recovery:
                     verdicts[i] = step(case, "recover", lambda v=v, cid=cid: recover(
                         v, by_id[cid], case.screening_date, model=model, query_patient_id=case.patient_id,

@@ -17,9 +17,11 @@ default data/ground_truth/trial_{T}_amendment_flips.txt.
 import argparse
 import csv
 import json
+import os
 import subprocess
 import sys
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -28,6 +30,7 @@ sys.path.insert(0, str(ROOT))
 
 from src import config  # noqa: E402
 from src.adapters.fhir_store import FhirStore  # noqa: E402
+from src.tools.local_io import atomic_write  # noqa: E402
 
 RUNS = ["baseline", "ctgov_timeout", "drop_codes", "bad_units", "amendment_v2"]
 SWITCHES = ["ctgov_timeout", "drop_codes", "bad_units", "amendment_v2", "note_conflict"]
@@ -38,9 +41,15 @@ DECIDED = {"met", "not_met"}
 
 def load_labels(path: Path) -> tuple[dict, dict]:
     crit, patient = {}, {}
-    with path.open(newline="", encoding="utf-8") as f:
-        for row in csv.DictReader(f):
+    with path.open(newline="", encoding="utf-8-sig") as f:
+        seen = set()
+        for line, row in enumerate(csv.DictReader(f), 2):
             pid, cid, exp = row["patient_id"].strip(), row["criterion_id"].strip(), row["expected"].strip()
+            key = (pid, cid.upper())
+            valid = {'eligible', 'not_eligible'} if cid.upper() == 'PATIENT' else DECIDED
+            if not pid or not cid or exp not in valid or key in seen:
+                raise ValueError(f'{path}:{line}: missing, unsupported or duplicate reference label; review before evaluation')
+            seen.add(key)
             if cid.upper() == "PATIENT":
                 patient[pid] = exp
             else:
@@ -66,10 +75,10 @@ def load_run(out_dir: Path, trial: str, date: str) -> dict | None:
     meta_path = out_dir / f"run_{trial}_{date}.json"
     if not meta_path.exists():
         return None
-    meta = json.loads(meta_path.read_text())
+    meta = json.loads(meta_path.read_text(encoding='utf-8'))
     run = {"meta": meta, "rows": load_csv(Path(meta["files"]["csv"])), "trace": load_trace(Path(meta["files"]["trace"]))}
     ij = meta["files"].get("impact_json")
-    run["impact"] = json.loads(Path(ij).read_text()) if ij and Path(ij).exists() else None
+    run["impact"] = json.loads(Path(ij).read_text(encoding='utf-8')) if ij and Path(ij).exists() else None
     return run
 
 
@@ -212,11 +221,14 @@ def failure_paths(runs: dict) -> dict:
 # ---------- orchestration ----------
 
 def run_all(args, out_root: Path) -> dict:
-    """Runs the baseline and every switch in parallel (independent processes, separate output folders)."""
-    procs = {}
-    for name in RUNS:
+    """Bounded concurrency, fresh completion markers, and explicit failure accounting."""
+    out_root.mkdir(parents=True, exist_ok=True)
+    atomic_write(out_root / 'execution_status.json', json.dumps({
+        'complete': False, 'failures': {}, 'runs': {name: 'pending' for name in RUNS}}))
+    def execute(name):
         out = out_root / name
-        if not (args.reuse and (out / f"run_{args.trial}_{args.date}.json").exists()):
+        marker = out / f"run_{args.trial}_{args.date}.json"
+        if not args.reuse:
             cmd = [sys.executable, str(ROOT / "run.py"), "--trial", args.trial, "--date", args.date, "--out", str(out)]
             for flag in ("nct", "predicates", "patients"):
                 if getattr(args, flag):
@@ -231,14 +243,32 @@ def run_all(args, out_root: Path) -> dict:
                         cmd += [f"--{flag.replace('_', '-')}", str(getattr(args, flag))]
             print(f"[eval] starting {name} ...", flush=True)
             out.mkdir(parents=True, exist_ok=True)
-            log = open(out / "console.txt", "w")
-            procs[name] = (subprocess.Popen(cmd, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT, text=True), log)
-    for name, (proc, log) in procs.items():
-        code = proc.wait()
-        log.close()
-        print(f"[eval] {name} finished (exit {code})", flush=True)
-    runs = {name: load_run(out_root / name, args.trial, args.date) for name in RUNS}
-    return {k: v for k, v in runs.items() if v}
+            marker.unlink(missing_ok=True)  # stale CSVs cannot prove this attempt completed
+            with (out / 'console.txt').open('w', encoding='utf-8') as log:
+                try:
+                    code = subprocess.run(cmd, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT,
+                                          env={**os.environ, 'PYTHONUTF8':'1'}).returncode
+                except OSError as e:
+                    return name, None, f'launch failed: {e}'
+            print(f'[eval] {name} finished (exit {code})', flush=True)
+            if code:
+                return name, None, f'exit {code}; see {out / "console.txt"}'
+        try:
+            run = load_run(out, args.trial, args.date)
+        except (OSError, ValueError, KeyError) as e:
+            return name, None, f'incomplete or invalid outputs: {e}'
+        if run and run['meta'].get('execution_mode') != ('rules_only' if args.no_agent else 'agent'):
+            return name, None, 'execution mode differs from requested mode (or missing mode metadata)'
+        return name, run, '' if run else 'missing completed run outputs'
+
+    with ThreadPoolExecutor(max_workers=getattr(args, 'jobs', 1)) as pool:
+        results = list(pool.map(execute, RUNS))
+    args.execution_failures = {name:error for name, run, error in results if error}
+    out_root.mkdir(parents=True, exist_ok=True)
+    atomic_write(out_root / 'execution_status.json', json.dumps({
+        'complete':not args.execution_failures, 'failures':args.execution_failures,
+        'runs':{name:('failed' if error else 'completed') for name, run, error in results}}, indent=2))
+    return {name:run for name, run, error in results if run and not error}
 
 
 def mark(value, target: str) -> str:
@@ -275,8 +305,9 @@ def render(args, labels_path: Path, m: dict, runs: dict) -> str:
          f"{fmt(rc['rate'])} ({rc['recovered']}/{rc['planted']})"),
         ("Amendment recall", "planted status flips detected after the amendment", ar["recall"], "100%",
          fmt(ar["recall"]) if ar["planted"] is not None else "not measured (no planted list)"),
-        ("Failure paths", "scenarios reproducible with a switch", sum(fp.values()), "5 of 5",
-         f"{sum(fp.values())} of {len(fp)}"),
+        ("Required failure paths", "four required switches; note_conflict is optional",
+         sum(fp[name] for name in RUNS if name != 'baseline'), "",
+         f"{sum(fp[name] for name in RUNS if name != 'baseline')} of 4"),
     ]
     out = [f"# Evaluation report: trial {args.trial}", "",
            f"- Screening date: {args.date} · Generated: {datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC}",
@@ -284,6 +315,13 @@ def render(args, labels_path: Path, m: dict, runs: dict) -> str:
            f"- Runs: {', '.join(runs)}" + (" · agent off" if args.no_agent else ""), ""]
     if sample:
         out += ["> ⚠️ **Sample labels used to exercise this script. These numbers are NOT an evaluation.**", ""]
+    if labels_path.name == 'design_labels.csv':
+        out += ["> DESIGN LABELS ONLY: not independently reviewed clinical ground truth. "
+                f"Coverage: {cm['labelled_criteria']} criterion labels and {pm['labelled_patients']} patient labels. "
+                "EXT11's smoking range and EXT43's method/code conflict require reviewer adjudication.", ""]
+    if getattr(args, 'execution_failures', {}):
+        out += ['> INCOMPLETE EXECUTION — metrics below do not constitute a successful evaluation.', '']
+        out += [f'- {name}: {error}' for name, error in args.execution_failures.items()]
     out += ["| Metric | Definition | Result | Target | |", "|---|---|---|---|---|"]
     for name, desc, val, target, shown in rows:
         out.append(f"| {name} | {desc} | {shown} | {target} | {mark(val, target) if target else ''} |")
@@ -325,26 +363,48 @@ def evaluate(runs: dict, crit_labels: dict, patient_labels: dict, store: FhirSto
     }
 
 
+def acceptance_failures(metrics):
+    """Project targets are gates, not merely red cells in a successful command."""
+    failed = [name for name in RUNS if name != 'baseline' and not metrics['failures'][name]]
+    if metrics['patient']['wrongful_exclusions']:
+        failed.append('wrongful exclusions must be zero')
+    for label, value, minimum in [
+        ('patient sensitivity', metrics['patient']['sensitivity'], 95),
+        ('strict criterion agreement', metrics['criterion']['accuracy_strict'], 90),
+        ('evidence coverage', metrics['evidence']['coverage'], 100),
+        ('trace coverage', metrics['trace']['coverage'], 100),
+        ('amendment recall', metrics['amendment']['recall'], 100),
+    ]:
+        if value is None or value < minimum:
+            failed.append(f'{label}: {value} (required >= {minimum})')
+    return failed
+
+
 def main() -> int:
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, 'reconfigure'):
+            stream.reconfigure(encoding='utf-8')
     p = argparse.ArgumentParser(description="Evaluate pre-screening against ground truth")
     p.add_argument("--trial", required=True)
     p.add_argument("--labels", type=Path, required=True)
     p.add_argument("--flips", type=Path, help="planted amendment flips, one patient_id per line")
     p.add_argument("--date", default=config.SCREENING_DATE)
     p.add_argument("--reuse", action="store_true", help="use existing run outputs instead of re-running")
+    p.add_argument('--jobs', type=int, choices=range(1, 6), default=1, help='concurrent scenarios (default 1 to avoid model throttling)')
+    p.add_argument('--out-root', type=Path, help='separate directory for this evaluation')
     p.add_argument("--no-agent", action="store_true")
     for flag in ("nct", "predicates", "patients", "v1-snapshot", "v2-snapshot", "v2-predicates"):
         p.add_argument(f"--{flag}", type=str if flag == "nct" else Path)
     args = p.parse_args()
 
-    out_root = config.OUT_DIR / "eval" / args.trial
+    crit_labels, patient_labels = load_labels(args.labels)
+    out_root = args.out_root or config.OUT_DIR / "eval" / args.trial
     runs = run_all(args, out_root)
     if "baseline" not in runs:
         print("error: baseline run produced no output", file=sys.stderr)
         return 2
-    crit_labels, patient_labels = load_labels(args.labels)
     flips_path = args.flips or config.DATA_DIR / "ground_truth" / f"trial_{args.trial}_amendment_flips.txt"
-    planted = [l.strip() for l in flips_path.read_text().splitlines() if l.strip()] if flips_path.exists() else None
+    planted = [l.strip() for l in flips_path.read_text(encoding='utf-8').splitlines() if l.strip()] if flips_path.exists() else None
     if args.trial == "SAD":
         from src.engine import sad_adapter as sa
         cases = sa.load_cases(args.patients) if args.patients else sa.load_cases() + sa.load_cases(config.DATA_DIR / "extended_cases" / "cases")
@@ -354,13 +414,19 @@ def main() -> int:
         store = FhirStore(args.patients or config.PATIENT_DIR)
 
     metrics = evaluate(runs, crit_labels, patient_labels, store, planted)
+    failed_targets = acceptance_failures(metrics)
+    metrics['acceptance'] = {'passed': not args.execution_failures and not failed_targets,
+                             'failed_targets': failed_targets,
+                             'scope': 'measured project targets only; independent labels require human review'}
     report = render(args, args.labels, metrics, runs)
     path = out_root / f"eval_report_{args.trial}_{args.date}.md"
     path.write_text(report, encoding="utf-8")
     (out_root / f"eval_metrics_{args.trial}_{args.date}.json").write_text(json.dumps(metrics, indent=2, default=str))
     print(report)
     print(f"[eval] report: {path}")
-    return 0
+    if failed_targets:
+        print('[eval] acceptance targets not met: ' + '; '.join(failed_targets), file=sys.stderr)
+    return 1 if args.execution_failures or failed_targets else 0
 
 
 if __name__ == "__main__":
