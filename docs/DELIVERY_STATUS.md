@@ -15,17 +15,15 @@ This file separates engineering evidence from human deliverables. It is not a co
 - Explicit smoking ranges and approximate quantities are detected from source text before model interpretation. EXT02's approximate quantity, as well as EXT01/EXT11 ranges, remains unknown.
 - Regression result: 239 tests and 23 subtests passed on Windows with its default encoding. The frozen evaluator's original-file check passed after restoring 8 manifest-referenced source records from the existing local demo, with matching SHA hashes. Those ignored raw originals are not included in a clean Git clone.
 
-## Independent review - pending
+## Ground truth - eight required cases
 
-The user confirmed no independent labels or teammate review results exist yet. Run:
+On 2026-10-11 the user designated `data/ground_truth/sad_confirmed_labels_v1.csv` as ground truth and changed the minimum from 20 to **8 complete cases, SAD01-SAD08**. The supplied CSV is preserved: 80 computable criteria, 8 manual I5 entries and 8 overall conclusions. The 50 extended cases are supplementary regression cases, not part of this required cohort. Reviewer identity and date are absent, so independent annotation provenance is not certified.
 
-```powershell
-python scripts/prepare_independent_review.py
-```
+Run `python -m eval.sad_reference --log out/prescreen_log_SAD_2026-10-09.csv`. This checks all eight cases and preserves unknown/pending/review distinctions. Any reference mismatch returns a nonzero exit code. This is separate from the legacy design-label percentage gates.
 
-This creates a blank annotation sheet for all 58 patients (580 computable criteria plus 58 patient conclusions), source records and criteria under out/independent-review. It does not manufacture truth labels. Require at least 20 complete patients with reviewer, evidence, date and rationale. Resolve EXT11's range and EXT43's method/code discrepancy before using their labels to judge correctness.
+The existing verified baseline agrees on 79/80 computable criteria (98.75%) and 6/8 overall conclusions (75%). SAD07/I2 is expected unknown but returned met; SAD04 is expected likely_eligible but returned needs_review; SAD07 is expected needs_review but returned likely_eligible. These discrepancies remain unresolved; eight complete cases do not imply all results pass.
 
-The generator refuses to overwrite filled review sheets. Keep unknown/undetermined annotations in the review record; only export adjudicated binary labels for scoring. Blank, unsupported and duplicate scoring labels are rejected.
+`python scripts/prepare_independent_review.py` optionally creates blank review sheets for these eight cases and refuses to overwrite filled sheets. It does not replace the confirmed CSV or manufacture reviewer sign-off.
 
 ## Submission material - pending
 
@@ -33,6 +31,6 @@ The generator refuses to overwrite filled review sheets. Keep unknown/undetermin
 - A recorded 3-minute video. Use DEMO_SCRIPT.md as a recording outline; it is not a video.
 - The official Slack writeup template and a completed, reviewed writeup. WRITEUP_DRAFT.md is provisional and must not be called template-compliant without the official template.
 - Team member names and emails supplied by the team; do not infer them from Git author metadata.
-- Anonymous repository accessibility. Authenticated git access is insufficient; a logged-out HTTP 404 needs the owner to check visibility and the exact URL. No visibility change or public release has been performed.
+Repository accessibility was verified on 2026-10-11: GitHub reports public visibility and an anonymous request returned HTTP 200.
 
 The second trial, Lambda, EventBridge and SES remain optional under TASKS; their absence is not counted as a mandatory failure here. The optional note_conflict switch is separate from the four mandatory failure switches.
