@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT25",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "eda3b088-4821-5ea2-9056-f885909f065e",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "e16950f1-2580-54f3-93c1-074e94bea0e2",
+  "history_id": "647cef32-160a-5f25-87e6-61e43165228d",
+  "FHIR_file": "cases/EXT25.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "BMI 17.5 (below 18)",
+  "design_category": "excluded",
+  "design_target": "I1",
+  "design_target_status": "not_met"
+}

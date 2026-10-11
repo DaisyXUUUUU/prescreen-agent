@@ -1,12 +1,12 @@
 """Free-text history interpretation for SAD E3 (smoking), E4 (advanced therapies), E5 (lipid-lowering drugs).
 
-Ming's rule pack only reads fixed questionnaire fields; anything else is `unknown`. When a
+The SAD rule pack only reads fixed questionnaire fields; anything else is `unknown`. When a
 history criterion is unknown and the questionnaire carries free text, the model reads it and
 returns structured facts. It does not decide the criterion:
 
   - every fact must carry a quote; quotes that do not occur in the source are dropped, and a
     fact without a verified quote is ignored;
-  - the code applies Ming's thresholds and windows (cigarettes/day and /week, lookback months
+  - the code applies the rule pack's thresholds and windows (cigarettes/day and /week, lookback months
     or days, date arithmetic) to those facts;
   - anything the model marks unclear stays `unknown`, with the model's explanation for the CRC.
 
@@ -79,7 +79,7 @@ def _window_start(screening: date, rule: dict) -> date:
     if rule.get("lookback_days"):
         return screening - timedelta(days=rule["lookback_days"])
     months = rule.get("lookback_calendar_months", 0)
-    y, m = divmod(screening.year * 12 + screening.month - 1 - months, 12)  # same as Ming's subtract_months
+    y, m = divmod(screening.year * 12 + screening.month - 1 - months, 12)  # same as the SAD evaluator's subtract_months
     return screening.replace(year=y, month=m + 1, day=min(screening.day, calendar.monthrange(y, m + 1)[1]))
 
 

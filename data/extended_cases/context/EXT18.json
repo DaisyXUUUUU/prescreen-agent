@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT18",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "715d57a1-ef72-52a3-9043-4434d67a1ede",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "de5c6eab-5d7d-5e0a-8736-ec3632ad7d3e",
+  "history_id": "cd156630-64f3-54f3-9aa7-145f9929417f",
+  "FHIR_file": "cases/EXT18.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "drug free text: gene therapy trial in 2023 (outside 12 months)",
+  "design_category": "likely_eligible",
+  "design_target": "E4",
+  "design_target_status": "not_met"
+}

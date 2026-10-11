@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT31",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "ba6c4303-69a9-5ea9-aac5-057143616d50",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "513af397-deb0-558c-a55e-3498f326f343",
+  "history_id": "c80a312e-cab3-562e-a2cd-39d85566519b",
+  "FHIR_file": "cases/EXT31.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "Lp(a) 24 nmol/L",
+  "design_category": "excluded",
+  "design_target": "I3",
+  "design_target_status": "not_met"
+}

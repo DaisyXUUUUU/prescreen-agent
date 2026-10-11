@@ -126,7 +126,7 @@ class FhirStore:
     @classmethod
     def from_bundles(cls, bundles: dict[str, dict]) -> "FhirStore":
         """Index bundles already in memory. Resources are shared, not copied, so callers that
-        evaluate the same bundles (e.g. Ming's SAD engine) see any in-memory changes."""
+        evaluate the same bundles (e.g. the SAD evaluator) see any in-memory changes."""
         store = cls.__new__(cls)
         store.patient_dir, store.index, store.load_errors = None, {}, []
         for name, bundle in bundles.items():

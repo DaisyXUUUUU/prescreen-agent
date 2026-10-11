@@ -69,7 +69,7 @@ def main():
     ap.add_argument("--runs", type=Path, default=R, help="folder with the five run folders (default out/eval/SAD)")
     R = ap.parse_args().runs
     spec = sa.load_spec()
-    cases = sa.load_cases() + sa.load_cases(config.DATA_DIR / "eng_cases" / "cases")
+    cases = sa.load_cases() + sa.load_cases(config.DATA_DIR / "extended_cases" / "cases")
     rules_only, *_ = sa.screen(cases, spec, use_agent=False)
     rules_cat = {r.patient_id: r.category for r in rules_only}
     rules_status = {(r.patient_id, v.criterion_id): v.status for r in rules_only for v in r.verdicts}
@@ -98,8 +98,8 @@ def main():
                          "agent_used": any(t["actor"] == "agent" for t in steps), "trace": steps}
         facts = case_facts(c)
         patients.append({
-            "id": c.case_id, "source": "Ming" if c.case_id.startswith("SAD") else "Engineering",
-            "purpose": c.ctx.get("purpose", "Ming's designed screening case"),
+            "id": c.case_id, "source": "Core" if c.case_id.startswith("SAD") else "Extended",
+            "purpose": c.ctx.get("purpose", "core screening case"),
             "design": c.ctx.get("design_category"), "rules_category": rules_cat[c.case_id],
             "category": runs["baseline"]["cat"][c.case_id],
             "by_run": {run: runs[run]["cat"][c.case_id] for run in RUNS},
@@ -143,10 +143,10 @@ def main():
     showcase = {
         "recovery": {"case": "SAD04", "criterion": "I2", "run": "drop_codes",
                      "trace": drop_tr.get("SAD04|I2", [])},
-        "free_text": {"case": "ENG04", "criterion": "E4", "trace": tr.get("ENG04|E4", [])},
-        "boundary": {"case": "ENG01", "criterion": "E3", "trace": tr.get("ENG01|E3", [])},
-        "conflict": {"case": "ENG07", "criterion": "I2", "trace": tr.get("ENG07|I2", [])},
-        "evidence": {"case": "ENG06", "criterion": "I5", "trace": tr.get("ENG06|I5", [])},
+        "free_text": {"case": "EXT04", "criterion": "E4", "trace": tr.get("EXT04|E4", [])},
+        "boundary": {"case": "EXT01", "criterion": "E3", "trace": tr.get("EXT01|E3", [])},
+        "conflict": {"case": "EXT07", "criterion": "I2", "trace": tr.get("EXT07|I2", [])},
+        "evidence": {"case": "EXT06", "criterion": "I5", "trace": tr.get("EXT06|I5", [])},
     }
 
     data = {
@@ -170,10 +170,10 @@ def main():
     cat = Counter(p["category"] for p in patients)
     changed = [p for p in patients if p["category"] != p["rules_category"]]
     md = [f"# SAD pre-screening run, {DATE}", "",
-          f"{len(patients)} synthetic patients (8 from Ming, {len(patients) - 8} engineering-authored), trial NCT07347678 SAD cohort. "
+          f"{len(patients)} synthetic patients (8 core screening cases, {len(patients) - 8} extended scenarios), trial NCT07347678 SAD cohort. "
           "Open `report.html` (or `docs/demo/index.html` in the repo) for the full interactive view.", "",
           "| Section | Patients |", "|---|---|"] + [f"| {k} | {cat.get(k, 0)} |" for k in ("likely_eligible", "pending", "excluded", "needs_review")] + [
-          "", f"Patients whose result differs from Ming's rules-only evaluator: {len(changed)}", ""] + [
+          "", f"Patients whose result differs from the rules-only evaluation: {len(changed)}", ""] + [
           f"- {p['id']}: {p['rules_category']} → {p['category']} ({p['purpose']})" for p in changed]
     (R / "REVIEW.md").write_text("\n".join(md) + "\n", encoding="utf-8")
     print(f"wrote {R / 'report.html'} ({len(page) // 1024} KB), {demo / 'index.html'}, {R / 'REVIEW.md'}")
@@ -311,7 +311,7 @@ a { color: var(--accent); }
   <section id="input">
     <span class="eyebrow">1 · Input</span>
     <h2>Eligibility criteria</h2>
-    <p class="muted">Fetched from the ClinicalTrials.gov API, snapshotted with SHA-256, and compiled by hand into Ming's rule pack <code>sad-1.0.0</code>. The last column says who settles each criterion.</p>
+    <p class="muted">Fetched from the ClinicalTrials.gov API, snapshotted with SHA-256, and compiled and reviewed into the rule pack <code>sad-1.0.0</code>. The last column says who settles each criterion.</p>
     <div class="panel scroll"><table id="crit-table"><thead><tr><th>ID</th><th>Type</th><th>Criterion text (registry)</th><th>Compiled rule</th><th>Settled by</th></tr></thead><tbody></tbody></table></div>
     <h2>Patients</h2>
     <p class="muted" id="roster-note"></p>
@@ -330,7 +330,7 @@ a { color: var(--accent); }
         <li>Explains conflicting results and what to check</li>
         <li>Labels changed criteria as substantive, wording or ambiguous</li></ul></div>
       <div class="panel"><h3>Code does</h3><ul>
-        <li>Every numeric comparison and time window, with Ming's thresholds</li>
+        <li>Every numeric comparison and time window, with the rule pack's thresholds</li>
         <li>Checks each quote really occurs in the source; drops it otherwise</li>
         <li>Drug classes from the NLM RxNav terminology, never the model's memory</li>
         <li>Scans the text for drugs the model failed to report</li>
@@ -346,7 +346,7 @@ a { color: var(--accent); }
     <p class="muted">Four sections, as a coordinator writes them by hand. Select a section to filter; select a patient to see every criterion with its evidence and trace.</p>
     <div class="sections4" id="sections4"></div>
     <div class="filters">
-      <label><input type="checkbox" id="f-changed"> Only patients the agent changed (vs Ming's rules-only evaluator)</label>
+      <label><input type="checkbox" id="f-changed"> Only patients the agent changed (vs rules-only evaluation)</label>
       <label><input type="checkbox" id="f-agent"> Only patients the agent worked on</label>
     </div>
     <div class="legend">
@@ -359,7 +359,7 @@ a { color: var(--accent); }
   <section id="amendment">
     <span class="eyebrow">Amendment monitoring</span>
     <h2>When the criteria change</h2>
-    <p class="muted">The fetched criteria are compared with the last snapshot. Each changed item is classified by the model; only substantive changes trigger a re-screen with the amended rules (an engineering sample amendment here: SAD LDL-C threshold 70 → 100 mg/dL, HbA1c line reworded).</p>
+    <p class="muted">The fetched criteria are compared with the last snapshot. Each changed item is classified by the model; only substantive changes trigger a re-screen with the amended rules (a simulated amendment here: SAD LDL-C threshold 70 → 100 mg/dL, HbA1c line reworded).</p>
     <div class="panel scroll"><table id="changes"><thead><tr><th>Before</th><th>After</th><th>Classification</th><th>Model's reason</th></tr></thead><tbody></tbody></table></div>
     <p id="flips"></p>
   </section>
@@ -372,13 +372,13 @@ a { color: var(--accent); }
 
   <section id="evaluation">
     <span class="eyebrow">4 · Evaluation</span>
-    <h2>Measured against the cases' design intent</h2>
-    <p class="muted">Labels are the engineering cases' design intent, written before any run (<code>data/eng_cases/design_labels.csv</code>). They test whether the pipeline does what each case was built to test; they are not clinical ground truth.</p>
+    <h2>Measured against the scenarios' design intent</h2>
+    <p class="muted">Labels are the extended scenario set's design intent, written before any run (<code>data/extended_cases/design_labels.csv</code>). They test whether the pipeline does what each case was built to test; they are not clinical ground truth.</p>
     <div class="panel scroll"><table id="metrics"><thead><tr><th>Metric</th><th>Result</th><th>Target</th></tr></thead><tbody></tbody></table></div>
   </section>
 
   <footer>
-    <span>Synthetic data only (Synthea demographics; screening records authored by Ming and by engineering). Public APIs: ClinicalTrials.gov, NLM RxNav. AWS: Amazon Bedrock, Amazon S3.</span>
+    <span>Synthetic data only (Synthea demographics; designed screening records). Public APIs: ClinicalTrials.gov, NLM RxNav. AWS: Amazon Bedrock, Amazon S3.</span>
     <span>Source: <a href="https://github.com/DaisyXUUUUU/prescreen-agent" target="_blank" rel="noopener">github.com/DaisyXUUUUU/prescreen-agent</a></span>
   </footer>
 </div>
@@ -405,14 +405,14 @@ const base = D.runs.baseline;
 const agentTasks = Object.values(D.agent_kinds).reduce((a, b) => a + b, 0);
 document.getElementById('flowstrip').innerHTML = `
   <div><span class="eyebrow">Input</span><span class="n">${D.criteria.length}</span><span class="muted">criteria from ClinicalTrials.gov, ${P.length} patients as FHIR R4 records</span></div>
-  <div><span class="eyebrow">Rules</span><span class="n">${P.length * CRIT.length}</span><span class="muted">criterion checks by Ming's deterministic evaluator</span></div>
+  <div><span class="eyebrow">Rules</span><span class="n">${P.length * CRIT.length}</span><span class="muted">criterion checks by the deterministic SAD evaluator</span></div>
   <div class="agentcol"><span class="eyebrow">Agent</span><span class="n">${agentTasks}</span><span class="muted">${Object.entries(D.agent_kinds).map(([k, v]) => `${v} × ${k}`).join(' · ')}</span></div>
   <div><span class="eyebrow">Output</span><span class="n">${ORDER.map(c => base.counts[c]).join(' / ')}</span><span class="muted">likely eligible / pending / excluded / needs review</span></div>`;
 
 document.querySelector('#crit-table tbody').innerHTML = D.criteria.map(c =>
   `<tr><td class="mono">${c.id}</td><td>${c.type}</td><td>${esc(c.text)}</td><td class="mono">${esc(c.rule)}</td><td>${esc(c.by)}</td></tr>`).join('');
-const nMing = P.filter(p => p.source === 'Ming').length;
-document.getElementById('roster-note').textContent = `${nMing} cases from Ming (Synthea demographics, designed screening records) and ${P.length - nMing} engineering cases generated from her template, one deliberate situation each: both sides of every threshold, exact boundaries, unit conversion, missing data, hand-written free text, liver and kidney evidence, conflicts.`;
+const nCore = P.filter(p => p.source === 'Core').length;
+document.getElementById('roster-note').textContent = `${nCore} core screening cases (Synthea demographics, designed screening records) and ${P.length - nCore} extended scenarios generated from core case SAD01, one deliberate situation each: both sides of every threshold, exact boundaries, unit conversion, missing data, hand-written free text, liver and kidney evidence, conflicts.`;
 document.querySelector('#roster tbody').innerHTML = P.map(p =>
   `<tr><td class="mono">${p.id}</td><td>${p.source}</td><td>${esc(p.purpose)}</td><td class="mono">${esc(p.facts['LDL-C'] || '-')}</td><td class="mono">${esc(p.facts['Lp(a)'] || '-')}</td><td class="mono">${esc(p.facts['BMI'] || '-')}</td></tr>`).join('');
 
@@ -421,7 +421,7 @@ const traceHTML = steps => steps.length ? steps.map(t =>
 const show = D.showcase;
 const card = (title, k, text, s) => `<article class="card panel"><span class="eyebrow">${title}</span><h3>${esc(s.case)} · ${s.criterion}</h3><p>${text}</p><div class="trace">${traceHTML(s.trace)}</div></article>`;
 document.getElementById('showcase').innerHTML = [
-  card('Missing result', 0, 'Under the <code>drop_codes</code> switch the LDL-C result is filed under the calculated-LDL code. The rule query finds nothing; the agent looks up equivalent codes, finds the record and hands its ID back to Ming\'s evaluator, which decides.', show.recovery),
+  card('Missing result', 0, 'Under the <code>drop_codes</code> switch the LDL-C result is filed under the calculated-LDL code. The rule query finds nothing; the agent looks up equivalent codes, finds the record and hands its ID back to the evaluator, which decides.', show.recovery),
   card('Free text and drug knowledge', 0, '"Received a twice-yearly cholesterol injection called Leqvio". The model extracts the drug and date; RxNav resolves Leqvio to inclisiran, classed as RNA, Small Interfering; code checks the 12-month window.', show.free_text),
   card('Fuzzy boundary', 0, '"4 or 5 cigarettes on a Friday or Saturday night". Over 2 a day on smoking days, under 10 a week: the protocol\'s two definitions disagree, so the criterion stays unknown for the coordinator.', show.boundary),
   card('Conflicting results', 0, 'Two LDL-C results, 65 and 85 mg/dL, same time and specimen. Code re-runs the evaluator with each: the choice changes the outcome, so it goes to review with the model\'s explanation.', show.conflict),
@@ -458,7 +458,7 @@ function select(id) {
 }
 document.getElementById('f-changed').onchange = renderMatrix;
 document.getElementById('f-agent').onchange = renderMatrix;
-renderSections(); renderMatrix(); select('ENG04');
+renderSections(); renderMatrix(); select('EXT04');
 
 document.querySelector('#changes tbody').innerHTML = D.impact.changes.map(c => `<tr><td>${esc(c.old || '-')}</td><td>${esc(c.new || '-')}</td><td><span class="change-label ${c.label === 'substantive' ? 'bad' : 'ok'}">${c.label}</span></td><td>${esc(c.reason)}</td></tr>`).join('');
 document.getElementById('flips').innerHTML = `<strong>${D.impact.flips.length} patients change status</strong> after re-screening with the amended rule: <span class="mono">${D.impact.flips.join(', ')}</span>.`;

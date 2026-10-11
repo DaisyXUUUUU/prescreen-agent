@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT46",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "c818aa53-e09b-5abf-a416-a6bda62df7ca",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "d1276c61-46fc-5c47-8f6e-9597b44f5883",
+  "history_id": "39b01289-b690-5b59-812b-62b120d52ca7",
+  "FHIR_file": "cases/EXT46.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "I5: cirrhosis on the problem list",
+  "design_category": "needs_review",
+  "design_target": "I5",
+  "design_target_status": null
+}

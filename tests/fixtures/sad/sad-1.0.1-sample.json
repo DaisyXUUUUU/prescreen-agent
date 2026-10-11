@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1-engineering-sample",
+  "version": "1.0.1-sample",
   "trial_id": "NCT07347678",
   "cohort": "SAD",
   "source_sha256": "40ed9e30c7b08b2a35b466df9dd8968caa1b476ede619dbb3ffbb1e03ba5422e",
@@ -144,5 +144,5 @@
     "All supplied cases are authored examples, not an unbiased sample or independently labeled clinical test set."
   ],
   "freeze_time_utc": "2026-10-09T20:18:43.429369+00:00",
-  "note": "ENGINEERING SAMPLE amendment for the T10 demo, derived from Ming's sad-1.0.0.json. NOT Ming's v2. Only change: I2 SAD LDL-C lower bound 70 -> 100 mg/dL."
+  "note": "Sample amendment for the amendment demo, derived from sad-1.0.0.json. Only change: I2 SAD LDL-C lower bound 70 -> 100 mg/dL."
 }

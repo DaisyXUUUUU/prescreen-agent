@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT28",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "dbd5cca6-75d0-5667-88f7-3672042a0078",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "5286c7e2-8a70-5c62-b00a-cd9036b79d2f",
+  "history_id": "9d3fd543-00de-58b5-8205-99dd95a835b2",
+  "FHIR_file": "cases/EXT28.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "LDL 1.81 mmol/L = protocol's own equivalent of 70 mg/dL",
+  "design_category": "likely_eligible",
+  "design_target": "I2",
+  "design_target_status": "met"
+}

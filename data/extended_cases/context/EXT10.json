@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT10",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "f2d7d490-ca60-51f0-a981-500256643e06",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "57439c8a-213c-5deb-bb0d-e57f040a7d67",
+  "history_id": "30a5850d-4769-504d-82ca-1e720c4aeba6",
+  "FHIR_file": "cases/EXT10.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "smoking free text: vapes nicotine daily, no cigarettes (protocol counts cigarettes)",
+  "design_category": null,
+  "design_target": "E3",
+  "design_target_status": null
+}

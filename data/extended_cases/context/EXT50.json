@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT50",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "d5f32832-e9c0-5068-b88c-beceb2215ec2",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "0eb7c333-303c-53d2-be29-3055fab2cb69",
+  "history_id": "33cc1ff8-e6ae-5226-9be1-bb52c1f2e97b",
+  "FHIR_file": "cases/EXT50.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "two ALT results 25 and 30 (choice does not matter)",
+  "design_category": "likely_eligible",
+  "design_target": "E1",
+  "design_target_status": "not_met"
+}

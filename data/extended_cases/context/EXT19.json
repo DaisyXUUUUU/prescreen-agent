@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT19",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "b963178b-7345-58e9-b080-efb6853e45d8",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "763e9629-1eaa-5d47-8e0b-6a25112fa03a",
+  "history_id": "d5ae0362-4ca9-505a-bdeb-b71ee6c9a2ea",
+  "FHIR_file": "cases/EXT19.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "drug free text: Kynamro (mipomersen, an ASO) until January 2026",
+  "design_category": "excluded",
+  "design_target": "E4",
+  "design_target_status": "met"
+}

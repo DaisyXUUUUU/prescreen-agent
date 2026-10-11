@@ -1,4 +1,4 @@
-"""T6: write the pre-screening log the CRC reads (Markdown) and the eval reads (CSV)."""
+"""Write the pre-screening log the CRC reads (Markdown) and the eval reads (CSV)."""
 
 import csv
 import logging

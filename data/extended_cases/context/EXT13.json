@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT13",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "b6f09896-860f-5763-b9a0-eaec0402d6f9",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "d528f53f-6659-52b4-9dd1-8a409177de94",
+  "history_id": "00a2904a-2461-5bdf-bada-27f52610f704",
+  "FHIR_file": "cases/EXT13.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "drug free text: brand statin stopped inside the 30-day window",
+  "design_category": "excluded",
+  "design_target": "E5",
+  "design_target_status": "met"
+}

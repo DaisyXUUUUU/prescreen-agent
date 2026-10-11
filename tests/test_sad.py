@@ -1,4 +1,4 @@
-"""SAD adapter: Ming's engine inside the engineering pipeline (offline, no model)."""
+"""SAD adapter: the SAD evaluator inside the screening pipeline (offline, no model)."""
 
 import json
 from collections import Counter
@@ -39,10 +39,10 @@ def test_reproduces_ming_engine_exactly(sad):
     """Acceptance for the adapter: same decision per case and same status/conflict/reason per criterion."""
     spec, cases, _ = sad
     results, *_ = sa.screen(cases, spec, use_agent=False)
-    ming = {x["case_id"]: x for x in json.loads((ROOT / "t6_sad_demo/outputs/prescreening_log.json").read_text("utf-8"))}
+    reference = {x["case_id"]: x for x in json.loads((ROOT / "trials/nct07347678_sad/outputs/prescreening_log.json").read_text("utf-8"))}
     for r in results:
-        assert r.category == sa.DECISION_TO_CATEGORY[ming[r.patient_id]["decision"]], r.patient_id
-        rows = {c["criterion_id"]: c for c in ming[r.patient_id]["criteria"]}
+        assert r.category == sa.DECISION_TO_CATEGORY[reference[r.patient_id]["decision"]], r.patient_id
+        rows = {c["criterion_id"]: c for c in reference[r.patient_id]["criteria"]}
         for v in r.verdicts:
             assert (v.status, v.conflict) == (rows[v.criterion_id]["status"], rows[v.criterion_id]["conflict"])
             assert rows[v.criterion_id]["reason"] in v.note
@@ -79,7 +79,7 @@ def test_drop_codes_then_agent_tools_restore_the_verdict(sad):
     t["lookup_equivalent_codes"]()
     q = t["fhir_query_codes"](codes=["13457-7"])
     out = t["evaluate_with_records"](resource_ids=[q["records"][0]["resource_id"]])
-    assert out["status"] == "met"  # 70 mg/dL >= 70, decided by Ming's engine
+    assert out["status"] == "met"  # 70 mg/dL >= 70, decided by the SAD evaluator
     final = ag.finalize(v, rc, "")
     assert final.status == "met" and "13457-7 -> 18262-6" in final.note
     assert "equivalent code 13457-7" in final.recovery
@@ -92,7 +92,7 @@ def test_bad_units_convert_and_implausible_guard(sad):
     res = by_case(sa.screen(cases, spec, use_agent=False)[0])
     i2 = lambda c: next(v for v in res[c].verdicts if v.criterion_id == "I2")  # noqa: E731
     assert i2("SAD01").status == "met" and any(t["tool"] == "rule:unit_convert" for t in i2("SAD01").trace)
-    # 690 mg/dL would pass Ming's >= 70 check; the plausibility guard makes it unknown instead
+    # 690 mg/dL would pass the evaluator's >= 70 check; the plausibility guard makes it unknown instead
     assert i2("SAD02").status == "unknown" and "outside plausible range" in i2("SAD02").note
     assert res["SAD02"].category == "pending"
 

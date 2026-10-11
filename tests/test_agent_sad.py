@@ -3,7 +3,7 @@
 The model is replaced by canned structured outputs and RxNav by a fixed table, so these tests
 check what the code does with the model's answers: quote checks, thresholds and windows applied
 by code, terminology over model memory, and aggregation that never excludes on interpretation.
-Cases are the engineering-authored ones in data/eng_cases/ (design intent, not ground truth).
+Cases are the extended scenario set in data/extended_cases/ (design intent, not ground truth).
 """
 
 import pytest
@@ -29,7 +29,7 @@ def env(monkeypatch):
     monkeypatch.setattr(rxnav, "scan_text", lambda text, cid: [
         {"phrase": k, **e} for k, e in RXNAV.items() if k in text.lower() and rxnav.in_class(e, cid) == "yes"])
     spec, engine = sa.load_spec(), sa.load_engine()
-    cases = {c.case_id: c for c in sa.load_cases() + sa.load_cases(config.DATA_DIR / "eng_cases" / "cases")}
+    cases = {c.case_id: c for c in sa.load_cases() + sa.load_cases(config.DATA_DIR / "extended_cases" / "cases")}
     sa.install_store(list(cases.values()))
     rules = {r["id"]: r for r in spec["rules"]}
 
@@ -59,20 +59,20 @@ def exposure(substance, quote, **kw):
 
 def test_daily_smoking_over_threshold_is_met_and_interpreted(env):
     env.answer(smoking())
-    v = env.run("ENG02", "E3")
+    v = env.run("EXT02", "E3")
     assert v.status == "met" and v.interpreted and "10/day" in v.note
 
 
 def test_intermittent_smoking_where_definitions_disagree_stays_unknown(env):
     env.answer(smoking(smokes_every_day="no", cigarettes_on_a_smoking_day=4.5, smoking_days_per_week=1.5,
                        quotes=["usually 4 or 5 cigarettes on a Friday or Saturday night"]))
-    v = env.run("ENG01", "E3")
+    v = env.run("EXT01", "E3")
     assert v.status == "unknown" and "CRC to judge" in v.note
 
 
 def test_fabricated_quote_is_not_used(env):
-    env.answer(smoking(quotes=["smokes two packs a day"]))  # not in ENG02's text
-    v = env.run("ENG02", "E3")
+    env.answer(smoking(quotes=["smokes two packs a day"]))  # not in EXT02's text
+    v = env.run("EXT02", "E3")
     assert v.status == "unknown" and "no supporting quote" in v.note
 
 
@@ -82,7 +82,7 @@ def test_terminology_overrides_model_memory(env):
     # the model wrongly says Leqvio is not an siRNA; RxNav says inclisiran is
     env.answer(interpret.ExposureFacts(exposures=[exposure("Leqvio", "injection called Leqvio", in_class="no",
                                                             last_use_date="2026-03-12")], explicitly_none=False, explanation="x"))
-    v = env.run("ENG04", "E4")
+    v = env.run("EXT04", "E4")
     assert v.status == "met" and "inclisiran" in v.note
     assert any(t["tool"] == "rxnav" and "model said no" in t["result"] for t in v.trace)
 
@@ -90,7 +90,7 @@ def test_terminology_overrides_model_memory(env):
 def test_drug_the_model_leaves_out_is_caught_by_the_terminology_scan(env):
     # observed live: the model omitted Leqvio entirely and claimed "explicitly none"
     env.answer(interpret.ExposureFacts(exposures=[], explicitly_none=True, explanation="x"))
-    v = env.run("ENG04", "E4")
+    v = env.run("EXT04", "E4")
     assert v.status == "unknown" and "leqvio" in v.note.lower() and "not reported by the model" in v.note
     assert any(t["tool"] == "rule:terminology_scan" for t in v.trace)
 
@@ -100,7 +100,7 @@ def test_statin_before_window_and_otc_supplement_inside_it(env):
         exposure("rosuvastatin", "Stopped rosuvastatin 10 mg in early June 2026", in_class="yes", last_use_date="2026-06-01"),
         exposure("red yeast rice", "over-the-counter red yeast rice supplement every day", in_class="yes",
                  prescription="no", ongoing=True)], explicitly_none=False, explanation="x"))
-    v = env.run("ENG03", "E5")
+    v = env.run("EXT03", "E5")
     assert v.status == "unknown"  # OTC lipid-lowering supplement in window: the CRC decides
     assert "needs CRC judgement: red yeast rice" in v.note and "not counted: rosuvastatin" in v.note
 
@@ -108,14 +108,14 @@ def test_statin_before_window_and_otc_supplement_inside_it(env):
 def test_negative_with_supplements_is_not_met(env):
     env.answer(interpret.ExposureFacts(exposures=[exposure("fish oil", "Takes fish oil capsules", prescription="no",
                                                             ongoing=True)], explicitly_none=False, explanation="x"))
-    assert env.run("ENG05", "E5").status == "not_met"
+    assert env.run("EXT05", "E5").status == "not_met"
 
 
 def test_model_failure_keeps_rule_result(env, monkeypatch):
     def boom(*a, **k):
         raise RuntimeError("bedrock down")
     monkeypatch.setattr(llm, "structured_call", boom)
-    v = env.run("ENG02", "E3")
+    v = env.run("EXT02", "E3")
     assert v.status == "unknown" and not v.interpreted and v.trace[-1]["tool"] == "agent:error"
 
 
@@ -129,14 +129,14 @@ def _screen_one(env, case_id, patch):
 
 def test_firm_exclusion_from_free_text_excludes(env):
     env.answer(smoking())
-    r = _screen_one(env, "ENG02", lambda v: env.run("ENG02", "E3"))
+    r = _screen_one(env, "EXT02", lambda v: env.run("EXT02", "E3"))
     assert r.category == "excluded" and r.decisive == ["E3"] and "(from free text)" in r.reasons[0]
 
 
 def test_terminology_confirmed_drug_excludes(env):
     env.answer(interpret.ExposureFacts(exposures=[exposure("Leqvio", "injection called Leqvio", in_class="no",
                                                             last_use_date="2026-03-12")], explicitly_none=False, explanation="x"))
-    r = _screen_one(env, "ENG04", lambda v: env.run("ENG04", "E4"))
+    r = _screen_one(env, "EXT04", lambda v: env.run("EXT04", "E4"))
     assert r.category == "excluded" and r.decisive == ["E4"]
 
 
@@ -145,13 +145,13 @@ def test_drug_class_from_model_only_goes_to_review(env):
     env.answer(interpret.ExposureFacts(exposures=[exposure("an injection called Leqvio", "injection called Leqvio",
                                                             in_class="yes", last_use_date="2026-03-12")],
                                        explicitly_none=False, explanation="x"))
-    r = _screen_one(env, "ENG04", lambda v: env.run("ENG04", "E4"))
+    r = _screen_one(env, "EXT04", lambda v: env.run("EXT04", "E4"))
     assert r.category == "needs_review" and "agent reading suggests exclusion" in r.reasons[0]
 
 
 def test_interpreted_pass_keeps_patient_with_confirmation(env):
     env.answer(interpret.ExposureFacts(exposures=[], explicitly_none=True, explanation="x"))
-    r = _screen_one(env, "ENG05", lambda v: env.run("ENG05", "E5"))
+    r = _screen_one(env, "EXT05", lambda v: env.run("EXT05", "E5"))
     assert r.category == "likely_eligible" and any("from free text" in c for c in r.confirm_at_visit)
 
 
@@ -165,7 +165,7 @@ def _conflict(env, case_id):
 def test_conflict_materiality_is_computed_by_the_engine(env):
     env.answer(conflict.ConflictNote(differences="d", likely_cause="c", what_to_check="w"))
     assert any(t["decision"] == "immaterial" for t in _conflict(env, "SAD07").trace)  # 90 and 110 both >= 70
-    eng07 = _conflict(env, "ENG07")
+    eng07 = _conflict(env, "EXT07")
     assert any(t["decision"] == "material" for t in eng07.trace) and eng07.conflict
 
 
@@ -174,7 +174,7 @@ def test_immaterial_conflict_resolves_material_one_stays_in_review(env, monkeypa
     monkeypatch.setattr(config, "IMMATERIAL_CONFLICT_RESOLVES", True)  # the decided default
     v = _conflict(env, "SAD07")
     assert v.status == "met" and not v.conflict and "resolved by rule" in v.note
-    assert _conflict(env, "ENG07").status == "unknown" and _conflict(env, "ENG07").conflict
+    assert _conflict(env, "EXT07").status == "unknown" and _conflict(env, "EXT07").conflict
     monkeypatch.setattr(config, "IMMATERIAL_CONFLICT_RESOLVES", False)
     assert _conflict(env, "SAD07").status == "unknown"
 
@@ -187,7 +187,7 @@ def _i5(env, case_id):
 
 
 def test_abnormal_kidney_labs_route_to_review_even_without_the_model(env):
-    v = _i5(env, "ENG06")
+    v = _i5(env, "EXT06")
     assert v.status == "unknown" and v.review_reason
     assert "Creatinine" in v.recovery and any("1.9 mg/dL" in str(e["value"]) for e in v.evidence)
 
@@ -222,6 +222,6 @@ def test_flag_concern_needs_a_finding_not_just_normal_labs(env, monkeypatch):
 
     monkeypatch.setattr(ev, "Agent", FakeAgent)
     monkeypatch.setattr("src.agent.agent.make_model", lambda: None)
-    v = next(v for v in sa.evaluate_case(env.cases["ENG05"], env.spec, env.engine)[0] if v.criterion_id == "I5")
-    v = ev.evidence_pack(env.cases["ENG05"], v)
+    v = next(v for v in sa.evaluate_case(env.cases["EXT05"], env.spec, env.engine)[0] if v.criterion_id == "I5")
+    v = ev.evidence_pack(env.cases["EXT05"], v)
     assert captured["normal"].startswith("rejected") and not v.review_reason

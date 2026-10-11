@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT01",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "93afce3c-02db-5d6e-820a-f3d72af47284",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "8bc34915-573e-57de-9284-dba30744d9ee",
+  "history_id": "193f41aa-1bdc-547d-af67-1173e58f251f",
+  "FHIR_file": "cases/EXT01.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "smoking described only in free text, intermittent weekend smoking (boundary of 'regular')",
+  "design_category": "pending",
+  "design_target": "E3",
+  "design_target_status": null
+}

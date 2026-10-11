@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT43",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "6899bd35-3253-53eb-9d42-e214630ad449",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "66045113-ca17-5a9a-823b-cabdd70a48ae",
+  "history_id": "728f4041-c751-5ca7-83ff-e20a873f40ee",
+  "FHIR_file": "cases/EXT43.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "LDL recorded only as calculated LDL (13457-7), 95 mg/dL",
+  "design_category": "likely_eligible",
+  "design_target": "I2",
+  "design_target_status": "met"
+}

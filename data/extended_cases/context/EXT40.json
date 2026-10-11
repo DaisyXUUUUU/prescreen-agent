@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT40",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "2c8b935f-5bc0-5d8e-8f91-761a8e810e7a",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "177f21c1-916f-5d81-adc9-cd2a2c8f2f0b",
+  "history_id": "497272f7-f502-5ad8-b822-e7ad78128041",
+  "FHIR_file": "cases/EXT40.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "age 17",
+  "design_category": "excluded",
+  "design_target": "AGE",
+  "design_target_status": "not_met"
+}

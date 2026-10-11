@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT44",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "76b43d25-14a4-57a0-8b7a-f2c2e49f4bbf",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "271a5059-d64b-5452-9a75-059f9c03381e",
+  "history_id": "a26b4041-5d04-5808-9474-f683be8a3e72",
+  "FHIR_file": "cases/EXT44.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "LDL 900 mg/dL (data-entry error)",
+  "design_category": "pending",
+  "design_target": "I2",
+  "design_target_status": null
+}

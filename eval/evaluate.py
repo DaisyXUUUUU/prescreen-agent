@@ -3,8 +3,8 @@
 One command runs the baseline and every failure switch through run.py, then
 computes the metric table and writes out/eval/eval_report_{trial}_{date}.md:
 
-    python eval/evaluate.py --trial B --labels data/ground_truth/trial_B.csv
-    python eval/evaluate.py --trial B --labels ... --reuse      # read existing runs, do not re-run
+    python eval/evaluate.py --trial SAD --labels data/extended_cases/design_labels.csv
+    python eval/evaluate.py --trial SAD --labels ... --reuse      # read existing runs, do not re-run
 
 Label file (CSV, header required):
     patient_id,criterion_id,expected
@@ -283,7 +283,7 @@ def render(args, labels_path: Path, m: dict, runs: dict) -> str:
            f"- Labels: `{labels_path}` ({pm['labelled_patients']} patients, {cm['labelled_criteria']} criterion labels)",
            f"- Runs: {', '.join(runs)}" + (" · agent off" if args.no_agent else ""), ""]
     if sample:
-        out += ["> ⚠️ **Sample labels written by engineering to exercise this script. These numbers are NOT an evaluation.**", ""]
+        out += ["> ⚠️ **Sample labels used to exercise this script. These numbers are NOT an evaluation.**", ""]
     out += ["| Metric | Definition | Result | Target | |", "|---|---|---|---|---|"]
     for name, desc, val, target, shown in rows:
         out.append(f"| {name} | {desc} | {shown} | {target} | {mark(val, target) if target else ''} |")
@@ -301,7 +301,7 @@ def render(args, labels_path: Path, m: dict, runs: dict) -> str:
         out += ["", "## Amendment", "", f"- Detected flips: {', '.join(ar['detected']) or 'none'}",
                 f"- Missed planted flips: {', '.join(ar['missed']) or 'none'}"]
     out += ["", "## Error attribution", "",
-            "Each disagreement with the labels. `Cause` is filled in by Ming: criteria compilation, concept mapping, "
+            "Each disagreement with the labels. `Cause` is assigned in review: criteria compilation, concept mapping, "
             "data problem, or engine defect.", ""]
     if cm["mismatches"]:
         out += ["| Patient | Criterion | Expected | Actual | Engine note | Cause |", "|---|---|---|---|---|---|"]
@@ -347,7 +347,7 @@ def main() -> int:
     planted = [l.strip() for l in flips_path.read_text().splitlines() if l.strip()] if flips_path.exists() else None
     if args.trial == "SAD":
         from src.engine import sad_adapter as sa
-        cases = sa.load_cases(args.patients) if args.patients else sa.load_cases() + sa.load_cases(config.DATA_DIR / "eng_cases" / "cases")
+        cases = sa.load_cases(args.patients) if args.patients else sa.load_cases() + sa.load_cases(config.DATA_DIR / "extended_cases" / "cases")
         store = FhirStore.from_bundles({c.case_id: c.bundle for c in cases})
         store.index = {c.case_id: store.index[c.patient_id] for c in cases}  # log IDs are case IDs
     else:

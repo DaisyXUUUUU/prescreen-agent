@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT32",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "47c439cc-cdc5-5157-86ca-64eff2d0a62a",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "152744b0-ba9a-57d4-94d3-9f49b9f04b3e",
+  "history_id": "f701e344-8a71-5c8d-8b59-cda578b04fff",
+  "FHIR_file": "cases/EXT32.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "TG exactly 400 mg/dL (must be <400)",
+  "design_category": "excluded",
+  "design_target": "I4",
+  "design_target_status": "not_met"
+}

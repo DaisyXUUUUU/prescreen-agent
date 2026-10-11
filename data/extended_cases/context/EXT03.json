@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT03",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "1e94d9b5-8baa-5d1c-95d4-756195f9d00b",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "69a1b503-fc8f-50e4-916a-f9c9fbca3a8f",
+  "history_id": "38e83d05-f95f-5608-9751-c6846945d7c5",
+  "FHIR_file": "cases/EXT03.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "lipid-lowering history in free text: statin stopped before the window, OTC red yeast rice inside it",
+  "design_category": "pending",
+  "design_target": "E5",
+  "design_target_status": null
+}

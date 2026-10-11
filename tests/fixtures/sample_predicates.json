@@ -1,5 +1,5 @@
 {
-  "_comment": "SAMPLE predicates shaped like trial B, written by engineering to exercise the engine. NOT trial B: the real file is data/predicates/trial_B.json from Ming.",
+  "_comment": "SAMPLE predicates for a hypertension + hypercholesterolemia trial, used to exercise the generic engine; not a screened trial.",
   "trial_id": "SAMPLE",
   "predicates": [
     {"criterion_id": "S-I1", "trial_id": "SAMPLE", "type": "inclusion", "concept": "Age >= 18",

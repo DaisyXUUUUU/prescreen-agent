@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT11",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "6dd83fdf-4c4c-5c93-8859-52064acfcf0f",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "4af21a90-565e-5d9d-a43a-11d4a03c1023",
+  "history_id": "bb2ef56c-1d3a-5aea-99f4-d537e83dccb6",
+  "FHIR_file": "cases/EXT11.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "smoking free text: one or two every day (<=2/day but >10/week)",
+  "design_category": "excluded",
+  "design_target": "E3",
+  "design_target_status": "met"
+}

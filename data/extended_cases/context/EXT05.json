@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT05",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "a62459d9-5626-5b87-ab20-b3d1cc90066a",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "2918674f-1918-5dda-8d4e-771d7044b717",
+  "history_id": "f7194fca-bcab-5cc0-bbcc-23e2d8784fe4",
+  "FHIR_file": "cases/EXT05.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "lipid-lowering history in free text, negative with OTC supplements",
+  "design_category": "likely_eligible",
+  "design_target": "E5",
+  "design_target_status": "not_met"
+}

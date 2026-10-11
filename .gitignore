@@ -22,13 +22,17 @@ logs/
 .vscode/
 .idea/
 
-# placeholder test trial (not trial B); real snapshots are committed
+# snapshots of the test-fixture trial are not committed
 data/snapshots/NCT02178098/
 
-# Ming local runtime, historical work and full generated Synthea histories
+# local runtime tools, archived work and full generated Synthea histories
 /tools/
 /archive/
-/t6_sad_demo/data/raw/
+/trials/nct07347678_sad/data/raw/
 
 # local tool config
 .claude/
+
+# internal working notes (not part of the submission)
+internal/
+CLAUDE.md

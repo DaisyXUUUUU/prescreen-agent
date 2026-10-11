@@ -1,14 +1,14 @@
 """Conflict explanation (brief decision 4) for SAD: several candidate results for one criterion.
 
-Ming's rule sends any conflict to review. The CRC still has to work out what is going on, so:
+The SAD rules send any conflict to review. The CRC still has to work out what is going on, so:
 
-  - the code re-runs Ming's engine once per candidate (keeping only that result) and reports
+  - the code re-runs the SAD evaluator once per candidate (keeping only that result) and reports
     whether choosing one or the other would change the criterion: material vs immaterial;
   - the model compares the candidates' recorded metadata (value, time, status, specimen,
     method) and writes what most likely happened and what to check. It never picks a result.
 
 The verdict stays `unknown` with the conflict flag, so the patient stays in review, unless
-config.IMMATERIAL_CONFLICT_RESOLVES is switched on (pending Ming's decision): then an
+config.IMMATERIAL_CONFLICT_RESOLVES is on (the default): then an
 immaterial conflict takes the status every candidate agrees on, with the conflict kept visible.
 """
 

@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT07",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "7a168477-d356-5578-84ad-f4dc8eddf6f4",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "f6dc47a8-c709-5184-b719-b8b65428750b",
+  "history_id": "7a924953-6280-59f1-b602-d795f5b45cab",
+  "FHIR_file": "cases/EXT07.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "two conflicting LDL results that straddle the 70 mg/dL threshold",
+  "design_category": "needs_review",
+  "design_target": "I2",
+  "design_target_status": null
+}

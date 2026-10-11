@@ -1,4 +1,4 @@
-"""Screen every loaded patient against one predicate set (T5 + T7 + T6).
+"""Screen every loaded patient against one predicate set (evaluate, recover, aggregate).
 
 Used by run.py for the weekly log and by the amendment monitor (T10) to
 re-screen under the amended predicates.

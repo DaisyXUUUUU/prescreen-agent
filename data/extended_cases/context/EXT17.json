@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT17",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "823301e7-7b79-5729-ac99-606bc0813f5d",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "555e052e-f489-5dcf-bf24-cd7398e0fa6e",
+  "history_id": "61bd187f-3951-541b-adc4-91dcd2b0d691",
+  "FHIR_file": "cases/EXT17.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "drug free text: Repatha (evolocumab, a PCSK9 antibody) inside the window",
+  "design_category": "excluded",
+  "design_target": "E5",
+  "design_target_status": "met"
+}

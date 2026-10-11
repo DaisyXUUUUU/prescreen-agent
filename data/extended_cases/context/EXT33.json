@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT33",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "6479f681-14f6-527a-b19b-80f57fd649bf",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "22b3efae-0bf2-5c89-b1d4-5c27eb9ff422",
+  "history_id": "6d108100-675b-572b-81f6-de73d465cf4b",
+  "FHIR_file": "cases/EXT33.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "TG 4.5 mmol/L = 398.6 mg/dL",
+  "design_category": "likely_eligible",
+  "design_target": "I4",
+  "design_target_status": "met"
+}

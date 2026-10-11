@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT09",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "66cae789-c2e8-5d0b-b1c5-e619e3326960",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "55059fee-70a1-5d6c-b7f1-6dbea3956d94",
+  "history_id": "5c1659df-94c6-5cb9-93c5-e25851a6ea5f",
+  "FHIR_file": "cases/EXT09.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "smoking free text: quit years ago",
+  "design_category": "likely_eligible",
+  "design_target": "E3",
+  "design_target_status": "not_met"
+}

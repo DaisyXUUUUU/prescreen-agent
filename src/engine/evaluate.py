@@ -2,7 +2,7 @@
 
 No LLM, no clock: the same predicate, patient data and screening date always
 give the same Verdict. `status` says whether the predicate's condition holds;
-whether that includes or excludes the patient is decided later (T6) from the
+whether that includes or excludes the patient is decided at aggregation from the
 predicate's `type`.
 
 evaluate() queries the FHIR adapter and hands the result to judge(). The agent
@@ -150,7 +150,7 @@ def judge(predicate: dict, q: QueryResult, v: Verdict, screening_date: str, reso
         return v
 
     if predicate.get("aggregation") == "count_distinct_active_ingredients":
-        # Distinct RxNorm codes; true ingredient-level counting needs Ming's ATC->RxNorm map.
+        # Distinct RxNorm codes; true ingredient-level counting needs an ATC->RxNorm map.
         distinct = sorted({r["code"] for r in records})
         return _compare(predicate, v, float(len(distinct)), f"{len(distinct)} distinct active medication(s)",
                         _evidence(records, "display"))

@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT22",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "c2c4671a-542f-5460-9711-cf6c2db561b8",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "7d3a7f17-11d2-5fa2-9c05-5b1f737b4abc",
+  "history_id": "12f8632b-ce35-5d0b-b386-de416eb55082",
+  "FHIR_file": "cases/EXT22.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "clean pass, LDL 85",
+  "design_category": "likely_eligible",
+  "design_target": "I2",
+  "design_target_status": "met"
+}

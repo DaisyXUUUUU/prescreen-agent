@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT48",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "a4706be0-29d0-5ca4-8b7d-b51d083ee6e1",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "52b477e2-dd03-5e65-843d-1f05ff54b8db",
+  "history_id": "691fa7bf-6ec3-58f7-b84f-dfa6d19c5554",
+  "FHIR_file": "cases/EXT48.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "two TG results 150 and 410 (choice changes I4)",
+  "design_category": "needs_review",
+  "design_target": "I4",
+  "design_target_status": null
+}

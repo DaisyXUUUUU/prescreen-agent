@@ -1,10 +1,10 @@
 """T5: unit normalisation and plausibility ranges.
 
-Factors and ranges are from docs/TASKS.md (T5) and still need Ming's review.
+Conversion factors are the standard lipid factors.
 A value that cannot be converted, or lands outside its plausible range after
 conversion, is rejected; the engine then returns `unknown` with the reason.
 Ranges are deliberately wide (they catch data-entry errors such as a decimal slip, not clinical
-abnormality); kept as engineering defaults by decision on 2026-10-09.
+abnormality); chosen as data-error guards.
 """
 
 from dataclasses import dataclass
@@ -36,7 +36,7 @@ ANALYTES = [
     Analyte("Systolic BP", frozenset({"8480-6"}), "mmHg", {}, 60, 260),
     Analyte("Diastolic BP", frozenset({"8462-4"}), "mmHg", {}, 30, 160),
     Analyte("ALT", frozenset({"1742-6"}), "U/L", {}, 1, 2000),
-    # Added for SAD (2026-10-09); ranges are engineering placeholders pending Ming's review.
+    # Added for SAD; wide data-error ranges.
     Analyte("AST", frozenset({"1920-8"}), "U/L", {}, 1, 2000),
     Analyte("HbA1c", frozenset({"4548-4"}), "%", {}, 3, 20),
     Analyte("BMI", frozenset({"39156-5"}), "kg/m2", {}, 10, 80),

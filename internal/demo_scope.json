@@ -1,0 +1,8 @@
+{
+  "status": "user_selected_active_demo_scope",
+  "primary": {"local_id": "T6", "nct_id": "NCT07347678", "cohort": "SAD", "rules": "trials/nct07347678_sad/rules/sad-1.0.0.json"},
+  "secondary": {"local_id": "T2", "nct_id": "NCT07610278", "rules": "trials/nct07610278/rules.json", "execution_status": "not_integrated"},
+  "retired_from_primary_demo": ["T7 / NCT07307989"],
+  "historical_scope": "archive/2026-10-09-pre-sad/demo_scope.json",
+  "notes": ["SAD is the selected demonstration cohort; POC is rejected by this evaluator.", "Registry-level source only; independent clinical review and complete protocol remain outstanding."]
+}

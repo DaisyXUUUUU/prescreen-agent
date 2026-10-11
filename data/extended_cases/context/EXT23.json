@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT23",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "06ffa953-f7f5-5849-8d11-258434dfc21c",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "c5596bde-7231-5ca4-9ddc-6068466e50ce",
+  "history_id": "41a97fbc-44f4-5cc7-b690-1487c821aa56",
+  "FHIR_file": "cases/EXT23.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "clean pass, age 30, LDL 140",
+  "design_category": "likely_eligible",
+  "design_target": "I2",
+  "design_target_status": "met"
+}

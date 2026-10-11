@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT34",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "f445c8f6-69b2-5a72-bd31-e638021c58a3",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "b28f5428-aa5c-58f0-9af6-ae9db0ca5271",
+  "history_id": "f75fe7d6-c318-5630-ae6d-4fccf684b35b",
+  "FHIR_file": "cases/EXT34.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "ALT 61 U/L > 1.5 x ULN 40",
+  "design_category": "excluded",
+  "design_target": "E1",
+  "design_target_status": "met"
+}

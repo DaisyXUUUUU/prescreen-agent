@@ -32,7 +32,7 @@ log = logging.getLogger(__name__)
 MAX_TOOL_CALLS = 6
 MAX_NOTE_HITS = 5
 
-# Engineering placeholder until Ming's data/mappings/local_code_map.json lands.
+# Default table; a site table at data/mappings/local_code_map.json takes precedence.
 PLACEHOLDER_EQUIVALENTS = [
     {"concept": "LDL-C", "codes": [{"system": LOINC, "code": "18262-6", "display": "LDL-C direct"},
                                    {"system": LOINC, "code": "13457-7", "display": "LDL-C calculated"},
@@ -74,7 +74,7 @@ def load_equivalents() -> tuple[list[dict], str]:
             log.warning("%s has an unexpected shape; using placeholder equivalents", path)
         except (ValueError, KeyError, TypeError) as e:
             log.warning("cannot read %s (%s); using placeholder equivalents", path, e)
-    return PLACEHOLDER_EQUIVALENTS, "engineering placeholder table"
+    return PLACEHOLDER_EQUIVALENTS, "default equivalence table"
 
 
 @dataclass
@@ -92,7 +92,7 @@ class RecoveryCase:
     # Patient ID in the FHIR store when it differs from the log ID (SAD: log uses the case ID).
     query_patient_id: str | None = None
     # Deterministic evaluator for records the agent found: (records sorted newest first) -> Verdict.
-    # None = the generic engine's judge(). SAD passes Ming's engine through the adapter.
+    # None = the generic engine's judge(). SAD passes the SAD evaluator through the adapter.
     evaluate_records: object = None
 
     @property

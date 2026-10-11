@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT15",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "301458d3-92fa-5a31-8de4-2b38b5b124d5",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "40abc8be-ae80-5b39-a567-4ac90676fb77",
+  "history_id": "4170f6bb-ddce-5443-a218-f696e84c1ff0",
+  "FHIR_file": "cases/EXT15.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "drug free text: statin stopped well before the window",
+  "design_category": "likely_eligible",
+  "design_target": "E5",
+  "design_target_status": "not_met"
+}

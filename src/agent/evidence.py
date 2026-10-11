@@ -1,7 +1,7 @@
-"""I5 evidence agent: collect hepatic/renal evidence for the investigator (Ming's I5_EVIDENCE_REVIEW.md).
+"""I5 evidence agent: collect hepatic/renal evidence for the investigator (see trials/nct07347678_sad/I5_EVIDENCE_REVIEW.md).
 
 I5 ("no clinically significant abnormalities of hepatic or renal function") is always a human
-judgement. Ming's engine returns it as manual with no evidence. Here the agent decides what to
+judgement. The SAD evaluator returns it as manual with no evidence. Here the agent decides what to
 look up in the patient's record (labs, diagnoses, notes, the screening interview) and flags what
 an investigator should look at; the code does the parts that must be exact:
 

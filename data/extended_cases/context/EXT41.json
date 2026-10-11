@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT41",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "3c502533-322c-5325-87dc-7b9aa3acda38",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "2a054add-cea0-5f06-9e41-eb420c7e8ffc",
+  "history_id": "f2ae3ce3-5e03-5c0c-ae22-c846d613723b",
+  "FHIR_file": "cases/EXT41.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "fasting state not recorded for the lipid specimen",
+  "design_category": "pending",
+  "design_target": "I2",
+  "design_target_status": null
+}

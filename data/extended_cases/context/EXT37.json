@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT37",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "9a5c5fda-4a53-5ca6-8b3d-49b0c6edd4b1",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "0b193884-d9fa-5186-a20d-5e0150772413",
+  "history_id": "f47d93dd-dd1e-5afa-853e-2503d5e83a12",
+  "FHIR_file": "cases/EXT37.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "HbA1c 6.4 %",
+  "design_category": "likely_eligible",
+  "design_target": "E2",
+  "design_target_status": "not_met"
+}

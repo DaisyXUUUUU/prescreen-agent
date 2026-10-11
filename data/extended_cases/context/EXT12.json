@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT12",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "6f7aafab-06cf-57c1-a824-69716377925d",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "e2ca8612-8fff-59cb-8f0e-c1c639cf3979",
+  "history_id": "6fd04ec8-f562-5411-9c43-112eec1b4529",
+  "FHIR_file": "cases/EXT12.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "smoking free text: one cigar at a wedding",
+  "design_category": "likely_eligible",
+  "design_target": "E3",
+  "design_target_status": "not_met"
+}

@@ -1,6 +1,6 @@
-"""T6: patient-level conclusion from per-criterion verdicts. Fixed rules, no model.
+"""Patient-level conclusion from per-criterion verdicts. Fixed rules, no model.
 
-Rules, first match wins (docs/TASKS.md T6):
+Rules, first match wins:
   1. any exclusion met                         -> excluded (names the criterion)
   2. any verdict flagged as conflict           -> needs_review
   3. any blocking unknown                      -> pending (names the missing data)
@@ -52,7 +52,7 @@ def _why(p: dict, v: Verdict) -> str:
 
 
 def aggregate(patient_id: str, predicates: list[dict], verdicts: list[Verdict], failed_first: bool = False) -> PatientResult:
-    """failed_first (SAD, Ming's rule): any clearly failed criterion -> excluded before conflicts and unknowns."""
+    """failed_first (SAD rule): any clearly failed criterion -> excluded before conflicts and unknowns."""
     by_id = {p["criterion_id"]: p for p in predicates}
     pairs = [(by_id[v.criterion_id], v) for v in verdicts]
     r = PatientResult(patient_id, "pending", verdicts=verdicts)

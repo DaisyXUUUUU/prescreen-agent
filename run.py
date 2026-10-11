@@ -1,9 +1,9 @@
 """Weekly pre-screening run for one trial.
 
-    python run.py --trial B --date 2026-10-12
-    python run.py --trial B --fail ctgov_timeout
+    python run.py --trial SAD --date 2026-10-09
+    python run.py --trial SAD --fail ctgov_timeout
 
-Development run on fixtures (until Ming's data lands):
+Run on the test fixtures:
 
     python run.py --trial SAMPLE --nct NCT02178098 \
         --predicates tests/fixtures/sample_predicates.json --patients tests/fixtures/patients --date 2026-10-09
@@ -36,13 +36,13 @@ def main() -> int:
     parser.add_argument("--date", default=config.SCREENING_DATE, help="screening date YYYY-MM-DD (default today)")
     parser.add_argument("--nct", help="override the trial's NCT ID from src/config.py")
     parser.add_argument("--predicates", type=Path,
-                        help="default data/predicates/trial_{TRIAL}.json; for SAD, Ming's t6_sad_demo/rules/sad-1.0.0.json")
+                        help="default data/predicates/trial_{TRIAL}.json; for SAD, trials/nct07347678_sad/rules/sad-1.0.0.json")
     parser.add_argument("--patients", type=Path,
-                        help="default data/patients/; for SAD, Ming's t6_sad_demo/data/cases (contexts in ../context)")
+                        help="default data/patients/; for SAD, trials/nct07347678_sad/data/cases (contexts in ../context)")
     parser.add_argument("--out", type=Path, default=config.OUT_DIR)
     parser.add_argument("--no-agent", action="store_true", help="skip the recovery agent (rules only)")
-    parser.add_argument("--no-eng-cases", action="store_true",
-                        help="SAD: only Ming's cases (default adds engineering-authored data/eng_cases/)")
+    parser.add_argument("--no-extended-cases", action="store_true",
+                        help="SAD: core screening set only (default adds the extended scenario set in data/extended_cases/)")
     parser.add_argument("--v1-snapshot", type=Path, help="T10: previous criteria text (default: latest snapshot)")
     parser.add_argument("--v2-snapshot", type=Path,
                         help="T10 with --fail amendment_v2: amended criteria text (default data/snapshots/{NCT}/amendment_v2.txt)")
@@ -78,14 +78,14 @@ def main() -> int:
     use_agent = not args.no_agent
     input_problems = []
     if sad:
-        # Ming's rule pack and cases, evaluated by her engine through the adapter.
+        # SAD rule pack and core cases, evaluated by the SAD evaluator through the adapter.
         spec = sa.load_spec(pred_path)
         cases_dir = args.patients or sa.SAD_DIR / "data" / "cases"
         input_problems = sa.verify_inputs(pred_path, cases_dir)
         cases = sa.load_cases(cases_dir)
-        eng_dir = config.DATA_DIR / "eng_cases" / "cases"
-        if not args.patients and not args.no_eng_cases and eng_dir.exists():
-            cases += sa.load_cases(eng_dir)
+        ext_dir = config.DATA_DIR / "extended_cases" / "cases"
+        if not args.patients and not args.no_extended_cases and ext_dir.exists():
+            cases += sa.load_cases(ext_dir)
         predicates = sa.predicates(spec)
         store = sa.install_store(cases)
         if not config.FAILURE_TARGETS:

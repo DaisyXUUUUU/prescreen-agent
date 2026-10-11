@@ -2,8 +2,8 @@
 
 Expected statuses follow mechanically from the fixture data and the predicate
 (e.g. LDL 162.4 >= 100 -> met). They test the engine's arithmetic and rules,
-not clinical labels: patient-level ground truth comes from Ming (T11).
-Injected-case tests below are engineering's own until Ming's list arrives.
+not clinical labels.
+Injected-case tests below cover boundaries, units and windows.
 """
 
 import copy
@@ -84,7 +84,7 @@ def test_every_verdict_has_trace():
         assert run(cid, "fixture-complete").trace
 
 
-# ---------- injected cases (engineering placeholders for Ming's list) ----------
+# ---------- injected cases ----------
 
 def store_with_ldl(tmp_path, *values):
     """fixture-complete with its LDL observations replaced by (value, unit, date) tuples."""

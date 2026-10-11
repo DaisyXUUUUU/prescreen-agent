@@ -23,20 +23,20 @@ AWS_REGION = os.getenv("AWS_REGION", "us-west-2")
 S3_BUCKET = os.getenv("S3_BUCKET", "")
 BEDROCK_MODEL_ID = os.getenv("BEDROCK_MODEL_ID", "")
 
-# Primary trial (decided 2026-10-09): Ming's T6, NCT07347678, SAD cohort only.
-# T2 (NCT07610278, hypertension + hypercholesterolemia) is kept as a reference; no patients yet.
+# Primary trial: NCT07347678, SAD cohort only.
+# NCT07610278 (hypertension + hypercholesterolemia) is kept as a reference rule set; no patients yet.
 TRIALS: dict[str, str | None] = {
     "SAD": "NCT07347678",
     "T2": "NCT07610278",
 }
 
-# Public trial used by the engineering fixtures in tests/fixtures/. It is not a project trial.
+# Public trial used by the test fixtures in tests/fixtures/. It is not a screened trial.
 TEST_NCT_ID = "NCT02178098"
 
 # Default anchor for time windows; override with SCREENING_DATE=YYYY-MM-DD.
 SCREENING_DATE = os.getenv("SCREENING_DATE") or date.today().isoformat()
 
-# Aggregation order (open question for Ming). True: a blocking unknown is checked
+# Aggregation order for the generic engine. True: a blocking unknown is checked
 # before a failed inclusion, so such a patient is "pending" rather than "excluded"
 # (brief goal 2: answer unknown before excluded). False: failed inclusion wins.
 PENDING_BEFORE_INCLUSION_FAIL = True
@@ -59,7 +59,7 @@ FAILURES: dict[str, bool] = {
 }
 
 
-# Patients each data failure is applied to (Ming's injected-case list). Empty:
+# Patients each data failure is applied to. Empty:
 # src/failures.py picks the first patients with an LDL-C record, in ID order.
 FAILURE_TARGETS: dict[str, list[str]] = {}
 
@@ -80,7 +80,7 @@ def trial_nct(trial: str) -> str:
         raise ValueError(f"unknown trial {trial!r}; known: {sorted(TRIALS)}")
     nct = TRIALS[trial]
     if not nct:
-        raise ValueError(f"NCT ID for trial {trial} not set in src/config.py (waiting on Ming)")
+        raise ValueError(f"NCT ID for trial {trial} not set in src/config.py")
     return nct
 
 

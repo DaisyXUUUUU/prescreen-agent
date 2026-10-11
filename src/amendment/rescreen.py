@@ -28,7 +28,7 @@ def _rel(p: Path) -> str:
 def run_amendment(trial: str, nct: str, fetch, screening_date: str, predicates_v1: list[dict], results_v1, out_dir: Path,
                   use_agent: bool = True, v1_snapshot: Path | None = None, v2_snapshot: Path | None = None,
                   v2_predicates: Path | None = None, rescreen_fn=None) -> Path | None:
-    """rescreen_fn(v2_path) -> (results, predicates) overrides the generic re-screen (SAD uses Ming's engine)."""
+    """rescreen_fn(v2_path) -> (results, predicates) overrides the generic re-screen (SAD uses the SAD evaluator)."""
     if config.failure_enabled("amendment_v2"):
         new_path = v2_snapshot or config.SNAPSHOT_DIR / nct / "amendment_v2.txt"
         if not new_path.exists():

@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT38",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "b547d271-edf0-5da3-8688-b21e98882126",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "a446d0c2-e79d-5976-a03c-191a8f260c79",
+  "history_id": "b8fe1edd-c09b-58cc-a69b-f2724a1ec6aa",
+  "FHIR_file": "cases/EXT38.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "age 66 at screening",
+  "design_category": "excluded",
+  "design_target": "AGE",
+  "design_target_status": "not_met"
+}

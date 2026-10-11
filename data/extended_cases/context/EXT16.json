@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT16",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "6e6f1a5b-0436-5efc-8840-975d88b202b0",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "eddbf21e-259b-5fbf-a493-b597978f700e",
+  "history_id": "5838c9f1-514f-5ad4-a967-06d4c2bc30f1",
+  "FHIR_file": "cases/EXT16.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "drug free text: 'a cholesterol tablet', name unknown",
+  "design_category": "pending",
+  "design_target": "E5",
+  "design_target_status": null
+}

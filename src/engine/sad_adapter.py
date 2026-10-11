@@ -1,18 +1,17 @@
-"""SAD (NCT07347678) adapter: Ming's deterministic engine inside the engineering pipeline.
+"""SAD (NCT07347678) adapter: the deterministic SAD evaluator inside the screening pipeline.
 
-Clinical logic stays in `t6_sad_demo/engine.py` (owned by Ming, never edited here). This
-module only connects it:
+Clinical logic stays in `trials/nct07347678_sad/engine.py`, the frozen, separately tested SAD
+evaluator; it is never edited here. This module connects it:
 
-  - loads her frozen rule pack, cases and contexts, and checks their SHA-256 against her
-    manifests, as her own runner does;
+  - loads the frozen rule pack, cases and contexts, and checks their SHA-256 against the
+    manifests, as the evaluator's own runner does;
   - builds one in-memory FHIR store over the same bundle objects, so failure injection and
-    the recovery agent see exactly what her engine sees;
-  - converts her per-criterion rows into engineering Verdicts (evidence, note, conflict,
-    trace) and her rule pack into predicate dicts for aggregation and the log;
-  - adds two engineering guards before her engine runs, both traced as rules and flagged for
-    Ming's review: unit conversion where unambiguous (e.g. LDL mmol/L -> mg/dL) and
-    plausibility ranges (src/engine/units.py), which her engine does not check;
-  - lets the recovery agent hand an equivalently coded record back to her engine.
+    the recovery agent see exactly what the evaluator sees;
+  - converts its per-criterion rows into pipeline Verdicts (evidence, note, conflict,
+    trace) and the rule pack into predicate dicts for aggregation and the log;
+  - adds two guards before the evaluator runs, both traced as rules: unit conversion where unambiguous (e.g. LDL mmol/L -> mg/dL) and
+    plausibility ranges (src/engine/units.py), which the evaluator does not check;
+  - lets the recovery agent hand an equivalently coded record back to the evaluator.
 """
 
 import copy
@@ -30,10 +29,10 @@ from src.engine.aggregate import PatientResult, aggregate
 from src.engine.evaluate import Verdict
 from src.engine.units import analyte_for, to_unit
 
-SAD_DIR = config.ROOT / "t6_sad_demo"
+SAD_DIR = config.ROOT / "trials/nct07347678_sad"
 SPEC_PATH = SAD_DIR / "rules" / "sad-1.0.0.json"
 
-# Mirrors the codes and units hard-wired in t6_sad_demo/engine.py. Used for the trace, the
+# Mirrors the codes and units hard-wired in trials/nct07347678_sad/engine.py. Used for the trace, the
 # unit/plausibility guard and the agent's equivalent-code lookup; never for the verdict itself.
 OBSERVATIONS = {
     "I1": [("39156-5", "kg/m2", "BMI")],
@@ -44,7 +43,7 @@ OBSERVATIONS = {
     "E2": [("4548-4", "%", "HbA1c")],
 }
 HISTORY = {"E3", "E4", "E5"}
-# Engineering demo targets (case IDs) until Ming maps her injected cases to switches:
+# Default failure-injection targets (case IDs):
 # drop_codes on a passing case so recovery restores a real verdict; bad_units converts a passing
 # case's LDL to mmol/L (rule converts back) and makes a failing case's LDL implausible (x10).
 DEFAULT_FAILURE_TARGETS = {"drop_codes": ["SAD04"], "bad_units": ["SAD01", "SAD02"]}
@@ -74,7 +73,7 @@ def _sha(path: Path) -> str:
 
 
 def load_engine():
-    spec = importlib.util.spec_from_file_location("ming_sad_engine", SAD_DIR / "engine.py")
+    spec = importlib.util.spec_from_file_location("sad_evaluator", SAD_DIR / "engine.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -85,7 +84,7 @@ def load_spec(path: Path | None = None) -> dict:
 
 
 def verify_inputs(spec_path: Path, cases_dir: Path) -> list[str]:
-    """Hash checks from Ming's manifests. Returns problems (empty = all inputs as frozen)."""
+    """Hash checks against the SAD manifests. Returns problems (empty = all inputs as frozen)."""
     problems = []
     manifest = json.loads((SAD_DIR / "rules" / "manifest.json").read_text())
     if Path(spec_path).resolve() == SPEC_PATH.resolve() and _sha(SPEC_PATH) != manifest["sha256"]:
@@ -142,7 +141,7 @@ def predicates(spec: dict) -> list[dict]:
     return out
 
 
-# ---------- engineering guards (before Ming's engine) ----------
+# ---------- guards (before the SAD evaluator) ----------
 
 def _normalise(bundle: dict) -> dict[str, list[tuple[str, str]]]:
     """Convert unambiguous units to the unit the engine expects and flag implausible values,
@@ -180,7 +179,7 @@ def _fmt_value(v) -> str:
 
 
 def _evidence(rows: list[dict]) -> list[dict]:
-    """Group Ming's field-level evidence by resource: value, date, and the other checked fields."""
+    """Group the evaluator's field-level evidence by resource: value, date, and the other checked fields."""
     by_ref: dict[str, dict] = {}
     for e in rows:
         item = by_ref.setdefault(e["resource_ref"], {"resource_id": e["resource_ref"], "value": None, "date": None, "fields": []})
@@ -247,9 +246,9 @@ def evaluate_case(case: SadCase, spec: dict, engine=None) -> tuple[list[Verdict]
 
 
 def evaluate_with_records(case: SadCase, spec: dict, cid: str, records: list[dict], engine=None) -> Verdict:
-    """Agent path: records found under an equivalent code are evaluated by Ming's engine as if
+    """Agent path: records found under an equivalent code are evaluated by the SAD evaluator as if
     recorded under the criterion's own code. Everything else (encounter, fasting, unit, threshold)
-    is still checked by her engine."""
+    is still checked by the evaluator."""
     engine = engine or load_engine()
     canonical = {code for code, _, _ in OBSERVATIONS.get(cid, [])}
     target = OBSERVATIONS[cid][0]
@@ -278,7 +277,7 @@ def screen(cases: list[SadCase], spec: dict, use_agent: bool = True, label: str 
 
     With the agent on, each case goes through: recovery of empty queries, free-text interpretation of
     history criteria, conflict explanation, and the I5 evidence pack. With it off, results equal
-    Ming's engine exactly."""
+    the rules-only SAD evaluator exactly."""
     from src.agent import conflict, evidence, interpret
 
     engine = load_engine()

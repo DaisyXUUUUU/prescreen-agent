@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT45",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "6a32e49d-e5a9-59ad-9813-000c1ebe36fb",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "e0f80031-cd6f-583d-b3f0-828789ab1d72",
+  "history_id": "c460610a-6e76-5ce8-8ad3-b73b0ee4416a",
+  "FHIR_file": "cases/EXT45.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "I5: total bilirubin 3.1 mg/dL (range 0.1-1.2)",
+  "design_category": "needs_review",
+  "design_target": "I5",
+  "design_target_status": null
+}

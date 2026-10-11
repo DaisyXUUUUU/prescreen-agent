@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT24",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "a4509107-8cb5-56e3-9271-104ccebad525",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "2cf53102-79f1-591e-aac9-c8116015abd7",
+  "history_id": "dda9f0f3-1277-533d-9e78-f76ce6fff914",
+  "FHIR_file": "cases/EXT24.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "BMI 36 (above 35)",
+  "design_category": "excluded",
+  "design_target": "I1",
+  "design_target_status": "not_met"
+}

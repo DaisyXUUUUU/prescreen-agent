@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT06",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "0a87f864-bece-5c27-a535-e83621602099",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "2e2e8e40-50ae-5c81-a8bd-fa1b1f5e63ff",
+  "history_id": "e2f1eca7-2fbc-5212-abf0-a26ae4c8d9b9",
+  "FHIR_file": "cases/EXT06.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "I5 evidence: normal ALT/AST but reduced kidney function, CKD diagnosis and hepatic steatosis note",
+  "design_category": "needs_review",
+  "design_target": "I5",
+  "design_target_status": null
+}

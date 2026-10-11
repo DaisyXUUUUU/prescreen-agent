@@ -2,13 +2,18 @@
 
 AWS Community Day Bay Area 2026 hackathon — "Hand it off" challenge.
 
-Takes over a clinical research coordinator's weekly clinical-trial pre-screening: reads synthetic patients (Synthea FHIR R4) and trial eligibility criteria (ClinicalTrials.gov), and writes the same pre-screening log the CRC writes by hand: likely eligible / pending / excluded / needs review, with evidence for every verdict. Deterministic code makes every comparison; an agent on Amazon Bedrock (Strands Agents + Amazon Nova 2 Lite) handles only the exceptions (empty queries, changed criteria). No patient is ever contacted. **Synthetic data only.**
+A clinical research coordinator (CRC) spends hours every week checking upcoming patients against the eligibility criteria of the trials a site is enrolling, and writes a pre-screening log: who is likely eligible, who is excluded and by which criterion, and who cannot be assessed yet. When a protocol is amended, nobody has time to re-check the patients excluded earlier.
 
-**See the run without installing anything:** the reviewer page [`docs/demo/index.html`](docs/demo/index.html) shows input, agent, output and evaluation for 58 patients, with every verdict's evidence and trace. GitHub shows HTML as source, so download it and open it in a browser, or use the hosted copy linked in the submission.
+This system takes over that work. It reads a trial's criteria from ClinicalTrials.gov and patient records as FHIR R4, and writes the log the CRC would write: **likely eligible / pending / excluded / needs review**, with the record, value and date behind every verdict. Deterministic rules decide everything a rule can decide. An agent on Amazon Bedrock handles what rules cannot read: results filed under another code, patients' own words about smoking and drug history, conflicting results, and evidence for criteria that need an investigator's judgement. When the criteria change, it classifies each change and re-screens. No patient is ever contacted. **Synthetic data only.**
 
-**Primary trial:** [NCT07347678](https://clinicaltrials.gov/study/NCT07347678), SAD cohort (Ming's "T6"): 10 criteria plus age 18–65. Clinical rules, the 8 original screening cases and the SAD evaluator are Ming's (`t6_sad_demo/`; see [its README](t6_sad_demo/README.md), [her delivery notes](docs/MING_SUBMISSION.md), [data delivery checklist](docs/DATA_DELIVERY.md), [handoff record](docs/MING_HANDOFF.md) and [her standalone demo](MING_DEMO.md)). The engineering pipeline in `src/` wraps her evaluator unchanged. NCT07610278 ("T2", hypertension with hypercholesterolemia) is kept as reference in `t2_backup/`.
+**See a full run without installing anything:** the reviewer page [`docs/demo/index.html`](docs/demo/index.html) shows the input, what the agent did, the coordinator's log with every verdict's evidence and trace, the amendment re-screen and the evaluation. GitHub displays HTML as source; download the file and open it in a browser, or use the hosted copy linked in the submission.
 
-**Data:** 58 synthetic patients: Ming's 8 cases (Synthea demographics, designed screening records) and 50 engineering cases in `data/eng_cases/`, generated deterministically by `scripts/build_eng_cases.py` from her template to cover both sides of every threshold, exact boundaries, unit conversion, missing data, hand-written free text, liver and kidney evidence and conflicting results. Each engineering case records its design intent (`data/eng_cases/design_labels.csv`), written before any run; it is used for evaluation and is not clinical ground truth.
+## Trial and data
+
+- **Trial:** [NCT07347678](https://clinicaltrials.gov/study/NCT07347678), SAD cohort: 10 criteria plus age 18–65. The compiled rule pack (`sad-1.0.0`), the deterministic SAD evaluator and the core screening cases are in [`trials/nct07347678_sad/`](trials/nct07347678_sad/README.md); every input is checked against SHA-256 manifests before a run. A second compiled rule set, [NCT07610278](trials/nct07610278/README.md) (hypertension with hypercholesterolemia), is included for reference.
+- **Patients:** 58 synthetic patients as FHIR R4 bundles.
+  - **Core screening set** (SAD01–SAD08): Synthea 3.3.0 demographics with designed screening records (labs with fasting specimens and reference ranges, a screening interview).
+  - **Extended scenario set** (EXT01–EXT50, [`data/extended_cases/`](data/extended_cases/README.md)): generated deterministically by `scripts/build_extended_cases.py` from core case SAD01, one deliberate situation per case: both sides of every threshold, exact boundaries, unit conversion, missing data, hand-written free text, liver and kidney evidence, conflicting results. Each case records its design intent before any run (`design_labels.csv`); evaluation measures the system against it. It is not clinical ground truth.
 
 ## Quick start
 
@@ -24,67 +29,54 @@ cp .env.example .env
 python -m pytest tests/            # offline, no AWS needed
 ```
 
-**Without AWS** (rules only, recovery agent off):
+**Without AWS** (rules only, agent off):
 
 ```bash
 python run.py --trial SAD --date 2026-10-09 --no-agent
 ```
 
-**With AWS.** You need an AWS profile with Bedrock access to Amazon Nova 2 Lite in `us-west-2`. Credentials come from your local profile (`aws configure` or `aws sso login`); nothing secret goes in the repo. In `.env`, set **`AWS_PROFILE`** to that profile (the template says `default`), check `AWS_REGION` and `BEDROCK_MODEL_ID`, and set `S3_BUCKET` if you have one. Then:
+**With AWS.** You need an AWS profile with Bedrock access to Amazon Nova 2 Lite in `us-west-2`. Credentials come from your local profile (`aws configure` or `aws sso login`); nothing secret goes in the repository. In `.env`, set **`AWS_PROFILE`** to that profile (the template says `default`), check `AWS_REGION` and `BEDROCK_MODEL_ID`, and set `S3_BUCKET` to have logs and snapshots copied to S3. Then:
 
 ```bash
 python check_bedrock.py            # expect: response: bedrock ok
 python run.py --trial SAD --date 2026-10-09
 ```
 
-Open `out/prescreen_log_SAD_2026-10-09.md`. If Bedrock is unreachable, the run says so once and continues with rules only. The SAD run includes Ming's 8 cases and the 50 engineering cases (`--no-eng-cases` to leave them out). With `--no-agent` the result equals Ming's own evaluator (checked by `tests/test_sad.py`).
+Open `out/prescreen_log_SAD_2026-10-09.md`. If Bedrock is unreachable, the run says so once and continues with rules only. `--no-extended-cases` screens the core set only.
 
-`tests/fixtures/` holds engineering's own sample data (four hand-written patients on NCT02178098, sample labels, a sample SAD amendment). None of it is a project trial or ground truth; see [tests/fixtures/README.md](tests/fixtures/README.md).
+## Outputs
 
-## Weekly run for a trial
+Each run writes to `out/` (and to `s3://$S3_BUCKET/logs/{trial}/{date}/` when `S3_BUCKET` is set):
 
-```bash
-python run.py --trial SAD --date 2026-10-09
-```
+- `prescreen_log_{trial}_{date}.md`: the CRC's log, four sections with key evidence (record, value, date), notes, and per-patient detail with every criterion and its trace;
+- `prescreen_log_{trial}_{date}.csv`: one row per patient and criterion;
+- `trace_{trial}_{date}.jsonl`: every rule and model step, labelled by actor (rule, engine, agent);
+- `run_{trial}_{date}.json`: run summary; `amendment_impact_{trial}_{date}.md` when the criteria changed.
 
-`--trial SAD` evaluates Ming's rule pack `t6_sad_demo/rules/sad-1.0.0.json` on her cases with her evaluator (`t6_sad_demo/engine.py`), after checking every input against her SHA-256 manifests. Other trials use the generic engine: NCT ID in `TRIALS` in `src/config.py`, predicates in `data/predicates/trial_{T}.json`, patients in `data/patients/`.
+If the criteria cannot be fetched and the cached copy is older than 14 days, no log is written.
 
-Writes to `out/`:
+## How a verdict is made
 
-- `prescreen_log_{trial}_{date}.md`: the CRC's log, four sections with key evidence (record ID, value, date), notes, and a per-patient detail with every criterion and its trace;
-- `prescreen_log_{trial}_{date}.csv`: one row per patient and criterion, for evaluation;
-- `trace_{trial}_{date}.jsonl`: every rule and model step; `run_{trial}_{date}.json`: run summary.
+1. **Criteria** are fetched from the ClinicalTrials.gov API v2, cached, and snapshotted with a SHA-256.
+2. **Patient records** are loaded into one in-memory FHIR store (`src/adapters/fhir_store.py`), with FHIR-style queries so a real FHIR server can replace it. The evaluator, the failure switches and the agent share it.
+3. **Guards** run first and are traced as rules: unambiguous unit conversion (LDL mmol/L → mg/dL, rounded to 0.1 mg/dL) and plausibility ranges (an LDL of 690 mg/dL becomes `unknown`, not "met").
+4. **The SAD evaluator** decides each criterion: binding to the screening encounter, fasting specimen, the upper limit of normal from each result's reference range (ALT or AST > 1.5 × ULN), questionnaire coverage windows for smoking and drug history. Criterion I5 ("no clinically significant hepatic or renal abnormality") is always the investigator's call.
+5. **The agent** (Strands Agents + Amazon Nova 2 Lite) handles what the rules cannot settle. The model reads, searches and explains; code compares numbers, applies windows and makes the call:
+   - *Result missing* → the agent looks up equivalent codes and re-queries; a record it finds goes back to the evaluator by ID, never by value.
+   - *Free-text history* (smoking, advanced therapies, lipid-lowering drugs) → the model extracts facts, each with a quote; quotes absent from the source are dropped; drug classes come from the NLM **RxNav** terminology (RxNorm / RxClass), not the model's memory; code scans the text for in-class drugs the model left out and asks it again; code applies the thresholds and windows. Where the protocol's definitions disagree (4–5 cigarettes on weekend nights: over 2 a day, under 10 a week) the criterion stays unknown for the CRC.
+   - *Conflicting results* → code re-runs the evaluator with each candidate to tell whether the choice changes the outcome; the model explains the difference and what to check, and never picks one.
+   - *I5 evidence* → a tool-using agent looks up liver and kidney labs, diagnoses and notes; lab flags come from reference ranges in code; every cited record is verified; a real finding sends the patient to review.
+6. **Aggregation** (fixed rules): any clearly failed criterion → excluded, including an exclusion read from free text on a firm basis (verified quote, code-applied threshold, terminology-confirmed drug class), shown as "from free text" with the quote; then an unresolved conflict, an exclusion resting on the model alone, or flagged I5 evidence → needs review; then unknown → pending; else likely eligible. A conflict where every candidate gives the same result is resolved to it, with the conflict kept in the evidence.
 
-Logs are uploaded to `s3://$S3_BUCKET/logs/{trial}/{date}/` when `S3_BUCKET` is set. If the criteria cannot be fetched and the cached copy is older than 14 days, no log is written.
+Fresh model conversation per case, temperature 0, at most 6–8 tool calls per task. Every step is traced; `--no-agent` gives a rules-only run.
 
-### How a verdict is made (SAD)
-
-1. **Criteria** for NCT07347678 are fetched from ClinicalTrials.gov, cached, snapshotted with SHA-256 (and copied to S3).
-2. **Cases** are loaded into one in-memory FHIR store shared by the evaluator, the failure switches and the agent.
-3. **Engineering guards** run first and are traced as rules: unambiguous unit conversion (e.g. LDL mmol/L → mg/dL) and plausibility ranges (an LDL of 690 mg/dL becomes `unknown`, not "met").
-4. **Ming's evaluator** decides each criterion: screening-encounter binding, fasting specimen, ULN from the reference range (ALT or AST > 1.5×ULN), questionnaire coverage windows for smoking and drug history; I5 is always left to the investigator.
-5. **The agent** (Strands + Nova 2 Lite) handles what the rules cannot settle. The model reads and explains; code compares and decides:
-   - *Empty query* → recovery agent: equivalent codes, then notes, then abstain; a found record goes back to Ming's evaluator by ID.
-   - *Free-text history* (smoking, advanced therapies, lipid-lowering drugs) → the model extracts facts with quotes; quotes absent from the source are dropped; drug classes come from NLM **RxNav** (RxNorm/RxClass), not the model's memory; code applies Ming's thresholds and windows; where the protocol's definitions disagree (e.g. 4–5 cigarettes on weekend nights) the criterion stays unknown for the CRC.
-   - *Conflicting results* → code re-runs Ming's evaluator per candidate to tell whether the choice matters; the model explains the difference and what to check, never picks one.
-   - *I5 (investigator judgement)* → a tool-using evidence agent looks up liver and kidney labs, diagnoses and notes; lab flags come from reference ranges in code; cited records are verified; abnormal findings send the patient to review.
-6. **Aggregation** follows Ming's rule: any clearly failed criterion → excluded, including an exclusion read from free text when its basis is firm (verified quote, code-applied threshold, drug class confirmed by RxNav; shown as "from free text" with the quote); then an unresolved conflict, an exclusion resting on the model alone, or flagged I5 evidence → needs review; then unknown → pending; else likely eligible. I5 is listed as "CRC to check".
-
-### How a verdict is made (generic engine)
-
-1. **Criteria** are fetched from the ClinicalTrials.gov API v2 (`src/tools/ctgov.py`), cached, and snapshotted with a SHA-256.
-2. **Data** comes from a file-based FHIR adapter over Synthea bundles (`src/adapters/fhir_store.py`), with FHIR-style queries so a real FHIR server could replace it.
-3. **The engine** (`src/engine/`) evaluates each predicate: thresholds, time windows, unit conversion with plausibility ranges, what a missing record means. Same input, same output; no model.
-4. **The recovery agent** (`src/agent/agent.py`) takes only criteria left `unknown` because a query came back empty. It tries equivalent codes, then searches clinical notes, then abstains with an explanation. It hands records back to the engine by ID, never values; note text is never treated as a lab value. Fresh conversation per case, temperature 0, at most 6 tool calls.
-5. **Aggregation** (`src/engine/aggregate.py`) applies fixed rules: any exclusion met → excluded; conflict → needs review; blocking unknown → pending (named data item); all inclusions met → likely eligible. Criteria that cannot be computed are listed for the CRC, never guessed.
-
-Use `--no-agent` for a rules-only run.
+A generic predicate engine (`src/engine/evaluate.py`) evaluates trials compiled into the general predicate format (thresholds, time windows, aggregation, what a missing record means); `tests/fixtures/` exercises it.
 
 ## Amendment monitoring
 
-Every run compares the fetched criteria with the previous snapshot (SHA-256). When they differ, the text is split into items and diffed; the model labels each changed item **substantive**, **wording** or **ambiguous** (case/spacing/punctuation-only changes are wording by rule; a model failure counts as ambiguous). Only substantive changes trigger a re-screen, using the amended predicate file `data/predicates/trial_{T}_v2.json`, which a person prepares and reviews (no automatic compilation). The result is `out/amendment_impact_{trial}_{date}.md`: what changed, how it was classified and why, and every patient whose status changes with the criterion and record behind it.
+Every run compares the fetched criteria with the previous snapshot (SHA-256). When they differ, the text is split into items and diffed; the model labels each changed item **substantive**, **wording** or **ambiguous** (case/spacing/punctuation-only changes are wording by rule; a model failure counts as ambiguous). Only substantive changes trigger a re-screen, with an amended rule pack that a person prepares and reviews; rules are not compiled automatically. The impact report lists what changed, how it was classified and why, and every patient whose status changes with the criterion and record behind it.
 
-Demo on SAD with an engineering sample amendment (SAD LDL-C threshold 70 → 100, HbA1c line reworded; not Ming's v2):
+Simulated amendment (SAD LDL-C threshold 70 → 100 mg/dL, HbA1c line reworded):
 
 ```bash
 python run.py --trial SAD --date 2026-10-09 --fail amendment_v2 \
@@ -93,95 +85,70 @@ python run.py --trial SAD --date 2026-10-09 --fail amendment_v2 \
   --v2-predicates tests/fixtures/sad/sad-1.0.1-sample.json
 ```
 
-Expected: one substantive and one wording change; SAD01, SAD04 and SAD06 change status.
+## Failure scenarios
 
-Demo on the engineering fixtures:
+Each failure path is reproducible with `--fail` (repeatable). Data failures alter the loaded records in memory only, and the log announces exactly what was altered.
 
-```bash
-python run.py --trial SAMPLE --nct NCT02178098 --predicates tests/fixtures/sample_predicates.json \
-  --patients tests/fixtures/patients --date 2026-10-09 --fail amendment_v2 \
-  --v1-snapshot tests/fixtures/snapshots/NCT02178098_v1.txt \
-  --v2-snapshot tests/fixtures/snapshots/NCT02178098_v2.txt \
-  --v2-predicates tests/fixtures/sample_predicates_v2.json
-```
-
-## Failure injection (for demos)
-
-Each failure path can be reproduced on demand with `--fail` (repeatable). Data failures alter the loaded records in memory only, and the log announces exactly what was altered.
-
-| Switch | What it does | Expected behaviour |
+| Switch | What it does | Behaviour |
 |---|---|---|
-| `ctgov_timeout` | ClinicalTrials.gov call times out | criteria served from cache, log stamped STALE (no log if cache > 14 days) |
-| `drop_codes` | one patient's LDL-C recoded 18262-6 → 13457-7 | rule query empty → recovery agent finds it under the equivalent code → engine decides |
-| `bad_units` | one patient's latest LDL-C in mmol/L, another's ×10 | first converted by rule; second rejected as implausible → `unknown` with reason |
-| `amendment_v2` | a prepared amended criteria text stands in for the live fetch | changes classified; substantive → re-screen and impact report |
-| `note_conflict` | (optional, not implemented) | |
+| `ctgov_timeout` | ClinicalTrials.gov call times out | criteria served from cache, log stamped STALE (no log if the cache is older than 14 days) |
+| `drop_codes` | SAD04's LDL-C filed under the calculated-LDL code | rule query empty → agent finds it under the equivalent code → evaluator decides |
+| `bad_units` | SAD01's LDL-C in mmol/L, SAD02's ×10 | first converted by rule; second rejected as implausible → `unknown` with the reason |
+| `amendment_v2` | an amended criteria text stands in for the live fetch | changes classified; substantive → re-screen and impact report |
+| `note_conflict` | not implemented | |
 
-On SAD the targets are SAD04 (`drop_codes`), SAD01 and SAD02 (`bad_units`) until Ming maps her injected cases (`DEFAULT_FAILURE_TARGETS` in `src/engine/sad_adapter.py`; override with `FAILURE_TARGETS` in `src/config.py`). Example: `python run.py --trial SAD --date 2026-10-09 --fail drop_codes`.
+Targets: `DEFAULT_FAILURE_TARGETS` in `src/engine/sad_adapter.py`, overridable with `FAILURE_TARGETS` in `src/config.py`.
 
 ## Evaluation
 
-One command runs the baseline and every failure switch, then scores the baseline against the labels:
-
-```bash
-python eval/evaluate.py --trial SAD --labels data/ground_truth/trial_SAD.csv   # once Ming delivers labels
-```
-
-On SAD, against the engineering cases' design intent (runs the five scenarios in parallel, then scores them; about 20 minutes with the agent on):
+One command runs the normal run and the four failure scenarios in parallel, then scores them against the extended set's design intent (about 20 minutes with the agent on); a second builds the reviewer page:
 
 ```bash
 python eval/evaluate.py --trial SAD --date 2026-10-09 \
-  --labels data/eng_cases/design_labels.csv --flips data/eng_cases/design_amendment_flips.txt \
+  --labels data/extended_cases/design_labels.csv --flips data/extended_cases/design_amendment_flips.txt \
   --v1-snapshot tests/fixtures/sad/NCT07347678_v1.txt --v2-snapshot tests/fixtures/sad/NCT07347678_v2.txt \
   --v2-predicates tests/fixtures/sad/sad-1.0.1-sample.json
-python scripts/build_report.py     # writes out/eval/SAD/report.html and docs/demo/index.html
+python scripts/build_report.py     # out/eval/SAD/report.html and docs/demo/index.html
 ```
 
-On the engineering fixtures (sample labels; the report says the numbers are not an evaluation):
-
-```bash
-python eval/evaluate.py --trial SAMPLE --labels tests/fixtures/sample_labels.csv \
-  --flips tests/fixtures/sample_amendment_flips.txt --nct NCT02178098 \
-  --predicates tests/fixtures/sample_predicates.json --patients tests/fixtures/patients --date 2026-10-09 \
-  --v1-snapshot tests/fixtures/snapshots/NCT02178098_v1.txt \
-  --v2-snapshot tests/fixtures/snapshots/NCT02178098_v2.txt \
-  --v2-predicates tests/fixtures/sample_predicates_v2.json
-```
-
-Labels are a CSV `patient_id,criterion_id,expected` with one row per computable criterion (`met` / `not_met`) and one `PATIENT` row per patient (`eligible` / `not_eligible`). Planted amendment flips go in `data/ground_truth/trial_{T}_amendment_flips.txt`, one patient ID per line. The report (`out/eval/{T}/eval_report_{T}_{date}.md`) covers wrongful exclusions, patient-level sensitivity, criterion accuracy, abstention, evidence and trace coverage, recovery rate, amendment recall and failure paths, and lists every disagreement for error attribution. `--reuse` scores existing runs without re-running.
+The report covers wrongful exclusions, patient-level sensitivity, criterion accuracy, abstention, evidence and trace coverage, recovery rate, amendment recall and failure paths, and lists every disagreement for error attribution. Labels use the CSV format `patient_id,criterion_id,expected` (`met` / `not_met` per criterion, `eligible` / `not_eligible` in a `PATIENT` row). `--reuse` scores existing runs without re-running.
 
 ## Individual tools
 
 ```bash
-python -m src.tools.ctgov NCT02178098                                   # fetch criteria (add --fail ctgov_timeout)
-python -m src.adapters.fhir_store --dir tests/fixtures/patients         # list patients
+python -m src.tools.ctgov NCT07347678                                    # fetch criteria (add --fail ctgov_timeout)
+python -m src.adapters.fhir_store --dir tests/fixtures/patients          # list patients
 python -m src.adapters.fhir_store fixture-complete 18262-6 --dir tests/fixtures/patients   # LDL-C by LOINC
-python -m src.engine.evaluate --predicates tests/fixtures/sample_predicates.json \
-  --patients tests/fixtures/patients --date 2026-10-09                  # per-criterion verdicts, no aggregation
 ```
 
 ## Layout
 
 ```
-run.py       weekly run for one trial
-src/         config.py, pipeline.py, failures.py
-  adapters/  file-based FHIR store            tools/      ClinicalTrials.gov fetch
-  engine/    evaluate, units, aggregate       agent/      recovery agent, trace
-  amendment/ diff, classify, re-screen        report/     log and impact report writers
-eval/        evaluation against ground-truth labels
-data/        patients/, predicates/, mappings/, snapshots/, ground_truth/  (trial data)
-tests/       offline tests and fixtures
+run.py         weekly run for one trial
+src/           config.py, pipeline.py, failures.py
+  adapters/    FHIR store                         tools/      ClinicalTrials.gov, RxNav
+  engine/      SAD adapter, generic engine, units, aggregation
+  agent/       recovery, free-text interpretation, conflict explanation, I5 evidence, trace
+  amendment/   diff, classify, re-screen          report/     log and impact report writers
+trials/        compiled rule packs, SAD evaluator and core cases
+data/          extended scenario set, criteria snapshots
+eval/          evaluation
+scripts/       extended-set generator, reviewer page builder
+docs/demo/     reviewer page
+tests/         offline tests (no model calls) and fixtures
 ```
 
-## Status
+## Known limitations
 
-- [x] T1 infrastructure: scaffold, Bedrock check (Amazon Nova 2 Lite)
-- [x] T3 FHIR file adapter · T4 ClinicalTrials.gov tool · T5 engine · T6 aggregation and log
-- [x] T7 recovery agent · T8 trace · T9 failure switches (`note_conflict` optional, not done)
-- [x] T10 amendment monitoring and re-screen · T11 evaluation script
-- [x] SAD (NCT07347678) end to end through Ming's evaluator, with agent, switches and amendment demo
-- [ ] Ground-truth labels, a real amendment (v2) and more cases from Ming; evaluation numbers wait for labels
-- [ ] T12 demo video, submission
+- Rule packs are compiled from the registry text by hand and reviewed; changed criteria are classified automatically, but the amended rules are prepared by a person.
+- All data is synthetic. The screening records are designed, not full longitudinal charts; the extended set's labels are design intent, not independent clinical ground truth, so the evaluation measures behaviour against intent, not clinical accuracy.
+- Supported: structured criteria on diagnoses, labs, medications and vital signs with thresholds and time windows, and free-text history for smoking and drug exposure. Not supported: imaging reports, oncology staging, lines of therapy, genomic criteria.
+- The model is not perfectly stable at temperature 0 (for example it sometimes leaves a drug out); the terminology scan and the re-ask catch those cases, and anything still unsettled goes to the CRC.
+- Fasting duration is checked as present and positive; a minimum of 6 hours and per-lab method requirements are specified but not yet enforced by the evaluator.
+
+## Data and privacy
+
+Synthetic patients only (Synthea demographics; designed screening records). No PHI or PII. External services: ClinicalTrials.gov API v2 and NLM RxNav (public), Amazon Bedrock and Amazon S3.
 
 ## License
 

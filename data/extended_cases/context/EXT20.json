@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT20",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "6f0a34e4-0468-53db-adca-ef854c1713c7",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "91085b4d-91b9-50fb-afed-5b4f8abbf5dc",
+  "history_id": "d20d488f-bf99-5c9b-99f7-e34c75313efc",
+  "FHIR_file": "cases/EXT20.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "drug free text: explicitly none",
+  "design_category": "likely_eligible",
+  "design_target": "E4",
+  "design_target_status": "not_met"
+}

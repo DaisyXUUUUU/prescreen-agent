@@ -10,7 +10,7 @@ injected value is never mistaken for real data.
               and of another made implausible (rule returns unknown).
   ctgov_timeout is handled in src/tools/ctgov.py; amendment_v2 in T10.
 
-Target patients come from config.FAILURE_TARGETS (Ming's injected-case list),
+Target patients come from config.FAILURE_TARGETS,
 otherwise the first patients, in ID order, that have an LDL-C 18262-6 record.
 """
 

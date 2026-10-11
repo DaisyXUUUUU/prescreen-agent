@@ -1,0 +1,15 @@
+{
+  "case_id": "EXT14",
+  "trial_id": "NCT07347678",
+  "cohort": "SAD",
+  "patient_id": "e4d04f35-6c22-517e-befc-6df1643002a8",
+  "screening_at": "2026-10-09T09:00:00-04:00",
+  "encounter_id": "8e258d5c-0988-5188-b1d0-67b8abe67772",
+  "history_id": "3397eab3-07bb-5061-b07c-cdcc80b8d3be",
+  "FHIR_file": "cases/EXT14.json",
+  "data_scope": "Synthetic extended-scenario case derived from core case SAD01",
+  "purpose": "drug free text: ezetimibe ongoing",
+  "design_category": "excluded",
+  "design_target": "E5",
+  "design_target_status": "met"
+}

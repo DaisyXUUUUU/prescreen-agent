@@ -1,5 +1,5 @@
 {
-  "_comment": "SAMPLE v2 (amendment demo, engineering-made): S-I5 LDL-C threshold 100 -> 140. NOT trial B.",
+  "_comment": "SAMPLE v2 (amendment test): S-I5 LDL-C threshold 100 -> 140.",
   "trial_id": "SAMPLE",
   "predicates": [
     {
