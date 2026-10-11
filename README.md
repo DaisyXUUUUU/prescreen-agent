@@ -4,7 +4,7 @@ AWS Community Day Bay Area 2026 hackathon — "Hand it off" challenge.
 
 Takes over a clinical research coordinator's weekly clinical-trial pre-screening: reads synthetic patients (Synthea FHIR R4) and trial eligibility criteria (ClinicalTrials.gov), and writes the same pre-screening log the CRC writes by hand: likely eligible / pending / excluded / needs review, with evidence for every verdict. Deterministic code makes every comparison; an agent on Amazon Bedrock (Strands Agents + Amazon Nova 2 Lite) handles only the exceptions (empty queries, changed criteria). No patient is ever contacted. **Synthetic data only.**
 
-**See the run without installing anything:** open [`docs/demo/index.html`](docs/demo/index.html) (input, agent, output and evaluation for 58 patients, with every verdict's evidence and trace).
+**See the run without installing anything:** the reviewer page [`docs/demo/index.html`](docs/demo/index.html) shows input, agent, output and evaluation for 58 patients, with every verdict's evidence and trace. GitHub shows HTML as source, so download it and open it in a browser, or use the hosted copy linked in the submission.
 
 **Primary trial:** [NCT07347678](https://clinicaltrials.gov/study/NCT07347678), SAD cohort (Ming's "T6"): 10 criteria plus age 18–65. Clinical rules, the 8 original screening cases and the SAD evaluator are Ming's (`t6_sad_demo/`; see [its README](t6_sad_demo/README.md), [her delivery notes](docs/MING_SUBMISSION.md), [data delivery checklist](docs/DATA_DELIVERY.md), [handoff record](docs/MING_HANDOFF.md) and [her standalone demo](MING_DEMO.md)). The engineering pipeline in `src/` wraps her evaluator unchanged. NCT07610278 ("T2", hypertension with hypercholesterolemia) is kept as reference in `t2_backup/`.
 

@@ -29,3 +29,6 @@ data/snapshots/NCT02178098/
 /tools/
 /archive/
 /t6_sad_demo/data/raw/
+
+# local tool config
+.claude/

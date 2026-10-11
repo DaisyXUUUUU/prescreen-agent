@@ -63,6 +63,11 @@ def case_facts(case):
 
 
 def main():
+    global R
+    import argparse
+    ap = argparse.ArgumentParser(description="Build the reviewer report from evaluation runs")
+    ap.add_argument("--runs", type=Path, default=R, help="folder with the five run folders (default out/eval/SAD)")
+    R = ap.parse_args().runs
     spec = sa.load_spec()
     cases = sa.load_cases() + sa.load_cases(config.DATA_DIR / "eng_cases" / "cases")
     rules_only, *_ = sa.screen(cases, spec, use_agent=False)
@@ -244,13 +249,15 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .filters label { display: inline-flex; gap: 6px; align-items: center; font-size: 0.86rem; color: var(--muted); }
 /* matrix */
+.matrix-wrap { max-height: min(62vh, 560px); overflow: auto; }
+table.matrix thead th { position: sticky; top: 0; z-index: 1; }
 table.matrix th, table.matrix td { padding: 6px 6px; text-align: center; }
 table.matrix td.pid, table.matrix th.pid { text-align: left; white-space: nowrap; }
 table.matrix tbody tr { cursor: pointer; }
 table.matrix tbody tr:hover, table.matrix tbody tr.sel { background: var(--accent-soft); }
 .cell { display: inline-grid; place-items: center; width: 26px; height: 22px; border-radius: 4px; font: 700 0.72rem/1 var(--mono); position: relative; }
-.s-met { color: var(--met); background: var(--met-bg); }
-.s-not_met { color: var(--fail); background: var(--fail-bg); }
+.s-pass { color: var(--met); background: var(--met-bg); }
+.s-fail { color: var(--fail); background: var(--fail-bg); }
 .s-unknown { color: var(--unk); background: var(--unk-bg); }
 .cell.agent::after { content: ""; position: absolute; top: -3px; right: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--agent); border: 2px solid var(--surface); }
 .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.82rem; color: var(--muted); align-items: center; }
@@ -343,10 +350,10 @@ a { color: var(--accent); }
       <label><input type="checkbox" id="f-agent"> Only patients the agent worked on</label>
     </div>
     <div class="legend">
-      <span><span class="cell s-met">M</span> met</span><span><span class="cell s-not_met">N</span> not met</span><span><span class="cell s-unknown">?</span> unknown</span><span><span class="dot"></span> agent involved</span><span>I5 is always the investigator's call</span>
+      <span>Letters: M met, N not met, ? unknown.</span><span><span class="cell s-pass">✓</span> criterion passed (inclusion met, or exclusion not met)</span><span><span class="cell s-fail">✗</span> failed</span><span><span class="cell s-unknown">?</span> unknown</span><span><span class="dot"></span> agent involved</span><span>I5 is always the investigator's call</span>
     </div>
-    <div class="panel scroll"><table class="matrix" id="matrix"><thead></thead><tbody></tbody></table></div>
-    <div class="panel" id="detail"></div>
+    <div class="panel matrix-wrap"><table class="matrix" id="matrix"><thead></thead><tbody></tbody></table></div>
+    <div class="panel" id="detail" style="scroll-margin-top:56px"></div>
   </section>
 
   <section id="amendment">
@@ -385,7 +392,10 @@ const CRIT = ['AGE','I1','I2','I3','I4','I5','E1','E2','E3','E4','E5'];
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pill = c => `<span class="pill c-${c}">${LABEL[c] || c}</span>`;
 const glyph = {met: 'M', not_met: 'N', unknown: '?'};
+const TYPE = {}; // colour by effect on eligibility: an exclusion that is not met is a pass
+const effect = (c, status) => status === 'unknown' ? 'unknown' : ((TYPE[c] === 'exclusion') === (status === 'met') ? 'fail' : 'pass');
 const P = D.patients;
+D.criteria.forEach(c => { TYPE[c.id] = c.type; });
 
 document.getElementById('chips').innerHTML = [
   `trial ${D.trial.nct} · ${D.trial.cohort}`, `screening ${D.trial.date}`, `${P.length} synthetic patients`,
@@ -396,7 +406,7 @@ const agentTasks = Object.values(D.agent_kinds).reduce((a, b) => a + b, 0);
 document.getElementById('flowstrip').innerHTML = `
   <div><span class="eyebrow">Input</span><span class="n">${D.criteria.length}</span><span class="muted">criteria from ClinicalTrials.gov, ${P.length} patients as FHIR R4 records</span></div>
   <div><span class="eyebrow">Rules</span><span class="n">${P.length * CRIT.length}</span><span class="muted">criterion checks by Ming's deterministic evaluator</span></div>
-  <div class="agentcol"><span class="eyebrow">Agent</span><span class="n">${agentTasks}</span><span class="muted">${Object.entries(D.agent_kinds).map(([k, v]) => `${v} ${k.toLowerCase()}`).join(' · ')}</span></div>
+  <div class="agentcol"><span class="eyebrow">Agent</span><span class="n">${agentTasks}</span><span class="muted">${Object.entries(D.agent_kinds).map(([k, v]) => `${v} × ${k}`).join(' · ')}</span></div>
   <div><span class="eyebrow">Output</span><span class="n">${ORDER.map(c => base.counts[c]).join(' / ')}</span><span class="muted">likely eligible / pending / excluded / needs review</span></div>`;
 
 document.querySelector('#crit-table tbody').innerHTML = D.criteria.map(c =>
@@ -428,15 +438,19 @@ document.querySelector('#matrix thead').innerHTML = `<tr><th class="pid">Patient
 function renderMatrix() {
   const onlyChanged = document.getElementById('f-changed').checked, onlyAgent = document.getElementById('f-agent').checked;
   const list = P.filter(p => (!filterCat || p.category === filterCat) && (!onlyChanged || p.category !== p.rules_category) && (!onlyAgent || CRIT.some(c => p.criteria[c].agent_used)));
-  document.querySelector('#matrix tbody').innerHTML = list.map(p => `<tr data-id="${p.id}"><td class="pid mono">${p.id}</td>${CRIT.map(c => { const v = p.criteria[c]; return `<td><span class="cell s-${v.status}${v.agent_used ? ' agent' : ''}" title="${c}: ${v.status}">${glyph[v.status]}</span></td>`; }).join('')}<td class="pid">${pill(p.category)}</td><td class="pid">${p.rules_category === p.category ? '<span class="muted">same</span>' : pill(p.rules_category)}</td></tr>`).join('') || `<tr><td colspan="14" class="muted">No patients match these filters.</td></tr>`;
-  document.querySelectorAll('#matrix tbody tr[data-id]').forEach(tr => tr.onclick = () => select(tr.dataset.id));
+  document.querySelector('#matrix tbody').innerHTML = list.map(p => `<tr data-id="${p.id}"><td class="pid mono">${p.id}</td>${CRIT.map(c => { const v = p.criteria[c]; return `<td><span class="cell s-${effect(c, v.status)}${v.agent_used ? ' agent' : ''}" title="${c}: ${v.status}">${glyph[v.status]}</span></td>`; }).join('')}<td class="pid">${pill(p.category)}</td><td class="pid">${p.rules_category === p.category ? '<span class="muted">same</span>' : pill(p.rules_category)}</td></tr>`).join('') || `<tr><td colspan="14" class="muted">No patients match these filters.</td></tr>`;
+  document.querySelectorAll('#matrix tbody tr[data-id]').forEach(tr => tr.onclick = () => {
+    select(tr.dataset.id);
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.getElementById('detail').scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block: 'start'});
+  });
 }
 function select(id) {
   const p = P.find(x => x.id === id);
   document.querySelectorAll('#matrix tbody tr').forEach(tr => tr.classList.toggle('sel', tr.dataset.id === id));
   const facts = Object.entries(p.facts).filter(([, v]) => v).map(([k, v]) => `<div class="${k.includes('free text') ? 'wide' : ''}"><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('');
   const crit = CRIT.map(c => { const v = p.criteria[c]; const meta = D.criteria.find(x => x.id === c);
-    return `<div class="crit"><div class="line"><span class="cell s-${v.status}${v.agent_used ? ' agent' : ''}">${glyph[v.status]}</span><strong class="mono">${c}</strong><span class="muted">${esc(meta.text.slice(0, 110))}</span>${v.rules_status !== v.status ? `<span class="pill c-needs_review">rules alone: ${v.rules_status}</span>` : ''}${v.interpreted ? '<span class="pill c-likely_eligible">from free text</span>' : ''}${v.review ? '<span class="pill c-needs_review">review</span>' : ''}</div>
+    return `<div class="crit"><div class="line"><span class="cell s-${effect(c, v.status)}${v.agent_used ? ' agent' : ''}">${glyph[v.status]}</span><strong class="mono">${c}</strong><span class="muted">${esc(meta.text.slice(0, 110))}</span>${v.rules_status !== v.status ? `<span class="pill c-needs_review">rules alone: ${v.rules_status}</span>` : ''}${v.interpreted ? '<span class="pill c-likely_eligible">from free text</span>' : ''}${v.review ? '<span class="pill c-needs_review">review</span>' : ''}</div>
       <p>${esc(v.note)}</p>${v.agent ? `<p><strong>Agent:</strong> ${esc(v.agent)}</p>` : ''}${v.evidence ? `<p class="muted mono" style="font-size:.76rem;overflow-wrap:anywhere">evidence: ${esc(v.evidence)}</p>` : ''}
       <details${v.agent_used ? ' open' : ''}><summary>Trace (${v.trace.length} steps)</summary><div class="trace">${traceHTML(v.trace)}</div></details></div>`; }).join('');
   const runs = Object.entries(p.by_run).map(([r, c]) => `<span class="chip">${r}: ${LABEL[c]}</span>`).join('');
