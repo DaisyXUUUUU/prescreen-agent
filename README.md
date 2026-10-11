@@ -2,6 +2,12 @@
 
 AWS Community Day Bay Area 2026 hackathon — "Hand it off" challenge.
 
+**Demo video:** [Watch on YouTube](https://youtu.be/Msg-lAUKdsA)
+
+**Writeup:** [Read on Google Docs](https://docs.google.com/document/d/1-GaKe88icVYlW2jytBQsSswfw_78wU1vgXnz34tjQjE/edit?tab=t.0)
+
+**Team:** P01 — Ming Lin, Ziyue Xu
+
 A clinical research coordinator (CRC) checks upcoming patients against trial eligibility criteria and writes a pre-screening log: who is likely eligible, who is excluded and by which criterion, and who cannot be assessed yet. Protocol amendments require re-checking those assessments. Interview-based workload and measured time savings are still pending.
 
 This system takes over that work. It reads a trial's criteria from ClinicalTrials.gov and patient records as FHIR R4, and writes the log the CRC would write: **likely eligible / pending / excluded / needs review**, with the record, value and date behind every verdict. Deterministic rules decide everything a rule can decide. An agent on Amazon Bedrock handles what rules cannot read: results filed under another code, patients' own words about smoking and drug history, conflicting results, and evidence for criteria that need an investigator's judgement. When the criteria change, it classifies each change and re-screens. No patient is ever contacted. **Synthetic data only.**
@@ -119,7 +125,7 @@ Agent calls have SDK turn limits and cancellation timers (60 seconds for structu
 
 Structured facts use JSON responses with local Pydantic validation and at most one format repair within a shared 60-second deadline; a second malformed output stays unknown instead of entering the SDK's automatic tool-schema repair loop. Explicit smoking ranges and approximate quantities are detected before model calls. The source remains unchanged, including EXT02's approximate quantity and EXT11's range.
 
-The required ground-truth cohort is **8 complete cases (SAD01-SAD08)**, replacing the previous 20-case minimum. The user-designated reference is `data/ground_truth/sad_confirmed_labels_v1.csv`; see [reference scope and scoring](data/ground_truth/README.md). Run `python -m eval.sad_reference --log out/prescreen_log_SAD_2026-10-09.csv` to check all eight cases, including unknowns and overall conclusions. The extended cases remain supplementary regression tests. The CSV does not record reviewer identity or date. `python scripts/prepare_independent_review.py` optionally creates blank review sheets and source records for these eight cases. See [delivery status](docs/DELIVERY_STATUS.md), [video outline](docs/DEMO_SCRIPT.md), and [writeup draft](docs/WRITEUP_DRAFT.md).
+The required ground-truth cohort is **8 complete cases (SAD01-SAD08)**, replacing the previous 20-case minimum. The user-designated reference is `data/ground_truth/sad_confirmed_labels_v1.csv`; see [reference scope and scoring](data/ground_truth/README.md). Run `python -m eval.sad_reference --log out/prescreen_log_SAD_2026-10-09.csv` to check all eight cases, including unknowns and overall conclusions. The extended cases remain supplementary regression tests. The CSV does not record reviewer identity or date. `python scripts/prepare_independent_review.py` optionally creates blank review sheets and source records for these eight cases. See [delivery status](docs/DELIVERY_STATUS.md), [video outline](docs/DEMO_SCRIPT.md), and [submission writeup](https://docs.google.com/document/d/1-GaKe88icVYlW2jytBQsSswfw_78wU1vgXnz34tjQjE/edit?tab=t.0).
 
 ## Individual tools
 

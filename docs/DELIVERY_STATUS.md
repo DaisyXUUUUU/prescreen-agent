@@ -25,12 +25,13 @@ The existing verified baseline agrees on 79/80 computable criteria (98.75%) and 
 
 `python scripts/prepare_independent_review.py` optionally creates blank review sheets for these eight cases and refuses to overwrite filled sheets. It does not replace the confirmed CSV or manufacture reviewer sign-off.
 
-## Submission material - pending
+## Submission materials
 
 - A real CRC interview and measured weekly time cost. The repository's generic "hours per week" is not measured evidence.
-- A recorded 3-minute video. Use DEMO_SCRIPT.md as a recording outline; it is not a video.
-- The official Slack writeup template and a completed, reviewed writeup. WRITEUP_DRAFT.md is provisional and must not be called template-compliant without the official template.
-- Team member names and emails supplied by the team; do not infer them from Git author metadata.
+- Demo video supplied: [Watch on YouTube](https://youtu.be/Msg-lAUKdsA). DEMO_SCRIPT.md is the supporting recording outline.
+- Writeup supplied: [Read on Google Docs](https://docs.google.com/document/d/1-GaKe88icVYlW2jytBQsSswfw_78wU1vgXnz34tjQjE/edit?tab=t.0). The supplied hackathon-writeup template was filled and verified locally as one page; WRITEUP_DRAFT.md is an earlier engineering draft.
+- Team P01: Ming Lin and Ziyue Xu, as listed in the supplied template. Member emails have not been supplied.
+
 Repository accessibility was verified on 2026-10-11: GitHub reports public visibility and an anonymous request returned HTTP 200.
 
 The second trial, Lambda, EventBridge and SES remain optional under TASKS; their absence is not counted as a mandatory failure here. The optional note_conflict switch is separate from the four mandatory failure switches.
