@@ -6,7 +6,7 @@ A clinical research coordinator (CRC) checks upcoming patients against trial eli
 
 This system takes over that work. It reads a trial's criteria from ClinicalTrials.gov and patient records as FHIR R4, and writes the log the CRC would write: **likely eligible / pending / excluded / needs review**, with the record, value and date behind every verdict. Deterministic rules decide everything a rule can decide. An agent on Amazon Bedrock handles what rules cannot read: results filed under another code, patients' own words about smoking and drug history, conflicting results, and evidence for criteria that need an investigator's judgement. When the criteria change, it classifies each change and re-screens. No patient is ever contacted. **Synthetic data only.**
 
-**Historical demonstration:** [`docs/demo/index.html`](docs/demo/index.html) and the previously shared hosted artifact predate these repairs. They are not current validation evidence. Run the commands below to validate the updated code; static reports have not been regenerated.
+**Reviewer page:** [`docs/demo/index.html`](docs/demo/index.html) (hosted copy: https://claude.ai/artifact/HDMQgv8m1ttxJQ9MtckViX) was rebuilt on 2026-10-11 from a fresh agent-mode evaluation of this code (58 synthetic patients, baseline plus four failure scenarios). Its metrics use design-intent labels, not independent clinical ground truth.
 
 ## Trial and data
 
@@ -155,7 +155,7 @@ tests/         offline tests (no model calls) and fixtures
 - The pipeline's versioned `src/engine/sad_validation_policy.json` enforces finite numeric fasting duration >=6 hours for LDL/TG. Booleans and malformed values return unknown. No sponsor-approved upper duration cutoff is available; extremely long finite durations still need independent review. The standalone frozen evaluator remains unchanged.
 - Method validation currently covers LDL only, using explicit synthetic method strings matched to the original code (direct vs calculated). Missing, unsupported or conflicting method representations return unknown. These strings are a demo allowlist, not clinically validated laboratory method codes; other labs need an approved per-lab policy before adding checks.
 - Recovery accepts only a system-qualified, one-hop equivalence allowlist rooted in the criterion, and revalidates the actual bound patient/encounter record. The `drop_codes` injection now uses generic LDL 2089-1 with the original direct method. EXT43's frozen calculated-code/direct-method conflict remains unknown for independent review. Frozen data and design labels were not rewritten to improve scores.
-- The committed reviewer HTML and its metrics describe the earlier run, before these boundary fixes. Re-run evaluation before presenting them as current; EXT11's design label and the old recovered-code case need independent review.
+- The reviewer page reflects the evaluation run after these boundary fixes. Under throttling, five I5 evidence calls in the failure-scenario runs ended as traced agent errors (I5 never changes a patient's category); the amendment run had none. EXT11's design label and EXT43's code/method conflict need independent review.
 
 ## Data and privacy
 
