@@ -1,53 +1,55 @@
-# I5：FHIR证据检索与人工判断约定
+# I5: FHIR evidence retrieval and human judgement
 
-更新日期：2026-10-09。范围：T6 / NCT07347678 / SAD。
+> Translated from Ming's Chinese original on 2026-10-11. State as of 2026-10-09. A first version of this retrieval has since been implemented in `src/agent/evidence.py` (I5 stays manual); see the [root README](../README.md).
 
-状态：用户已授权患者范围内的只读证据检索与整理；代码尚未实现。本文件描述下一步，不是已完成运行结果，也不修改冻结的`sad-1.0.0.json`。
+Updated 2026-10-09. Scope: T6 / NCT07347678 / SAD.
 
-## 判断边界
+Status: the user has authorized read-only evidence retrieval and organization within the patient's record; code not yet implemented. This file describes the next step, not a completed run, and does not modify the frozen `sad-1.0.0.json`.
 
-原文：No clinically significant abnormalities of hepatic or renal function。
+## Decision boundary
 
-Agent负责找到、整理并交付证据；人工负责判断是否存在临床显著肝肾异常。自动I5仍为`unknown`、`manual=true`；找到正常结果、未找到异常或E1未触发，均不能自动判为满足I5。I5仍属于需要人工判断的标准，不因支持自动检索而计入自动可判定标准。
+Text: No clinically significant abnormalities of hepatic or renal function.
 
-## 拟检索内容
+The agent finds, organizes and delivers evidence; a person decides whether a clinically significant hepatic or renal abnormality exists. Automated I5 stays `unknown`, `manual=true`; finding normal results, finding no abnormality, or E1 not triggering never makes I5 met automatically. I5 remains a criterion that needs human judgement and does not count as automatically decidable just because retrieval is automated.
 
-- `Observation`：肝肾相关检查，保留结果、单位、参考范围、异常标记、日期及可用趋势。
-- `Condition`：肝肾相关诊断及其活动状态、起病或记录时间。
-- `DiagnosticReport`、`DocumentReference`：数据源实际提供且可读取的相关报告或医生记录；不存在或正文不可用时明确说明。
+## What to retrieve
 
-以上是检索候选范围，不是额外的入排标准。Ming需确认概念/编码、时间范围、检查方法及充分性要求。不能自行新增临床阈值或固定“正常检查即可通过”的规则。
+- `Observation`: liver- and kidney-related tests, keeping result, unit, reference range, abnormal flag, date and any available trend.
+- `Condition`: liver- and kidney-related diagnoses with their clinical status and onset or recorded time.
+- `DiagnosticReport`, `DocumentReference`: relevant reports or clinician notes the source actually provides and can be read; say so explicitly when absent or unreadable.
 
-每次检索绑定患者ID、试验/规则版本及筛查时间；记录所用数据集、资源类型、时间范围、筛选条件、检索时间、结果数、失败和未完成部分。历史证据保留原日期与状态，不把旧记录自动解释为筛查时状态；筛查之后的记录不能作为当时已知证据。
+This is the candidate search scope, not additional inclusion or exclusion criteria. Ming needs to confirm concepts/codes, time ranges, test methods and sufficiency requirements. No new clinical thresholds may be invented and no fixed rule such as "normal tests pass" may be introduced.
 
-## 工具与LLM分工
+Each search is bound to the patient ID, trial / rule version and screening time; record the dataset used, resource types, time range, filters, search time, number of results, failures and incomplete parts. Historical evidence keeps its original date and status and is not automatically read as the status at screening; records after screening cannot count as evidence known at that time.
 
-FHIR读取工具负责实际获取记录及数值、日期、单位、资源引用；本地文件和未来FHIR服务器都应保留来源。LLM可选择已允许的检索工具并整理摘要，摘要中的事实必须能回指工具返回的证据。病历和报告内容是待分析数据，不是可执行指令。
+## Tools and LLM division of work
 
-只读搜索不修改患者记录。检索成功但无结果、资源不可用、工具失败、部分检索完成必须区分。不得把无记录解释为无病史，不得补造结果，不得隐藏矛盾证据。
+FHIR read tools fetch the actual records with values, dates, units and resource references; both local files and a future FHIR server must keep the source. The LLM may choose among the permitted retrieval tools and write a summary; every fact in the summary must point back to evidence a tool returned. Record and report contents are data to analyse, not instructions to follow.
 
-## 拟交付证据包
+Read-only search never modifies patient records. A successful search with no results, an unavailable resource, a tool failure and a partly completed search must be told apart. No record must never be read as no history; no result may be made up; no contradicting evidence may be hidden.
 
-以下是待实现的数据要求，不是当前输出已支持的字段承诺：
+## Proposed evidence pack
 
-- 患者、试验、I5、规则版本、筛查时间、证据包版本。
-- 每条证据的资源引用及字段位置、原文或数值、单位、参考范围、日期和来源；区分记录事实与Agent摘要。
-- 检索范围与工具执行记录，包含未查到、不可访问或失败的部分。
-- 缺失信息、候选结果冲突、过旧记录及需人工确认的问题。
-- 自动结论固定`unknown`并标记人工审核；证据包完成状态单独记录。
+The following are data requirements to implement, not fields the current output already promises:
 
-人工结论可为“满足／不满足／仍需补充信息”，保存理由、审核人、审核时间及所依据的证据包和规则版本。人工审核记录单独保存，不覆盖自动日志；未审核不得显示为人工已确认或完整资格已确定。
+- Patient, trial, I5, rule version, screening time, evidence-pack version.
+- For each item: resource reference and field location, text or value, unit, reference range, date and source; recorded facts kept apart from the agent's summary.
+- Search scope and tool execution record, including what was not found, inaccessible or failed.
+- Missing information, conflicting candidate results, outdated records and questions needing human confirmation.
+- The automated conclusion fixed at `unknown` and marked for human review; evidence-pack completion recorded separately.
 
-## 当前数据与实现缺口
+The human conclusion can be "met / not met / more information needed", stored with reasons, reviewer, review time and the evidence-pack and rule versions it relied on. Human review records are stored separately and do not overwrite the automated log; nothing unreviewed may be shown as human-confirmed or as complete eligibility.
 
-`engine.py`当前I5直接返回人工待审原因，证据为空；`outputs/`中的8例尚无I5检索证据包。`data/cases/`仅复用Synthea人口学，其余为设计的筛查记录。`data/raw/`保留原始病历，但尚未接入或与研究记录核对；其中资源是否存在必须实际检查。不能把未核对的两套数据声称为完整、无冲突的病史。
+## Current data and implementation gaps
 
-规则语义仍是人工判断，本次文档更新不改变冻结规则、病例、执行器或已生成结果。实现检索后再更新实现状态和运行产物。
+`engine.py` currently returns only the manual-review reason for I5, with empty evidence; the 8 cases in `outputs/` have no I5 evidence packs. `data/cases/` reuses only Synthea demographics; the rest are designed screening records. `data/raw/` keeps the original charts but is not yet connected or reconciled with the study records; whether a resource exists there must actually be checked. The two unreconciled data sets must not be claimed to be a complete, conflict-free history.
 
-## 分工与验收
+The rule semantics remain a human judgement; this update does not change the frozen rules, cases, evaluator or generated results. Implementation status and outputs will be updated once retrieval exists.
 
-1. Ming确认检索概念、时间范围、字段与人工审核要求，并独立标注预期可检索证据。
-2. 工程实现患者范围检索、证据包和独立审核记录；先使用合成数据，并核对纵向数据来源。
-3. 测试有证据、无匹配证据、冲突、部分失败/不可访问，以及错误患者和筛查后记录。确认来源引用可解析、日期数值保真、缺失和失败明确。
-4. 上述场景在人工审核前均保持I5为`unknown`；不把正常ALT/AST或空搜索结果转换为通过。
-5. 单独评估证据覆盖与正确性，不把技术测试或检索成功率报告为I5临床判断准确率。
+## Division of work and acceptance
+
+1. Ming confirms retrieval concepts, time ranges, fields and human-review requirements, and independently labels the evidence expected to be found.
+2. Engineering implements patient-scoped retrieval, the evidence pack and separate review records; first on synthetic data, with the longitudinal data source reconciled.
+3. Tests cover evidence present, no matching evidence, conflicts, partial failure / inaccessibility, the wrong patient and post-screening records. Check that source references resolve, dates and values are preserved, and missing data and failures are explicit.
+4. In all of these scenarios I5 stays `unknown` before human review; normal ALT/AST or an empty search never turns into a pass.
+5. Evidence coverage and correctness are evaluated separately; technical test or retrieval success rates are not reported as I5 clinical-judgement accuracy.

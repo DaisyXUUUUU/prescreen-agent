@@ -1,109 +1,111 @@
-# Trial Pre-Screening Agent：工程侧任务框架
+# Trial Pre-Screening Agent: engineering task plan
 
 Oct 9, 2026 · @Daisy Xu
 
-## 总览
+> Translated from the Chinese original on 2026-10-11. This is the plan as written on Oct 9, when the primary trial was still a placeholder "trial B". The project later switched to Ming's SAD trial (NCT07347678) and the agent grew beyond empty-query recovery; see the [root README](../README.md) and `CLAUDE.md` for what was built.
 
-工程侧共 12 项任务，目标是周六晚上让试验 B 端到端跑通，周日上午 11:59 PT 前提交。本文基于 PROJECT\_BRIEF v2，对原 D1–D10 做了三处调整：FHIR 服务器改为本地文件适配层、Agent 只处理例外、邮件和定时降为可选。
+## Overview
 
-**核心架构原则：确定性引擎先跑完所有病人，agent 只接手例外。**
+Engineering has 12 tasks. The goal is to run trial B end to end by Saturday night and submit before Sunday 11:59 AM PT. Based on PROJECT_BRIEF v2, three changes were made to the original D1–D10: the FHIR server became a local file adapter, the agent handles only exceptions, and email and scheduling became optional.
 
-1. 编译好的谓词（Ming 手工编译，试验 B 共 15 条）加载进来。
-2. 确定性引擎对每个病人逐条求值，输出 `met` / `not_met` / `unknown`。
-3. 汇总规则把结果归入四个区。
-4. 只有两类情况交给 agent：查询为空需要检索恢复（brief 决策 2），以及标准文本发生变化需要判断（决策 5）。决策 4（证据冲突转交复核）时间允许再加。
-5. 每个模型决策写一行 trace，随日志一起输出。
+**Core architecture principle: the deterministic engine evaluates every patient first; the agent takes over only the exceptions.**
 
-这样做的理由：让模型为 50 个病人 × 15 条谓词逐条决定会很慢、费钱，且每次结果不同，评估数字不可信；而例外情况正是 CRC 凭经验处理、脚本做不到的部分，仍然满足“不是流水线”的要求。模型**不对病人资格做最终裁决**，证据冲突一律转交 CRC。
+1. Load the compiled predicates (compiled by hand by Ming; 15 for trial B).
+2. The deterministic engine evaluates each predicate for each patient and outputs `met` / `not_met` / `unknown`.
+3. Aggregation rules sort the results into four sections.
+4. Only two kinds of case go to the agent: an empty query that needs retrieval recovery (brief decision 2), and changed criteria text that needs judgement (decision 5). Decision 4 (conflicting evidence routed to review) is added if time allows.
+5. Every model decision writes one trace line, output with the log.
 
-**时间线**
+Why: letting the model decide 50 patients × 15 predicates one by one would be slow and expensive, and results would vary between runs, so evaluation numbers would not be trustworthy. The exceptions are exactly what a CRC handles from experience and a script cannot, so this still meets "not a pipeline". The model **does not make the final eligibility call**; conflicting evidence always goes to the CRC.
 
-| 时间 | 任务 | 必须达成 |
+**Timeline**
+
+| When | Tasks | Must achieve |
 | --- | --- | --- |
-| 周五 | T1 基础设施、T2 接口确认、T3 数据适配层、T4 ctgov\_fetch | 一次成功的 Bedrock 调用；能查出一个病人的 LDL 值 |
-| 周六上午 | T5 判定引擎、T6 汇总与日志 | **试验 B 50 个病人出日志（生死线）** |
-| 周六下午 | T7 Agent、T8 trace、T9 失败开关 | 决策 2 在 demo 中可见 |
-| 周六晚上 | T10 修订重筛 | 改一份快照能触发重筛报告 |
-| 周日上午 | T11 评估、T12 README 与提交 | 评估数字、可运行 README、3 分钟视频 |
+| Friday | T1 infrastructure, T2 interface agreement, T3 data adapter, T4 ctgov_fetch | One successful Bedrock call; one patient's LDL value retrieved |
+| Saturday morning | T5 decision engine, T6 aggregation and log | **Log for trial B's 50 patients (the critical line)** |
+| Saturday afternoon | T7 agent, T8 trace, T9 failure switches | Decision 2 visible in the demo |
+| Saturday night | T10 amendment re-screen | Editing a snapshot triggers a re-screen report |
+| Sunday morning | T11 evaluation, T12 README and submission | Evaluation numbers, runnable README, 3-minute video |
 
-**需要 Ming 提供的东西**（详见 T2）：试验 B 的谓词 JSON、Synthea 病人数据及注入病例清单、ground truth 标签、ATC→RxNorm 映射表、两个试验的 NCT 编号。
+**Needed from Ming** (details in T2): trial B predicate JSON, Synthea patients with the list of injected cases, ground-truth labels, ATC→RxNorm map, NCT IDs of both trials.
 
-## T1 基础设施（周五，约 2 小时）
+## T1 Infrastructure (Friday, about 2 hours)
 
-目标：两人都能推送的公开仓库，加上一次成功的 Bedrock 调用。
+Goal: a public repository both of us can push to, plus one successful Bedrock call.
 
-**具体做法**
+**Steps**
 
-- **仓库**：GitHub 建公开仓库，加 MIT 许可证，把 Ming 加为协作者。`.gitignore` 排除 `.env`、`__pycache__`、本地缓存目录。
-- **AWS 区域**：统一用 `us-west-2` 或 `us-east-1`（选 Bedrock 上已开通 Claude 模型的那个），写进 `.env.example`。
-- **Bedrock 权限**：控制台 → Bedrock → Model access，申请 Anthropic Claude 模型。可能要填用途表单，**今天第一件事做**。
-- **预算告警**：AWS Budgets 设 $20 告警，邮件通知两人。
-- **S3 桶**：建一个桶，如 `prescreen-hack-<随机后缀>`，下设 `snapshots/`、`logs/`、`cache/` 三个前缀。
-- **README 骨架**：先写安装步骤和一条运行命令，之后每完成一个模块就补一段。
+- **Repository**: public GitHub repository with an MIT license; add Ming as collaborator. `.gitignore` excludes `.env`, `__pycache__` and local cache directories.
+- **AWS region**: use `us-west-2` or `us-east-1` (whichever has the Claude model enabled on Bedrock), recorded in `.env.example`.
+- **Bedrock access**: console → Bedrock → Model access, request the Anthropic Claude models. A use-case form may be required; **do this first today**.
+- **Budget alert**: AWS Budgets alert at $20, emailing both of us.
+- **S3 bucket**: one bucket such as `prescreen-hack-<random suffix>` with three prefixes: `snapshots/`, `logs/`, `cache/`.
+- **README skeleton**: installation steps and one run command first; add a section as each module lands.
 
-**目录结构**
+**Directory layout**
 
 ```
 prescreen-agent/
 ├── data/
-│   ├── patients/          # Ming 的 Synthea FHIR JSON
+│   ├── patients/          # Ming's Synthea FHIR JSON
 │   ├── predicates/        # trial_B.json, trial_G.json
 │   ├── mappings/          # atc_to_rxnorm.json, local_code_map.json
-│   ├── snapshots/         # 试验标准文本快照（v1、v2 用于模拟修订）
-│   └── ground_truth/      # Ming 的标签
+│   ├── snapshots/         # criteria text snapshots (v1, v2 for the simulated amendment)
+│   └── ground_truth/      # Ming's labels
 ├── src/
 │   ├── adapters/fhir_store.py     # T3
 │   ├── tools/ctgov.py             # T4
 │   ├── engine/evaluate.py         # T5
-│   ├── engine/units.py            # T5 单位换算与范围
+│   ├── engine/units.py            # T5 unit conversion and ranges
 │   ├── engine/aggregate.py        # T6
 │   ├── report/log_writer.py       # T6
 │   ├── agent/agent.py             # T7
 │   ├── agent/trace.py             # T8
 │   ├── amendment/monitor.py       # T10
-│   └── config.py                  # T9 失败开关
+│   └── config.py                  # T9 failure switches
 ├── eval/evaluate.py               # T11
 ├── tests/
-├── run.py                         # 一条命令跑完整流程
+├── run.py                         # one command for the whole flow
 ├── requirements.txt
 ├── .env.example
 └── README.md
 ```
 
-**验收**：`python -c` 调用一次 Bedrock 返回文本；Ming 能 clone 并推送一次提交。
+**Acceptance**: one Bedrock call via `python -c` returns text; Ming can clone and push a commit.
 
-## T2 与 Ming 的接口确认（周五，约 1 小时，需两人一起）
+## T2 Interface agreement with Ming (Friday, about 1 hour, together)
 
-目标：今天敲定所有引擎依赖的格式，之后双方不再单方面改动。
+Goal: settle today every format the engine depends on; afterwards neither side changes them unilaterally.
 
-**需要确认的事项**
+**Items to agree**
 
-| 事项 | 需要 Ming 给出 | 工程侧的用途 | 最晚时间 |
+| Item | From Ming | Engineering use | Latest |
 | --- | --- | --- | --- |
-| 谓词文件 | 试验 B 的 15 条谓词 JSON，按 brief 第 5 节 Predicate 结构 | T5 引擎输入 | 周五晚 |
-| 扩展字段 | 确认 `grade`、`resource`、`anchor`、`aggregation`、`absence_means`、`assumption` 全部启用 | T5 必须实现这些字段 | 周五 |
-| 病人数据 | Synthea 导出的 FHIR Bundle JSON，每人一个文件，放 `data/patients/` | T3 读取 | 周五晚，先给 5 个也行 |
-| 注入病例清单 | 每个注入病例的病人 ID、注入了什么、预期结果 | T5 单元测试、T9 失败场景 | 周六上午 |
-| ATC→RxNorm 映射 | 谓词中每个 ATC 类展开成的 RxNorm 成分编码列表 | 用药谓词匹配 | 周六上午 |
-| 本地编码映射 | 如 Hyperlipidemia 视为 hypercholesterolemia，单独一张表 | 从谓词中拆出来 | 周六上午 |
-| Ground truth | 至少 20 个病人，每人每条可计算谓词的 `met`/`not_met`，加病人级结论 | T11 评估 | 周六晚 |
-| NCT 编号 | 试验 B、G 的真实 NCT ID | T4、T10 | 周五 |
-| 修订快照 v2 | 试验 B 标准文本的手改版本，至少一处实质修改、一处纯措辞修改 | T10 演示 | 周六下午 |
+| Predicate file | Trial B's 15 predicates as JSON, in the brief section 5 Predicate structure | T5 engine input | Friday night |
+| Extension fields | Confirm `grade`, `resource`, `anchor`, `aggregation`, `absence_means`, `assumption` are all in use | T5 must implement them | Friday |
+| Patient data | Synthea FHIR Bundle JSON exports, one file per person, in `data/patients/` | T3 reads them | Friday night; 5 first is fine |
+| Injected-case list | For each injected case: patient ID, what was injected, expected result | T5 unit tests, T9 failure scenarios | Saturday morning |
+| ATC→RxNorm map | For each ATC class in the predicates, the list of RxNorm ingredient codes | Medication predicate matching | Saturday morning |
+| Local code map | E.g. Hyperlipidemia accepted as hypercholesterolemia, as a separate table | Taken out of the predicates | Saturday morning |
+| Ground truth | At least 20 patients, `met`/`not_met` for each computable predicate, plus a patient-level conclusion | T11 evaluation | Saturday night |
+| NCT IDs | Real NCT IDs of trials B and G | T4, T10 | Friday |
+| Amendment snapshot v2 | A hand-edited version of trial B's criteria text with at least one substantive and one wording-only change | T10 demo | Saturday afternoon |
 
-**工程侧要先自己做的**：在等数据期间，手写 3 个最简病人 JSON（一个合格、一个排除、一个缺化验值），先让 T3、T5 开工，不阻塞。
+**Engineering does first**: while waiting for data, hand-write 3 minimal patient JSONs (one eligible, one excluded, one missing a lab) so T3 and T5 can start without blocking.
 
-**分工边界**：谓词内容、编码正确性、标签由 Ming 负责；谓词怎么被执行、结果怎么汇总和呈现由工程侧负责。发现谓词有问题时，工程侧提出，由 Ming 修改，不自己改谓词文件。
+**Division of responsibility**: predicate content, code correctness and labels belong to Ming; how predicates are executed and how results are aggregated and presented belong to engineering. When a predicate looks wrong, engineering raises it and Ming changes it; engineering does not edit predicate files.
 
-## T3 数据适配层（周五，约 3 小时）
+## T3 Data adapter (Friday, about 3 hours)
 
-目标：一个接口和 FHIR 查询一致、但直接读本地 Synthea JSON 的数据层。替代原 D2 的 HAPI FHIR 服务器，省掉部署时间；接口不变，生产环境可直接换成真实 FHIR 服务。
+Goal: a data layer with the same interface as FHIR queries that reads local Synthea JSON directly. It replaces the HAPI FHIR server of the original D2 and saves deployment time; the interface is unchanged, so production can swap in a real FHIR service.
 
-**加载**
+**Loading**
 
-- 启动时读入 `data/patients/*.json`（FHIR Bundle），按 `patient_id → resourceType → [resources]` 建内存索引。
-- 需要的资源类型：`Patient`、`Condition`、`Observation`、`MedicationRequest`、`AllergyIntolerance`，以及注入病历文本用的 `DocumentReference`（或 Ming 约定的文本字段）。
+- At start-up read `data/patients/*.json` (FHIR Bundles) and build an in-memory index `patient_id → resourceType → [resources]`.
+- Resource types needed: `Patient`, `Condition`, `Observation`, `MedicationRequest`, `AllergyIntolerance`, and `DocumentReference` for injected note text (or the text field agreed with Ming).
 
-**对外函数**
+**Public functions**
 
 ```python
 def fhir_query(patient_id: str, resource: str, codes: list[dict],
@@ -115,152 +117,152 @@ def search_notes(patient_id: str, keywords: list[str]) -> QueryResult
 def list_patients(since_date: str | None = None) -> list[str]
 ```
 
-- `codes` 按 `system + code` 匹配，同一概念的多个编码视为 OR。
-- `window_days` 和 `anchor_date` 一起决定时间窗；默认锚点是筛选日期。
-- `search_notes` 是给 agent 做检索恢复用的，做简单的关键词匹配即可，返回命中片段和来源 ID。
+- `codes` match on `system + code`; several codes for one concept are OR.
+- `window_days` and `anchor_date` together define the time window; the default anchor is the screening date.
+- `search_notes` serves the agent's retrieval recovery; simple keyword matching returning snippets and source IDs is enough.
 
-**返回结构（错误分类型，agent 才能区别处理）**
+**Return structure (typed errors, so the agent can handle them differently)**
 
 ```python
 QueryResult = {
   "status": "ok" | "empty" | "timeout" | "malformed",
   "records": [ {"resource_id", "code", "value", "unit", "date"} ],
-  "detail": ""   # 出错时的说明
+  "detail": ""   # explanation on error
 }
 ```
 
-- `empty`：查询正常但没有记录，这是触发决策 2 的信号。
-- `timeout` / `malformed`：由 T9 的开关模拟，引擎按规则处理。
+- `empty`: the query worked but found nothing; this is the signal that triggers decision 2.
+- `timeout` / `malformed`: simulated by T9 switches; the engine handles them by rule.
 
-**验收**：能对一个手写病人查出 LDL-C 值并带回 `resource_id`；用一个不存在的编码查询返回 `empty` 而不是报错。
+**Acceptance**: retrieve a hand-written patient's LDL-C value with its `resource_id`; a query with a non-existent code returns `empty`, not an error.
 
-## T4 ctgov\_fetch 工具（周五，约 1.5 小时）
+## T4 ctgov_fetch tool (Friday, about 1.5 hours)
 
-目标：从 ClinicalTrials.gov API v2 获取试验入排标准，这是满足“调用别人的工具”的主要依据。
+Goal: fetch trial eligibility criteria from the ClinicalTrials.gov API v2; the main basis for "calls a tool you didn't build".
 
-**函数**
+**Function**
 
 ```python
 def ctgov_fetch(nct_id: str) -> FetchResult
 # GET https://clinicaltrials.gov/api/v2/studies/{nct_id}
-# 取 protocolSection.eligibilityModule 下的
+# take from protocolSection.eligibilityModule:
 #   eligibilityCriteria, minimumAge, maximumAge, sex
 ```
 
-**健壮性**
+**Robustness**
 
-- 超时 10 秒，失败重试 1 次。
-- 成功后写缓存：`cache/ctgov/{nct_id}.json`，附抓取时间。
-- 仍然失败时回退到缓存，返回 `status: "stale"` 和缓存年龄。缓存超过 14 天则返回 `status: "error"`，日志拒绝生成（brief 第 6 节规则）。
-- 返回值同样分类型：`ok` / `stale` / `error`，附 `fetched_at`。
+- 10-second timeout, one retry on failure.
+- On success write the cache `cache/ctgov/{nct_id}.json` with the fetch time.
+- If it still fails, fall back to the cache and return `status: "stale"` with the cache age. A cache older than 14 days returns `status: "error"` and no log is issued (brief section 6 rule).
+- Typed return values as well: `ok` / `stale` / `error`, with `fetched_at`.
 
-**快照（供 T10 使用）**
+**Snapshots (for T10)**
 
-- 每次成功抓取时，把标准文本存成 `snapshots/{nct_id}/{YYYY-MM-DD}.txt` 并计算 SHA-256。
-- 本地和 S3 各存一份。
+- On every successful fetch save the criteria text as `snapshots/{nct_id}/{YYYY-MM-DD}.txt` and compute its SHA-256.
+- Keep one copy locally and one in S3.
 
-**验收**：用真实 NCT 编号能取回标准文本；断网（或打开 T9 的超时开关）时返回缓存并标注 `stale`。
+**Acceptance**: a real NCT ID returns the criteria text; with the network off (or the T9 timeout switch on) the cache is returned and marked `stale`.
 
-## T5 判定引擎（周六上午，约 4 小时）
+## T5 Decision engine (Saturday morning, about 4 hours)
 
-目标：纯函数，输入一条谓词和一个病人，输出一条 Verdict。不调用 LLM，相同输入永远相同输出。这是技术深度分的核心。
+Goal: a pure function that takes one predicate and one patient and returns one Verdict. No LLM; the same input always gives the same output. This is the core of the technical-depth score.
 
-**函数**
+**Function**
 
 ```python
 def evaluate(predicate: dict, patient_id: str, screening_date: str) -> Verdict
 ```
 
-**处理步骤**
+**Steps**
 
-1. 若 `computable == false` 或 `grade == "N"`：直接返回 `unknown`，note 写“留给 CRC 判断”。
-2. 确定时间锚点：`anchor.event == "index_event"` 时，先查最近一次符合的卒中或 TIA 作为锚点（试验 G 才需要，B 可以先不做）。
-3. 调用 `fhir_query`，按 `resource`、`codes`、`window_days` 取记录。
-4. 结果为 `empty`：按 `absence_means` 返回（诊断缺失 → `not_met`，化验缺失 → `unknown`，过敏缺失 → `unknown`），并在 Verdict 上标记 `needs_recovery: true`，供 T7 的 agent 接手。
-5. 数值类：先过单位换算和合理性范围检查（见下），再按 `aggregation` 取值（`most_recent` / `mean_of_last_3` / `count_distinct_active_ingredients`），最后按 `operator` 比较。
-6. 填 `evidence`：每条用到的记录写 `resource_id`、`value`、`date`。
-7. 设 `blocking`：取谓词上的值，缺省为 `true`。
+1. If `computable == false` or `grade == "N"`: return `unknown` directly, note "left to the CRC".
+2. Determine the time anchor: with `anchor.event == "index_event"`, first find the most recent qualifying stroke or TIA as the anchor (trial G only; can wait for B).
+3. Call `fhir_query` with `resource`, `codes` and `window_days`.
+4. If the result is `empty`: return per `absence_means` (missing diagnosis → `not_met`, missing lab → `unknown`, missing intolerance → `unknown`), and set `needs_recovery: true` on the Verdict for the T7 agent.
+5. Numeric values: unit conversion and plausibility range check first (below), then pick the value per `aggregation` (`most_recent` / `mean_of_last_3` / `count_distinct_active_ingredients`), then compare per `operator`.
+6. Fill `evidence`: `resource_id`, `value`, `date` for every record used.
+7. Set `blocking`: taken from the predicate, default `true`.
 
-**第一版只实现试验 B 用到的运算符**：`<`、`<=`、`>`、`>=`、`exists`。`no_change`、`active_for_days` 等试验 G 或时间允许再做。
+**First version implements only the operators trial B uses**: `<`, `<=`, `>`, `>=`, `exists`. `no_change`, `active_for_days` and the like for trial G or if time allows.
 
-**单位换算与范围检查（`engine/units.py`）**
+**Unit conversion and range check (`engine/units.py`)**
 
-| 指标 | 标准单位 | 可换算单位 | 合理范围 |
+| Analyte | Standard unit | Convertible unit | Plausible range |
 | --- | --- | --- | --- |
-| LDL-C / 总胆固醇 / HDL-C | mg/dL | mmol/L × 38.67 | 10–500 |
-| 甘油三酯 | mg/dL | mmol/L × 88.57 | 20–5000 |
-| 收缩压 | mmHg | 无 | 60–260 |
-| 舒张压 | mmHg | 无 | 30–160 |
-| ALT | U/L | 无 | 1–2000 |
+| LDL-C / total cholesterol / HDL-C | mg/dL | mmol/L × 38.67 | 10–500 |
+| Triglycerides | mg/dL | mmol/L × 88.57 | 20–5000 |
+| Systolic BP | mmHg | none | 60–260 |
+| Diastolic BP | mmHg | none | 30–160 |
+| ALT | U/L | none | 1–2000 |
 
-换算系数和范围请 Ming 复核。单位无法识别或换算后超出范围 → 该谓词返回 `unknown`，note 写明原因（brief 失败路径“工具返回垃圾”）。
+Ming to review the conversion factors and ranges. An unrecognized unit, or a value out of range after conversion → that predicate returns `unknown` with the reason in the note (brief failure path "tool returns garbage").
 
-**测试（`tests/test_evaluate.py`）**
+**Tests (`tests/test_evaluate.py`)**
 
-- 用 Ming 的注入病例逐个写测试：边界值（刚好等于阈值）、缺化验、错单位、时间窗外的记录。
-- 每个测试断言 `status` 和 `evidence` 中的 `resource_id`。
+- One test per injected case from Ming: boundary values (exactly at the threshold), missing labs, wrong units, records outside the time window.
+- Each test asserts `status` and the `resource_id` in `evidence`.
 
-**验收**：试验 B 全部可计算谓词对 3 个手写病人返回预期结果；注入病例测试全部通过。
+**Acceptance**: every computable trial B predicate returns the expected result for the 3 hand-written patients; all injected-case tests pass.
 
-## T6 汇总与日志（周六上午，约 2 小时）
+## T6 Aggregation and log (Saturday morning, about 2 hours)
 
-目标：把每个病人的谓词结果汇总成病人级结论，输出 CRC 能直接用的预筛日志。**完成这一项，试验 B 就端到端跑通了。**
+Goal: aggregate each patient's predicate results into a patient-level conclusion and output a pre-screening log the CRC can use directly. **With this done, trial B runs end to end.**
 
-**汇总规则（`engine/aggregate.py`，固定规则，不用模型）**
+**Aggregation rules (`engine/aggregate.py`, fixed rules, no model)**
 
-按以下顺序判断，命中即停：
+Checked in this order; the first match wins:
 
-1. 任一排除标准 `met` → **已排除**，注明是哪条。
-2. 任一谓词带冲突标记（T7 决策 4 产生）→ **需复核**。
-3. 任一 `blocking: true` 的谓词为 `unknown` → **待补**，列出缺少的数据项。
-4. 所有可计算的入组标准 `met` → **可能合格**；若有 `blocking: false` 的 `unknown`，附“就诊时确认”备注。
-5. 任一入组标准 `not_met` → **已排除**。
+1. Any exclusion `met` → **excluded**, naming which one.
+2. Any predicate carrying a conflict flag (from T7 decision 4) → **needs review**.
+3. Any predicate with `blocking: true` that is `unknown` → **pending**, listing the missing data items.
+4. All computable inclusions `met` → **likely eligible**; if there is an `unknown` with `blocking: false`, add a "confirm at visit" note.
+5. Any inclusion `not_met` → **excluded**.
 
-注意第 3 条排在第 5 条之前的顺序要和 Ming 确认，它体现 brief 目标 2：“宁可答未知，不轻易排除”。
+Confirm with Ming that rule 3 comes before rule 5; it reflects brief goal 2: "answer unknown before answering excluded".
 
-**日志格式（`report/log_writer.py`）**
+**Log format (`report/log_writer.py`)**
 
-- 输出两份：`prescreen_log_{trial}_{date}.md`（给人看）和 `.csv`（给评估脚本用）。
-- Markdown 顶部：试验编号、标准抓取时间（缓存时标注 stale 及天数）、各区人数统计。
-- 四个区：可能合格、待补、已排除、需复核。每行：病人 ID、结论、关键证据（`resource_id` + 值 + 日期）、备注、该病人相关的 trace 条目。
-- 写入本地 `out/` 并上传 S3 `logs/{trial}/{date}/`。
+- Two outputs: `prescreen_log_{trial}_{date}.md` (for people) and `.csv` (for the evaluation script).
+- Markdown header: trial ID, criteria fetch time (stale and age when cached), count per section.
+- Four sections: likely eligible, pending, excluded, needs review. Each row: patient ID, conclusion, key evidence (`resource_id` + value + date), notes, and the patient's trace entries.
+- Written to local `out/` and uploaded to S3 `logs/{trial}/{date}/`.
 
-**入口**
+**Entry point**
 
 ```bash
 python run.py --trial B --date 2026-10-12
 ```
 
-**验收**：50 个病人全部出现在日志的某一个区，没有遗漏；每条“已排除”都能追溯到具体谓词和记录。
+**Acceptance**: all 50 patients appear in exactly one section of the log, none missing; every "excluded" traces back to a specific predicate and record.
 
-## T7 Agent 例外处理层（周六下午，约 4 小时）
+## T7 Agent exception layer (Saturday afternoon, about 4 hours)
 
-目标：用 Strands Agents + Bedrock 实现 brief 决策 2（检索恢复）。这是 demo 中最能体现“agent 而非流水线”的部分。
+Goal: implement brief decision 2 (retrieval recovery) with Strands Agents + Bedrock. This is the part of the demo that best shows "an agent, not a pipeline".
 
-**触发方式**
+**Trigger**
 
-T5 跑完后，收集所有 `needs_recovery: true` 的 Verdict，逐条交给 agent。agent 不碰其他已有结论的谓词。
+After T5, collect every Verdict with `needs_recovery: true` and hand them to the agent one by one. The agent does not touch predicates that already have a conclusion.
 
-**Agent 可用的工具**
+**Agent tools**
 
-| 工具 | 作用 | 来源 |
+| Tool | Purpose | Source |
 | --- | --- | --- |
-| `get_predicate(criterion_id)` | 读谓词定义，包括概念、编码、阈值 | 谓词文件 |
-| `lookup_equivalent_codes(concept, system)` | 返回同一概念的等价编码（LOINC、SNOMED 等） | Ming 的本地映射表 |
-| `fhir_query(...)` | 用新编码重查 | T3 |
-| `search_notes(patient_id, keywords)` | 在病历文本中搜索 | T3 |
-| `evaluate_with_records(criterion_id, records)` | 把找到的记录交回确定性引擎判定，模型自己不做数值比较 | T5 |
-| `record_decision(...)` | 写 trace，并给出最终状态 | T8 |
+| `get_predicate(criterion_id)` | Read the predicate definition: concept, codes, threshold | Predicate file |
+| `lookup_equivalent_codes(concept, system)` | Return equivalent codes for the same concept (LOINC, SNOMED, ...) | Ming's local mapping table |
+| `fhir_query(...)` | Re-query with the new codes | T3 |
+| `search_notes(patient_id, keywords)` | Search clinical note text | T3 |
+| `evaluate_with_records(criterion_id, records)` | Hand found records back to the deterministic engine; the model does no numeric comparison itself | T5 |
+| `record_decision(...)` | Write trace and give the final status | T8 |
 
-**系统提示词要点**
+**System prompt points**
 
-- 你在帮临床研究协调员处理“查询为空”的情况。
-- 按顺序尝试：等价编码 → 病历文本 → 放弃。每一步都要调用 `record_decision` 说明做了什么、为什么。
-- 找到记录后必须交给 `evaluate_with_records`，**不得自行比较数值或下结论**。
-- 病历文本中的描述（如“患者自述 LDL 偏高”）不能当作化验值，只能作为“建议补查”的依据。
-- 放弃时返回 `unknown`，note 写清楚查过哪些编码、哪些关键词，并给出建议（如“建议补查血脂四项”）。
+- You help a clinical research coordinator handle "the query came back empty".
+- Try in order: equivalent codes → note text → give up. Call `record_decision` after each step to say what was done and why.
+- Found records must go to `evaluate_with_records`; **never compare values or decide yourself**.
+- A description in note text (e.g. "patient says LDL is high") is not a lab value; it can only support "recommend repeating the test".
+- When giving up, return `unknown` with a note listing the codes and keywords tried and a recommendation (e.g. "recommend a lipid panel").
 
-**骨架**
+**Skeleton**
 
 ```python
 from strands import Agent
@@ -274,57 +276,57 @@ recovery_agent = Agent(
 )
 
 for v in pending_recovery:
-    recovery_agent(f"病人 {v.patient_id} 的谓词 {v.criterion_id} 查询为空，请处理。")
+    recovery_agent(f"Patient {v.patient_id}: the query for predicate {v.criterion_id} came back empty. Please handle it.")
 ```
 
-**控制成本和稳定性**：每个 Verdict 新建一次对话（不累积上下文）；设最大工具调用次数 6 次；temperature 设为 0。
+**Cost and stability**: a fresh conversation per Verdict (no accumulated context); at most 6 tool calls; temperature 0.
 
-**时间允许再加：决策 4（证据冲突）**——当结构化数据和病历文本矛盾时，agent 列出双方证据，状态设为冲突，由 T6 归入“需复核”。模型只呈现，不裁决。
+**If time allows: decision 4 (conflicting evidence)**: when structured data and note text contradict each other, the agent lists both pieces of evidence and marks the conflict; T6 puts the patient in "needs review". The model presents, it does not adjudicate.
 
-**验收**：Ming 埋入的“错编码”病例中，agent 能通过等价编码找回数值；完全没有数据的病例返回 `unknown` 并附可读的说明。
+**Acceptance**: for Ming's planted "wrong code" cases the agent recovers the value through an equivalent code; cases with no data at all return `unknown` with a readable explanation.
 
-## T8 trace 记录（周六下午，约 1 小时，与 T7 同时做）
+## T8 Trace (Saturday afternoon, about 1 hour, alongside T7)
 
-目标：每个模型决策留下一行可读的记录，出现在日志里，也是 demo 画面的主角。brief 指标要求 trace 覆盖率 100%。
+Goal: every model decision leaves one readable line, shown in the log and the star of the demo. The brief requires 100 % trace coverage.
 
-**结构**（对应 brief Verdict 的 `trace` 字段）
+**Structure** (the `trace` field of the brief's Verdict)
 
 ```python
 {"step": 1,
  "tool": "lookup_equivalent_codes",
- "result": "找到 LOINC 13457-7（计算 LDL）",
- "decision": "用等价编码重查，因原编码 18262-6 无记录"}
+ "result": "found LOINC 13457-7 (calculated LDL)",
+ "decision": "re-query with the equivalent code, because the original code 18262-6 has no record"}
 ```
 
-**实现**
+**Implementation**
 
-- `record_decision` 工具把 trace 追加到当前 Verdict 上。
-- 规则类处理（缓存回退、单位换算）也写 trace，`tool` 字段写 `rule:cache_fallback`、`rule:unit_convert`，方便评审区分模型决策和固定规则。
-- 同时把完整 trace 存成 `out/trace_{trial}_{date}.jsonl`，供评估脚本统计覆盖率。
+- The `record_decision` tool appends the trace to the current Verdict.
+- Rule-based handling (cache fallback, unit conversion) also writes trace, with `tool` set to `rule:cache_fallback`, `rule:unit_convert`, so reviewers can tell model decisions from fixed rules.
+- The full trace is also saved as `out/trace_{trial}_{date}.jsonl` for the evaluation script to measure coverage.
 
-**在日志中的呈现**：病人行下方缩进显示，例如：
+**In the log**: indented under the patient row, e.g.
 
 ```
-P-017  待补  LDL-C 无法评估
-  ↳ 原编码无记录 → 换等价编码重查，无记录 → 搜索病历“LDL / cholesterol”，无化验值
-  ↳ 结论：unknown；建议补查血脂四项
+P-017  pending  LDL-C cannot be assessed
+  ↳ original code has no record → re-queried with equivalent code, no record → searched notes for "LDL / cholesterol", no lab value
+  ↳ conclusion: unknown; recommend a lipid panel
 ```
 
-**验收**：每个经过 agent 的 Verdict 至少有一条 trace；日志里能直接读懂 agent 做了什么。
+**Acceptance**: every Verdict that went through the agent has at least one trace line; the log shows plainly what the agent did.
 
-## T9 失败注入开关（周六下午，约 1.5 小时）
+## T9 Failure-injection switches (Saturday afternoon, about 1.5 hours)
 
-目标：每种失败场景都能用一个配置开关稳定复现，录视频和现场演示不依赖真实故障碰巧发生。
+Goal: every failure scenario is reproducible with one configuration switch, so video recording and live demos do not depend on real failures happening by chance.
 
-**配置（`config.py`，也可用命令行参数覆盖）**
+**Configuration (`config.py`, overridable on the command line)**
 
 ```python
 FAILURES = {
-    "ctgov_timeout": False,   # ctgov_fetch 直接抛超时
-    "bad_units": False,       # 指定病人的 LDL 改成错误单位或离谱值
-    "drop_codes": False,      # 指定病人的 LDL 记录改用非常规编码
-    "amendment_v2": False,    # T10 读取 v2 快照替代真实抓取
-    "note_conflict": False,   # 可选：注入与结构化数据矛盾的病历文本
+    "ctgov_timeout": False,   # ctgov_fetch raises a timeout
+    "bad_units": False,       # a designated patient's LDL gets a wrong unit or absurd value
+    "drop_codes": False,      # a designated patient's LDL records use an unusual code
+    "amendment_v2": False,    # T10 reads the v2 snapshot instead of a real fetch
+    "note_conflict": False,   # optional: inject note text contradicting the structured data
 }
 ```
 
@@ -332,99 +334,99 @@ FAILURES = {
 python run.py --trial B --fail ctgov_timeout
 ```
 
-**场景与预期表现**
+**Scenarios and expected behaviour**
 
-| 开关 | brief 场景 | 类型 | 预期表现 | 优先级 |
+| Switch | Brief scenario | Type | Expected behaviour | Priority |
 | --- | --- | --- | --- | --- |
-| `ctgov_timeout` | 工具失败 | 规则 | 用缓存，日志顶部标注 stale 及天数 | 必做 |
-| `bad_units` | 工具返回垃圾 | 规则 | 能换算则换算，否则 `unknown`，trace 写原因 | 必做 |
-| `drop_codes` | 工具返回空 | 模型 | agent 换编码找回数值，trace 可见 | **必做，demo 主角** |
-| `amendment_v2` | 模糊修订 | 模型 | 见 T10 | 必做 |
-| `note_conflict` | 工具与模型分歧 | 模型 | 两份证据并列，转需复核 | 可选 |
+| `ctgov_timeout` | Tool fails | Rule | Use the cache; log header marked stale with its age | Must |
+| `bad_units` | Tool returns garbage | Rule | Convert if possible, else `unknown`; trace states the reason | Must |
+| `drop_codes` | Tool returns nothing | Model | Agent switches code and recovers the value; trace visible | **Must, demo star** |
+| `amendment_v2` | Ambiguous amendment | Model | See T10 | Must |
+| `note_conflict` | Tool and model disagree | Model | Both pieces of evidence side by side; needs review | Optional |
 
-视频最低要求：一个规则场景 + `drop_codes` + 修订或冲突中的一个。
+Minimum for the video: one rule scenario + `drop_codes` + one of amendment or conflict.
 
-**验收**：每个开关各跑一次，输出符合上表预期；关闭所有开关时结果和正常运行一致。
+**Acceptance**: each switch run once with output matching the table; with all switches off the result equals a normal run.
 
-## T10 修订监测与重筛（周六晚上，约 3 小时）
+## T10 Amendment monitoring and re-screen (Saturday night, about 3 hours)
 
-目标：标准文本变化时，判断是否实质修改，并输出“哪些病人状态变了、为什么”的报告。实现 brief 决策 5。
+Goal: when the criteria text changes, judge whether the change is substantive and report which patients change status and why. Implements brief decision 5.
 
-**流程**
+**Flow**
 
-1. **检测**：新抓取文本的 SHA-256 与上一份快照比较，一致则结束。
-2. **条目级 diff**：把两版文本按条目切分（按换行和编号），用 `difflib` 找出新增、删除、修改的条目。
-3. **模型分类**：每个变化条目交给 Bedrock，输出三选一：`substantive`（实质修改，如阈值、时间窗改变）/ `wording`（仅措辞）/ `ambiguous`（无法判断），附一句理由，写 trace。
-4. **处理**：
-   - `wording` → 记录，不重筛。
-   - `ambiguous` → 标记“需 CRC 确认”，不重筛（brief：不凭猜测重筛）。
-   - `substantive` → 进入第 5 步。
-5. **重编译**：实质修改的条目需要更新谓词。**演示版由 Ming 预先准备好 v2 谓词文件**，与 v2 快照配套；自动编译属于 brief 决策 1，已披露为人工复核，不做。
-6. **重筛**：用 v2 谓词对该试验全部病人重新跑 T5–T6，再与上一次结果逐病人对比。不做“只重跑受影响判定”的依赖追踪，引擎够快，全量重跑产出相同。
-7. **影响报告**：`amendment_impact_{trial}_{date}.md`，列出修改了哪些条目及分类，以及每个状态变化的病人：旧状态 → 新状态，原因指向具体条目和证据。
+1. **Detect**: compare the SHA-256 of the newly fetched text with the previous snapshot; stop if equal.
+2. **Item-level diff**: split both versions into items (by line and numbering) and find added, removed and modified items with `difflib`.
+3. **Model classification**: each changed item goes to Bedrock, which returns one of `substantive` (e.g. a threshold or time window changed) / `wording` (phrasing only) / `ambiguous` (cannot tell), with a one-sentence reason, written to the trace.
+4. **Handling**:
+   - `wording` → recorded, no re-screen.
+   - `ambiguous` → flagged "CRC to confirm", no re-screen (brief: never re-screen on a guess).
+   - `substantive` → step 5.
+5. **Recompile**: substantively changed items need updated predicates. **For the demo Ming prepares the v2 predicate file in advance**, paired with the v2 snapshot; automatic compilation is brief decision 1, disclosed as human-reviewed, and not done.
+6. **Re-screen**: run T5–T6 again for all of the trial's patients with the v2 predicates and compare with the previous result patient by patient. No dependency tracking to re-run only affected verdicts; the engine is fast and a full re-run gives the same output.
+7. **Impact report**: `amendment_impact_{trial}_{date}.md`, listing the changed items and their classification, and every patient whose status changes: old status → new status, with the reason pointing to the item and the evidence.
 
-**演示准备**（依赖 T2 中 Ming 的 v2 快照）：v2 至少包含一处实质修改（例如 LDL 阈值下调，使之前被排除的病人变为可能合格）和一处纯措辞修改。
+**Demo preparation** (depends on Ming's v2 snapshot from T2): v2 contains at least one substantive change (e.g. a lower LDL threshold that makes a previously excluded patient likely eligible) and one wording-only change.
 
-**验收**：打开 `amendment_v2` 开关运行，报告正确识别两处修改的类型；Ming 预埋的状态翻转病人全部出现在报告中（brief 指标：修订召回率 100%）。
+**Acceptance**: running with `amendment_v2` on, the report classifies both changes correctly; every status-flip patient Ming planted appears in the report (brief metric: amendment recall 100 %).
 
-## T11 评估脚本（周日上午，约 2 小时）
+## T11 Evaluation script (Sunday morning, about 2 hours)
 
-目标：把引擎输出和 Ming 的 ground truth 对比，算出 brief 第 11 节的指标。brief 写明评估数字“绝不能砍”。
+Goal: compare the engine's output with Ming's ground truth and compute the brief's section 11 metrics. The brief says the evaluation numbers "must never be cut".
 
-**输入**：T6 的 CSV、T8 的 trace JSONL、Ming 的标签文件、T9 各开关的运行结果。
+**Inputs**: T6's CSV, T8's trace JSONL, Ming's label file, and the results of each T9 switch run.
 
-**输出指标**
+**Metrics**
 
-| 指标 | 计算方式 | 目标 |
+| Metric | How computed | Target |
 | --- | --- | --- |
-| 误排除数 | 标签为合格、输出为已排除的病人数 | 0 |
-| 病人级敏感度 | 标签合格者中被归入“可能合格”或“待补”的比例 | ≥ 95% |
-| 谓词级准确率 | 可计算谓词上 `met`/`not_met` 与标签一致的比例 | ≥ 90% |
-| 弃权率 | 输出 `unknown` 的谓词占比 | 报告即可 |
-| 证据覆盖率 | 带有效 `resource_id` 的 Verdict 占比 | 100% |
-| trace 覆盖率 | 经过 agent 的 Verdict 中有 trace 的占比 | 100% |
-| 恢复率 | `drop_codes` 埋入病例中被 agent 找回的比例 | 报告即可 |
-| 修订召回率 | 预埋状态翻转病人被报告检出的比例 | 100% |
-| 失败场景 | 可用开关复现的场景数 | 实际数 / 5 |
+| Wrongful exclusions | Patients labelled eligible but output as excluded | 0 |
+| Patient-level sensitivity | Share of labelled-eligible patients placed in "likely eligible" or "pending" | ≥ 95 % |
+| Criterion-level accuracy | Share of computable predicates where `met`/`not_met` agrees with the label | ≥ 90 % |
+| Abstention rate | Share of predicates output as `unknown` | Reported |
+| Evidence coverage | Share of Verdicts with a valid `resource_id` | 100 % |
+| Trace coverage | Share of agent-handled Verdicts that have a trace | 100 % |
+| Recovery rate | Share of `drop_codes` planted cases the agent recovers | Reported |
+| Amendment recall | Share of planted status flips detected in the report | 100 % |
+| Failure paths | Number of scenarios reproducible with a switch | actual / 5 |
 
-**错误归因**：每个与标签不一致的结果，输出一行明细（病人、谓词、期望、实际），由 Ming 归入四类原因之一：谓词编译、概念映射、数据问题、引擎缺陷。
+**Error attribution**: one detail line (patient, predicate, expected, actual) for each result disagreeing with the labels, which Ming assigns to one of four causes: predicate compilation, concept mapping, data problem, engine defect.
 
-**运行**
+**Run**
 
 ```bash
 python eval/evaluate.py --trial B --labels data/ground_truth/trial_B.csv
 ```
 
-输出 `eval_report.md`，数字直接用于 writeup 和视频。**验收**：一条命令出完整指标表。
+Outputs `eval_report.md`; the numbers go straight into the writeup and video. **Acceptance**: one command produces the full metric table.
 
-## T12 README 验证、演示与提交（周日上午，截止 11:59 PT）
+## T12 README check, demo and submission (Sunday morning, deadline 11:59 PT)
 
-目标：四项提交物全部到位，评审在未登录状态下能打开仓库并照 README 跑通。
+Goal: all four submission items in place; a reviewer who is not logged in can open the repository and run it by following the README.
 
-**README 必须包含**
+**The README must contain**
 
-- 一段话说明：为谁（CRC）、解决什么、产出什么。
-- 安装：Python 版本、`pip install -r requirements.txt`、`.env.example` 中各变量的含义（AWS 区域、Bedrock 模型 ID、S3 桶名）。
-- 一条命令跑通：`python run.py --trial B`，以及每个失败开关的命令。
-- 架构图或简短说明：确定性引擎 + agent 例外处理，模型决策和固定规则的边界。
-- 数据声明：仅使用 Synthea 合成数据和公开 API，无 PHI。
-- 已知限制：照搬 brief 第 7 节。
+- One paragraph: for whom (the CRC), what it solves, what it produces.
+- Installation: Python version, `pip install -r requirements.txt`, the meaning of each `.env.example` variable (AWS region, Bedrock model ID, S3 bucket name).
+- One command that runs it: `python run.py --trial B`, and the command for each failure switch.
+- An architecture diagram or short explanation: deterministic engine + agent exception handling, and the boundary between model decisions and fixed rules.
+- Data statement: only Synthea synthetic data and public APIs, no PHI.
+- Known limitations: copied from brief section 7.
 
-**验证**
+**Checks**
 
-- [ ] 在一个全新目录（或新的虚拟环境）从 `git clone` 开始，严格照 README 走一遍。
-- [ ] 用无痕窗口打开仓库链接，确认不是 404。
-- [ ] 仓库根目录有 LICENSE 文件。
+- [ ] In a brand-new directory (or a new virtual environment), follow the README exactly from `git clone`.
+- [ ] Open the repository link in a private window and confirm it is not a 404.
+- [ ] A LICENSE file is in the repository root.
 
-**视频（3 分钟，与 Ming 一起录）**：CRC 是谁和每周成本（20 秒）→ 正常运行出日志（40 秒）→ `drop_codes` 展示 agent trace（50 秒）→ 一个规则失败场景（20 秒）→ 修订重筛报告（30 秒）→ 评估数字（20 秒）。工程侧负责准备好每段要跑的命令和预先生成的输出，避免录制时等待。
+**Video (3 minutes, recorded with Ming)**: who the CRC is and the weekly cost (20 s) → normal run producing the log (40 s) → `drop_codes` showing the agent trace (50 s) → one rule failure scenario (20 s) → amendment re-screen report (30 s) → evaluation numbers (20 s). Engineering prepares the commands for each segment and pre-generated outputs, so there is no waiting during recording.
 
-**writeup 中工程侧负责的段落**：架构、agent 决策与固定规则的边界、失败处理、AWS 服务使用。
+**Engineering's paragraphs in the writeup**: architecture, the boundary between agent decisions and fixed rules, failure handling, use of AWS services.
 
-## 可选项（按顺序，有余力再做）
+## Optional (in order, if there is time)
 
-1. **决策 4 证据冲突**：见 T7 末尾。
-2. **EventBridge 定时**：配置每周一 8:00 触发的规则，截图放进 README 即可，不必真的跑起来。
-3. **Lambda 封装**：把 `run.py` 打包成一个 Lambda，由 EventBridge 触发。
-4. **SES 邮件**：沙盒模式下收发地址都要先验证，提前做；做不完就只保留写入 S3。
-5. **试验 G**：需要实现 `index_event` 锚点和 `no_change`、`active_for_days` 运算符。
-6. **本地 HAPI FHIR**：把 T3 的文件适配层换成 Docker 版 HAPI FHIR，接口不变。
+1. **Decision 4, conflicting evidence**: see the end of T7.
+2. **EventBridge schedule**: a rule firing every Monday at 8:00; a screenshot in the README is enough, it need not actually run.
+3. **Lambda packaging**: package `run.py` as a Lambda triggered by EventBridge.
+4. **SES email**: in sandbox mode both sender and recipient must be verified, so do it early; if not finished, keep only the S3 write.
+5. **Trial G**: needs the `index_event` anchor and the `no_change`, `active_for_days` operators.
+6. **Local HAPI FHIR**: replace T3's file adapter with HAPI FHIR in Docker, interface unchanged.

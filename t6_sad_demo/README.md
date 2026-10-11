@@ -1,90 +1,92 @@
 # T6 SAD v1.0.0
 
-当前主试验为[NCT07347678](https://clinicaltrials.gov/study/NCT07347678)，本实现仅支持SAD队列。POC输入会被拒绝，不能误用SAD阈值。
+> Translated from Ming's Chinese original on 2026-10-11. This file records the state at Ming's handoff (2026-10-09). Since then the engineering pipeline wraps this evaluator unchanged and adds the agent; see the [root README](../README.md).
 
-2026-10-09：用户确认“试验原文与编译规则已验证一致”。该确认针对当前T6 SAD规则语义，不代表FHIR映射、病例独立标签、完整方案要求或临床准确率已验证；冻结文件未改写。GitHub接入状态见[交接记录](../docs/MING_HANDOFF.md)。
+The primary trial is [NCT07347678](https://clinicaltrials.gov/study/NCT07347678); this implementation supports the SAD cohort only. POC input is rejected so that SAD thresholds are never applied to it by mistake.
 
-## 已完成
+2026-10-09: the user confirmed that "the trial text and the compiled rules have been verified as consistent". That confirmation covers the semantics of the current T6 SAD rules. It does not mean the FHIR mapping, independent case labels, full-protocol requirements or clinical accuracy have been verified; the frozen files were not rewritten. GitHub integration status: see the [handoff record](../docs/MING_HANDOFF.md).
 
-1. 保存官方注册快照，冻结10条标准，加年龄18–65岁元数据约束。
-2. 固定Synthea 3.3.0、seed/clinician seed 20261009、参考/结束日期2026-10-09，重新生成8名18–65岁基础患者。
-3. 从每人保留出生日期等Patient人口学资源，独立设计BMI/空腹血脂/Lp(a)/肝酶/ULN/HbA1c及时间限定的筛查访谈，产出8份FHIR R4研究记录。
-4. 实现本地FHIR检索适配器和确定性SAD执行器，输出10条标准及年龄结果、证据字段/资源引用、检索轨迹、例外队列。
-5. 边界、缺失、冲突、单位、日期窗口、错误队列及原始文件保护测试。
+## Done
 
-## 明确的数据边界
+1. Saved the official registry snapshot, froze the 10 criteria, plus the age 18–65 metadata constraint.
+2. Fixed Synthea 3.3.0, seed/clinician seed 20261009, reference/end date 2026-10-09, and regenerated 8 base patients aged 18–65.
+3. Kept each patient's birth date and other Patient demographics, and independently designed BMI / fasting lipids / Lp(a) / liver enzymes / ULN / HbA1c and a time-bounded screening interview, producing 8 FHIR R4 study records.
+4. Implemented a local FHIR retrieval adapter and a deterministic SAD evaluator that output the 10 criteria plus age, evidence fields / resource references, retrieval trace and an exception queue.
+5. Tests for boundaries, missing data, conflicts, units, date windows, the error queue and protection of the original files.
 
-SAD02的原始吸烟记录已单独核对：窗口内两条均为Ex-smoker，与合成访谈“窗口内未吸烟”没有直接冲突；未据此推断全窗口状态或修改病例。证据及限制见[SAD02复核记录](SAD02_REVIEW.md)。
+## Data boundaries
 
-`data/raw/`保存完整且未改动的Synthea输出；`data/cases/`是仅复用其Patient人口学、其余由作者设计的试验专用合成记录。后者**没有包含或核对完整纵向病史**，不是通过修改真实病史得到的“合格患者”。药物阴性依据是合成访谈中的明确回答与回溯覆盖，不能把原始病历没查到药物等同于未用药。
+SAD02's original smoking records were checked separately: both records inside the window are Ex-smoker, which does not directly conflict with the synthetic interview answer "no smoking in the window"; the whole-window status was not inferred from them and the case was not changed. Evidence and limits: [SAD02 review](SAD02_REVIEW.md).
 
-这些数据用来验证软件边界和证据追溯，不估计招募率、真实数据覆盖率或临床性能。健康志愿者的全部临床判断未被自动确认，不能称为已确认健康/可入组。
+`data/raw/` keeps the complete, unmodified Synthea output; `data/cases/` are trial-specific synthetic records that reuse only the Patient demographics, with everything else designed by the author. They **do not contain or reconcile the full longitudinal history**, and they are not "eligible patients" obtained by editing real histories. A negative drug history rests on an explicit answer in the synthetic interview and its look-back coverage; "no drug found in the original chart" is never treated as "not taking it".
 
-## 固定规则与演示约定
+These data verify software boundaries and evidence traceability. They do not estimate recruitment rates, real-world data coverage or clinical performance. No clinical judgement about healthy volunteers is confirmed automatically, and nobody may be called confirmed healthy / enrollable.
 
-SAD使用LDL≥70 mg/dL、Lp(a)≥25 nmol/L；BMI18–35闭区间、TG<400、HbA1c≥6.5排除、ALT或AST>1.5×各自ULN排除。Lp(a)代码43583-4已对照[LOINC](https://loinc.org/43583-4)的摩尔浓度定义，不做mg/dL固定换算。
+## Fixed rules and demo conventions
 
-日历月与30天窗口分开计算；窗口两端包含是明确的演示政策。吸烟只自动评价整个窗口未吸烟、或当前连续吸烟的明确访谈；不明确/间歇模式进入unknown。实际筛查流程需完整方案进一步确认。
+SAD uses LDL ≥70 mg/dL and Lp(a) ≥25 nmol/L; BMI 18–35 inclusive; TG <400; HbA1c ≥6.5 excludes; ALT or AST >1.5× their own ULN excludes. Lp(a) code 43583-4 was checked against the [LOINC](https://loinc.org/43583-4) molar-concentration definition, with no fixed conversion to mg/dL.
 
-I5“无临床显著肝肾异常”始终人工待审：正常ALT/AST不能自动证明该条满足。病历缺失和结果冲突分别标为pending/review。任一明确不满足入组或触发排除即fails_evaluated_criteria，同时仍保留人工待审事项。
+Calendar-month and 30-day windows are computed separately; including both window ends is an explicit demo policy. Smoking is evaluated automatically only for an explicit interview of no smoking through the whole window, or of current continuous smoking; unclear or intermittent patterns become unknown. The real screening workflow needs confirmation from the full protocol.
 
-E1采用OR逻辑：ALT或AST任一分支有有效且无未解决冲突的证据确认超出各自1.5×ULN，即可判定E1为`met`。另一分支的缺失或冲突不推翻这个独立成立的判定，但证据与冲突标记仍保留，患者计算结果为`fails_evaluated_criteria`且仍需处理人工事项。若唯一疑似超标分支自身存在未解决冲突，则不能依赖该分支定论；没有任何有效超标分支且另一分支未解决时，E1为`unknown`。
+I5 "no clinically significant hepatic or renal abnormality" always stays for human review: normal ALT/AST cannot automatically show that it is met. Missing records and conflicting results are marked pending / review respectively. Any clearly failed inclusion or triggered exclusion gives fails_evaluated_criteria, with the manual items still kept.
 
-## FHIR映射复核：未关闭事项（2026-10-09）
+E1 uses OR logic: if either the ALT or the AST branch has valid evidence, without unresolved conflict, that it exceeds its own 1.5×ULN, E1 is `met`. A missing or conflicting other branch does not overturn that independently established result, but its evidence and conflict flag are kept, and the patient's computed result is `fails_evaluated_criteria` with the manual items still to handle. If the only branch suspected of being high has an unresolved conflict itself, it cannot settle E1; with no valid high branch and the other branch unresolved, E1 is `unknown`.
 
-用户已确认原文与规则语义一致；以下是后续提出的操作定义和实现一致性缺口，尚未修复，不因前述确认而关闭。
+## FHIR mapping review: open items (2026-10-09)
 
-### 空腹时长：最低6小时已确认，待实现
+The user confirmed that the text and the rule semantics agree; the following are operational definitions and implementation gaps raised afterwards. They are not fixed and are not closed by that confirmation.
 
-当前`Reader.observation()`仅检查关联标本属于患者、时长单位为`h`且值大于0；没有最低空腹时长、合理上限或完整的类型/有限值校验。不能把当前通过检查的记录描述为已满足临床空腹时长要求。0.5小时和9999小时均可能通过，单纯新增下限也不能排除异常大值。
+### Fasting duration: minimum 6 hours confirmed, not yet implemented
 
-2026-10-09用户明确最低空腹时长为≥6小时（包含6小时），用于I2 LDL和I4 TG。当前公开原文未提供具体小时数，因此记录为用户确认的demo policy，待申办方/完整方案确认，不能标为原文要求。原先最低时长待定事项已解决；极端大值的合理性上限与处理仍待定义。落实时将政策写入新版本配置，而非仅改Python中的常数。空腹证据不充分应返回`unknown`，不据此直接排除患者。本次记录不改变现有执行器，当前代码仍只检查大于0。
+`Reader.observation()` currently only checks that the linked specimen belongs to the patient, that the duration unit is `h` and that the value is above 0; there is no minimum fasting duration, plausible upper bound or full type / finite-value check. A record that passes the current check cannot be described as meeting a clinical fasting requirement: 0.5 hours and 9999 hours may both pass, and adding only a lower bound does not exclude absurdly large values.
 
-待准备测试：缺失、0、负数、0.5小时、下限前/等于/后、非数值、布尔值、非有限值、极端大值、错误单位及错误患者标本。最低时长边界可准备5.99/6/6.01小时测试；极端大值的预期处理仍需合理性政策。
+On 2026-10-09 the user set the minimum fasting duration at ≥6 hours (6 included) for I2 LDL and I4 TG. The public text gives no number of hours, so this is recorded as a user-confirmed demo policy pending sponsor / full-protocol confirmation, not as a requirement of the text. The earlier open item on the minimum is resolved; the plausibility upper bound and its handling are still to be defined. The policy is to go into a new version of the configuration rather than only into a Python constant. Insufficient fasting evidence should return `unknown` and must not exclude the patient. This record does not change the current evaluator, which still checks only > 0.
 
-### 检测方法：文档与代码不一致，待定义适用范围
+Tests to prepare: missing, 0, negative, 0.5 h, just below / equal to / just above the lower bound, non-numeric, boolean, non-finite, absurdly large, wrong unit and a specimen belonging to another patient. Boundary tests can use 5.99 / 6 / 6.01 hours; the expected handling of absurd values needs the plausibility policy.
 
-冻结规则的`demo_policies`写有“missing fasting/method/ULN ... return unknown”，但当前执行器不读取任何Observation的`method`。现有病例只有LDL有`method.text`，其余相关检验没有method；不能声称当前已执行方法学检查，也不能擅自要求所有指标都必须有method。
+### Test method: documentation and code disagree; scope to be defined
 
-Ming需按指标确认：哪些必须提供方法、可接受的表示形式及内容、缺失/未知/不支持的方法应如何处理。只有一段非空method.text不等于方法满足要求；合成LDL说明文字也不是独立的方法学验证。工程随后选择实现相应检查，或在新版本中缩小并准确描述要求；不得直接改写已冻结的1.0.0及哈希。
+The frozen rules' `demo_policies` say "missing fasting/method/ULN ... return unknown", but the current evaluator reads no Observation `method`. In the current cases only LDL has `method.text`; the other relevant labs have none. It cannot be claimed that a method check is performed, nor should every lab be required to have a method without a decision.
 
-待准备测试：需要方法与不需要方法的指标、缺失/空白/可接受/不支持的方法。病例如需补充方法，应明确为新设计的合成数据，不伪称由原始病历取得。
+Ming needs to confirm per lab: which ones must state a method, the acceptable representation and content, and how missing / unknown / unsupported methods are handled. A non-empty method.text does not mean the method requirement is met; the synthetic LDL note is not an independent method validation. Engineering then implements the check, or narrows and describes the requirement precisely in a new version; the frozen 1.0.0 and its hashes must not be rewritten.
 
-### OR语义：已明确，待补针对性回归
+Tests to prepare: labs that need and do not need a method; missing / blank / acceptable / unsupported methods. If cases need methods added, they must be clearly new synthetic data, not presented as taken from the original charts.
 
-现有测试覆盖“一侧超标、另一侧缺少ULN”，尚需明确覆盖“有效ALT超标＋AST结果冲突”及对称情况：E1为`met`，患者计算结果不满足，`conflict=true`且冲突证据保留。另测仅有冲突的疑似超标分支、另一侧正常时，E1保持`unknown`。这些是逻辑和证据保留测试，不替代I5人工判断。
+### OR semantics: defined, targeted regression tests still to add
 
-## I5：证据自动检索，结论由人工判断（已授权，待实现）
+Current tests cover "one side high, other side missing its ULN". Still to cover explicitly: "valid high ALT + conflicting AST results" and the symmetric case: E1 is `met`, the patient's computed result fails, `conflict=true` and the conflicting evidence is kept. Also test a suspected-high branch that is only conflicting while the other side is normal: E1 stays `unknown`. These are logic and evidence-retention tests and do not replace the I5 human judgement.
 
-Agent可在指定患者的FHIR记录中只读检索肝肾相关检查、诊断和报告，整理证据、缺失、冲突及检索覆盖范围，供人工判断I5。FHIR工具返回实际记录、数值、日期和引用；LLM可选择工具并整理摘要，不能生成缺失的检查结果或自行判定“临床显著”。没有检索到异常不等于没有异常；E1未触发也不证明I5满足。
+## I5: automated evidence retrieval, human decision (authorized, not yet implemented)
 
-自动I5结果继续保留`status=unknown`、`manual=true`，与证据检索是否成功分开。人工结论、理由、审核人、时间及所用证据版本单独保存，不覆盖原始自动日志。证据包交付完成不等于临床审核完成。
+The agent may search, read-only, the specified patient's FHIR record for liver- and kidney-related tests, diagnoses and reports, and organize the evidence, gaps, conflicts and search coverage for a person to judge I5. FHIR tools return actual records, values, dates and references; the LLM may choose tools and write a summary, but must not invent missing results or decide on its own what is "clinically significant". Finding no abnormality does not mean there is none; E1 not being triggered does not show I5 is met.
 
-当前`engine.py`的I5仅返回人工待审原因，证据为空；现有8例输出没有新增检索结果。纵向检索还需接入并核对`data/raw/`与研究记录，不得将两者未核对的内容拼接成完整病史。具体检索范围、数据约定、分工和测试见[I5证据检索与人工判断约定](I5_EVIDENCE_REVIEW.md)。
+The automated I5 result stays `status=unknown`, `manual=true`, separately from whether the evidence search succeeded. The human conclusion, reasons, reviewer, time and the evidence version used are stored separately and never overwrite the original automated log. Delivering an evidence pack does not mean the clinical review is done.
 
-## 重跑
+`engine.py` currently returns only the manual-review reason for I5, with empty evidence; the existing 8 outputs have no retrieval results. Longitudinal retrieval also needs `data/raw/` connected and reconciled with the study records; the two must not be stitched into a "complete history" without reconciliation. Scope, data conventions, division of work and tests: [I5 evidence retrieval and human review](I5_EVIDENCE_REVIEW.md).
 
-从项目根目录：
+## Re-running
 
-```powershell
+From the project root:
+
+```bash
 python t6_sad_demo/run.py
 python t6_sad_demo/test_demo.py
 ```
 
-`run.py`先验证规则、源记录和输入病例哈希。`prepare.py`仅用于首次准备，会拒绝覆盖冻结规格；更改定义应另建版本。
+`run.py` first verifies the hashes of the rules, the source record and the input cases. `prepare.py` is for first-time preparation only and refuses to overwrite the frozen specification; changing a definition means creating a new version.
 
-生成基础患者的命令和环境：
+Command and environment used to generate the base patients:
 
-```powershell
+```bash
 java -jar tools/synthea-3.3.0/synthea-with-dependencies.jar -p 8 -s 20261009 -cs 20261009 -r 20261009 -e 20261009 -a 18-65 -c t6_sad_demo/data/synthea.properties Massachusetts
 ```
 
-需Java11及Synthea jar。已有raw数据时不要运行到同一输出目录以混入重复患者；复现应使用新的工作副本/版本目录。
+Needs Java 11 and the Synthea jar. If raw data already exists, do not write to the same output directory (duplicate patients would mix in); reproduce in a fresh working copy / version directory.
 
-## 当前结果及限制
+## Current results and limits
 
-8个病例，共88项评价（80条标准＋8项年龄）：计算部分通过2例，明确不满足4例，缺失待处理1例，冲突复核1例。全部8例仍有I5人工项；完整资格确认数为0。
+8 cases, 88 evaluations in total (80 criteria + 8 age checks): computed part passes 2, clearly fails 4, missing data pending 1, conflict review 1. All 8 still carry the manual I5 item; the number of cases with complete eligibility confirmed is 0.
 
-17个技术测试方法（含多组边界/病例子测试）通过；8份研究Bundle通过FHIR R4模型解析。不代表US Core全部约束、真实服务器集成或临床有效性验证。Ming尚未独立标注ground truth，因此不报告准确率。
+17 technical test methods (including several boundary / case sub-tests) pass; the 8 study bundles parse with the FHIR R4 model. This does not mean all US Core constraints, real-server integration or clinical validity are verified. Ming has not yet independently labelled ground truth, so no accuracy is reported.
 
-`outputs/`包含JSON日志、例外队列、汇总、Markdown和HTML报告。本轮为本地确定性工具闭环，尚无模型驱动Agent、AWS交付、通知或改版重筛。下一步可以让Agent调用这些工具，但必须保留确定性计算和人工例外边界。
+`outputs/` contains the JSON log, exception queue, summary, Markdown and HTML reports. This round is a local deterministic tool loop with no model-driven agent, AWS delivery, notification or amendment re-screening. Next, an agent can call these tools, but the deterministic calculations and the human-exception boundaries must be kept.

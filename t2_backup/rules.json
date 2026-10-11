@@ -16,7 +16,7 @@
         "character_end_exclusive": 60
       },
       "normalization": "Backslash-escaped comparison signs remain in source_text; expression stores normalized operators.",
-      "title": "年龄18–75岁",
+      "title": "Age 18-75 years",
       "computability": "C",
       "expression": {
         "op": "age_range",
@@ -37,14 +37,14 @@
         "context.screening_at",
         "evidence"
       ],
-      "logic_zh": "18≤筛查时周岁≤75。",
       "unresolved": [
-        "确认年龄判定的具体筛查时点；字段绑定和生日/日期精度处理待验证。"
+        "Confirm the exact screening time point for age; field binding and birth-date / date-precision handling to be verified."
       ],
       "stage": "screening",
       "specification_status": "frozen_with_explicit_gaps",
       "execution_status": "not_validated",
-      "clinical_review_status": "pending_Ming_review"
+      "clinical_review_status": "pending_Ming_review",
+      "logic": "18 <= age in whole years at screening <= 75."
     },
     {
       "rule_id": "T2-I2",
@@ -58,7 +58,7 @@
         "character_end_exclusive": 97
       },
       "normalization": "Backslash-escaped comparison signs remain in source_text; expression stores normalized operators.",
-      "title": "原发性高血压",
+      "title": "Primary hypertension",
       "computability": "C",
       "expression": {
         "op": "confirmed_diagnosis",
@@ -72,14 +72,14 @@
         "conditions",
         "evidence"
       ],
-      "logic_zh": "需要原发性高血压的明确诊断证据；继发性诊断不能替代。",
       "unresolved": [
-        "审核原发性高血压概念集、确认/活动状态及可接受证据。"
+        "Review the primary-hypertension concept set, verification / clinical status and acceptable evidence."
       ],
       "stage": "screening",
       "specification_status": "frozen_with_explicit_gaps",
       "execution_status": "not_validated",
-      "clinical_review_status": "pending_Ming_review"
+      "clinical_review_status": "pending_Ming_review",
+      "logic": "Needs explicit diagnostic evidence of primary hypertension; a secondary-hypertension diagnosis does not substitute."
     },
     {
       "rule_id": "T2-I3",
@@ -93,7 +93,7 @@
         "character_end_exclusive": 224
       },
       "normalization": "Backslash-escaped comparison signs remain in source_text; expression stores normalized operators.",
-      "title": "无降压治疗，或至多2种且稳定至少4周",
+      "title": "No antihypertensive treatment, or at most 2 drugs stable for at least 4 weeks",
       "computability": "C",
       "expression": {
         "op": "or",
@@ -149,15 +149,15 @@
         "coverage",
         "evidence"
       ],
-      "logic_zh": "确认未治疗 OR（降压药数≤2 AND 所有对应药物剂量稳定≥28天）。",
       "unresolved": [
-        "审核药物集合；组合制剂按成分/制剂计数；频次变化、停药、换药定义。",
-        "确认筛查访视锚点；药物无记录不是确认未用药。"
+        "Review the drug set; count combination products by ingredient / product; define frequency changes, stopping and switching.",
+        "Confirm the screening-visit anchor; no drug record is not confirmation of no drug."
       ],
       "stage": "screening",
       "specification_status": "frozen_with_explicit_gaps",
       "execution_status": "not_validated",
-      "clinical_review_status": "pending_Ming_review"
+      "clinical_review_status": "pending_Ming_review",
+      "logic": "Confirmed untreated OR (number of antihypertensives <= 2 AND every such drug at a stable dose for >= 28 days)."
     },
     {
       "rule_id": "T2-I4",
@@ -171,7 +171,7 @@
         "character_end_exclusive": 357
       },
       "normalization": "Backslash-escaped comparison signs remain in source_text; expression stores normalized operators.",
-      "title": "三次坐位诊室SBP均值",
+      "title": "Mean of three seated office SBP readings",
       "computability": "C",
       "expression": {
         "op": "measurement_mean_range",
@@ -197,14 +197,14 @@
         "context.bp_screening_visit_id",
         "evidence"
       ],
-      "logic_zh": "140≤规定访视的3次坐位诊室SBP算术平均值<165 mmHg；不得选任意最近3条。",
       "unresolved": [
-        "确认筛查访视和读数选择规则（含超过3次时如何选）；术语及字段映射待审核。"
+        "Confirm the screening visit and reading-selection rule (including more than 3 readings); terminology and field mapping to be reviewed."
       ],
       "stage": "screening",
       "specification_status": "frozen_with_explicit_gaps",
       "execution_status": "not_validated",
-      "clinical_review_status": "pending_Ming_review"
+      "clinical_review_status": "pending_Ming_review",
+      "logic": "140 <= arithmetic mean of 3 seated office SBP readings at the specified visit < 165 mmHg; not any 3 most recent readings."
     },
     {
       "rule_id": "T2-I5",
@@ -218,7 +218,7 @@
         "character_end_exclusive": 821
       },
       "normalization": "Backslash-escaped comparison signs remain in source_text; expression stores normalized operators.",
-      "title": "高胆固醇、LDL未达目标及降脂治疗要求",
+      "title": "Hypercholesterolemia, LDL above target and lipid-lowering treatment requirements",
       "computability": "P",
       "expression": {
         "op": "and",
@@ -345,15 +345,15 @@
         "context.screening_visit_1_at",
         "evidence"
       ],
-      "logic_zh": "疾病 AND LDL未达个体目标 AND 他汀/耐受例外要求 AND 可选合并药物要求；不能把可选药变成必需。",
       "unresolved": [
-        "补风险分层LDL目标、指南/国家/版本、研究者判断、禁忌/耐受标准。",
-        "审核他汀例外和最后4周修饰范围的逻辑树；不能用I6的70当作治疗目标。"
+        "Add risk-stratified LDL targets, guideline / country / version, investigator judgement, contraindication / intolerance criteria.",
+        "Review the logic tree of the statin exception and the last-4-weeks modification scope; the 70 in I6 must not be used as a treatment target."
       ],
       "stage": "screening",
       "specification_status": "frozen_with_explicit_gaps",
       "execution_status": "not_validated",
-      "clinical_review_status": "pending_Ming_review"
+      "clinical_review_status": "pending_Ming_review",
+      "logic": "Disease AND LDL not at individual target AND statin / intolerance-exception requirement AND optional concomitant-drug requirement; an optional drug must not become mandatory."
     },
     {
       "rule_id": "T2-I6",
@@ -367,7 +367,7 @@
         "character_end_exclusive": 963
       },
       "normalization": "Backslash-escaped comparison signs remain in source_text; expression stores normalized operators.",
-      "title": "访视2空腹Friedewald LDL-C",
+      "title": "Visit 2 fasting Friedewald LDL-C",
       "computability": "C",
       "expression": {
         "op": "and",
@@ -407,15 +407,15 @@
         "context.screening_visit_2_id",
         "evidence"
       ],
-      "logic_zh": "同一份有效访视2空腹Friedewald LDL结果满足70≤LDL<190 mg/dL；两个比较不可用不同标本。",
       "unresolved": [
-        "绑定同一specimen/result；审核检测方法代码、空腹标记及多结果选择。"
+        "Bind to one specimen / result; review the method code, fasting flag and multiple-result selection."
       ],
       "stage": "screening",
       "specification_status": "frozen_with_explicit_gaps",
       "execution_status": "not_validated",
       "clinical_review_status": "pending_Ming_review",
-      "result_binding": "All lab and temporal clauses refer to one selected result/specimen."
+      "result_binding": "All lab and temporal clauses refer to one selected result/specimen.",
+      "logic": "One valid visit-2 fasting Friedewald LDL result satisfies 70 <= LDL < 190 mg/dL; the two comparisons may not use different specimens."
     },
     {
       "rule_id": "T2-I7",
@@ -429,7 +429,7 @@
         "character_end_exclusive": 999
       },
       "normalization": "Backslash-escaped comparison signs remain in source_text; expression stores normalized operators.",
-      "title": "访视2空腹TG",
+      "title": "Visit 2 fasting TG",
       "computability": "C",
       "expression": {
         "op": "lab_threshold",
@@ -450,14 +450,14 @@
         "context.screening_visit_2_id",
         "evidence"
       ],
-      "logic_zh": "访视2空腹TG<400 mg/dL；400不通过。",
       "unresolved": [
-        "审核概念/单位和多结果选择；缺空腹标记为unknown。"
+        "Review concept / unit and multiple-result selection; a missing fasting flag is unknown."
       ],
       "stage": "screening",
       "specification_status": "frozen_with_explicit_gaps",
       "execution_status": "not_validated",
-      "clinical_review_status": "pending_Ming_review"
+      "clinical_review_status": "pending_Ming_review",
+      "logic": "Visit 2 fasting TG < 400 mg/dL; 400 does not pass."
     },
     {
       "rule_id": "T2-E1",
@@ -471,7 +471,7 @@
         "character_end_exclusive": 1060
       },
       "normalization": "Backslash-escaped comparison signs remain in source_text; expression stores normalized operators.",
-      "title": "有症状的体位性低血压",
+      "title": "Symptomatic orthostatic hypotension",
       "computability": "P",
       "expression": {
         "op": "and",
@@ -497,14 +497,14 @@
         "reviews",
         "evidence"
       ],
-      "logic_zh": "体位性低血压 AND 相关症状；完整确认诊断可供CRC审阅。",
       "unresolved": [
-        "补体位测量标准、间隔、变化阈值、症状关联及时间范围。"
+        "Add the postural measurement standard, interval, change thresholds, symptom association and time range."
       ],
       "stage": "screening",
       "specification_status": "frozen_with_explicit_gaps",
       "execution_status": "not_validated",
-      "clinical_review_status": "pending_Ming_review"
+      "clinical_review_status": "pending_Ming_review",
+      "logic": "Orthostatic hypotension AND related symptoms; a complete confirmed diagnosis may be reviewed by the CRC."
     },
     {
       "rule_id": "T2-E2",
@@ -518,7 +518,7 @@
         "character_end_exclusive": 1163
       },
       "normalization": "Backslash-escaped comparison signs remain in source_text; expression stores normalized operators.",
-      "title": "禁药治疗或不能遵守禁药要求",
+      "title": "Prohibited medication or inability to comply with medication restrictions",
       "computability": "N",
       "expression": {
         "op": "or",
@@ -541,14 +541,14 @@
         "coverage",
         "evidence"
       ],
-      "logic_zh": "命中禁药治疗 OR 无法遵守禁药要求；输入须区分无法遵守与尚未询问。",
       "unresolved": [
-        "补完整禁药表、洗脱期、例外、前瞻用药限制及CRC确认。"
+        "Add the complete prohibited-drug list, washout periods, exceptions, prospective medication restrictions and CRC confirmation."
       ],
       "stage": "screening",
       "specification_status": "frozen_with_explicit_gaps",
       "execution_status": "not_validated",
-      "clinical_review_status": "pending_Ming_review"
+      "clinical_review_status": "pending_Ming_review",
+      "logic": "Hits a prohibited medication OR unable to comply with the medication restrictions; input must distinguish 'unable to comply' from 'not yet asked'."
     }
   ],
   "source": [
@@ -572,5 +572,6 @@
       "source_completeness": "registry_eligibility_only_not_full_protocol"
     }
   ],
-  "note": "Original frozen source files and hashes remain in archive/2026-10-09-pre-sad/rules. Nine criteria; pending mapping and clinical review."
+  "note": "Original frozen source files and hashes remain in archive/2026-10-09-pre-sad/rules. Nine criteria; pending mapping and clinical review.",
+  "note_translation": "title, logic and unresolved translated from Ming's Chinese original on 2026-10-11 (logic_zh renamed logic); rule semantics unchanged."
 }

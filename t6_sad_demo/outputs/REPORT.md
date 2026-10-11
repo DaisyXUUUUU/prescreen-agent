@@ -1,133 +1,133 @@
-# T6 SAD：本地预筛选运行结果
+# T6 SAD: local pre-screening run
 
-8个定向合成病例，10条标准加年龄约束。通过计算部分不等于完整资格；I5全部保留研究者审核。没有独立人工ground truth，不能报告临床准确率。
+8 purpose-built synthetic cases, 10 criteria plus the age constraint. Passing the computed part is not complete eligibility; I5 stays with the investigator in every case. There is no independent human ground truth, so no clinical accuracy can be reported.
 
-结果：{"passes_evaluated_criteria": 2, "fails_evaluated_criteria": 4, "pending": 1, "review": 1}
+Result: {"passes_evaluated_criteria": 2, "fails_evaluated_criteria": 4, "pending": 1, "review": 1}
 
 ## SAD01 · passes_evaluated_criteria
 
-不满足项：无明确项；人工复核：需要。
+Failed criteria: none; human review: required.
 
-- AGE：met。Age at screening=46 证据：Patient/fb59ce1d-c14e-05e7-719d-47eb6e65a9ab
-- I1：met。39156-5=22 kg/m2; predicate from 1.0.0/I1 证据：Observation/43d80a5c-52c2-5dbb-ab4f-236cbb8c4e44, Observation/43d80a5c-52c2-5dbb-ab4f-236cbb8c4e44
-- I2：met。18262-6=90 mg/dL; predicate from 1.0.0/I2 证据：Observation/d844d949-dd1c-5ce5-ab58-459800e02d6f, Observation/d844d949-dd1c-5ce5-ab58-459800e02d6f, Specimen/b649f11e-8516-5d0a-a90c-b5cc3d8dfdbb
-- I3：met。43583-4=40 nmol/L; predicate from 1.0.0/I3 证据：Observation/e5689dbe-040e-5244-824e-cdf7a07c8f26, Observation/e5689dbe-040e-5244-824e-cdf7a07c8f26
-- I4：met。2571-8=150 mg/dL; predicate from 1.0.0/I4 证据：Observation/fd7128ab-9881-5661-b658-0b273a141902, Observation/fd7128ab-9881-5661-b658-0b273a141902, Specimen/b649f11e-8516-5d0a-a90c-b5cc3d8dfdbb
-- I5：unknown。Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient
-- E1：not_met。Both ALT and AST at or below 1.5×ULN 证据：Observation/cbec5089-7035-5476-8a2c-17dbadf221b9, Observation/cbec5089-7035-5476-8a2c-17dbadf221b9, Observation/cbec5089-7035-5476-8a2c-17dbadf221b9, Observation/30755cff-9a9e-5579-aaae-6f678a5a4c21, Observation/30755cff-9a9e-5579-aaae-6f678a5a4c21, Observation/30755cff-9a9e-5579-aaae-6f678a5a4c21
-- E2：not_met。4548-4=5.4 %; predicate from 1.0.0/E2 证据：Observation/653f06f3-841c-524d-9bf3-177ad9cbfa9c, Observation/653f06f3-841c-524d-9bf3-177ad9cbfa9c
-- E3：not_met。Explicit report of no smoking throughout three-calendar-month window 证据：QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367
-- E4：not_met。Explicit negative synthetic interview covering entire window; self-report limitation retained 证据：QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367
-- E5：not_met。Explicit negative synthetic interview covering entire window; self-report limitation retained 证据：QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367
+- AGE: met. Age at screening=46 Evidence: Patient/fb59ce1d-c14e-05e7-719d-47eb6e65a9ab
+- I1: met. 39156-5=22 kg/m2; predicate from 1.0.0/I1 Evidence: Observation/43d80a5c-52c2-5dbb-ab4f-236cbb8c4e44, Observation/43d80a5c-52c2-5dbb-ab4f-236cbb8c4e44
+- I2: met. 18262-6=90 mg/dL; predicate from 1.0.0/I2 Evidence: Observation/d844d949-dd1c-5ce5-ab58-459800e02d6f, Observation/d844d949-dd1c-5ce5-ab58-459800e02d6f, Specimen/b649f11e-8516-5d0a-a90c-b5cc3d8dfdbb
+- I3: met. 43583-4=40 nmol/L; predicate from 1.0.0/I3 Evidence: Observation/e5689dbe-040e-5244-824e-cdf7a07c8f26, Observation/e5689dbe-040e-5244-824e-cdf7a07c8f26
+- I4: met. 2571-8=150 mg/dL; predicate from 1.0.0/I4 Evidence: Observation/fd7128ab-9881-5661-b658-0b273a141902, Observation/fd7128ab-9881-5661-b658-0b273a141902, Specimen/b649f11e-8516-5d0a-a90c-b5cc3d8dfdbb
+- I5: unknown. Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient
+- E1: not_met. Both ALT and AST at or below 1.5×ULN Evidence: Observation/cbec5089-7035-5476-8a2c-17dbadf221b9, Observation/cbec5089-7035-5476-8a2c-17dbadf221b9, Observation/cbec5089-7035-5476-8a2c-17dbadf221b9, Observation/30755cff-9a9e-5579-aaae-6f678a5a4c21, Observation/30755cff-9a9e-5579-aaae-6f678a5a4c21, Observation/30755cff-9a9e-5579-aaae-6f678a5a4c21
+- E2: not_met. 4548-4=5.4 %; predicate from 1.0.0/E2 Evidence: Observation/653f06f3-841c-524d-9bf3-177ad9cbfa9c, Observation/653f06f3-841c-524d-9bf3-177ad9cbfa9c
+- E3: not_met. Explicit report of no smoking throughout three-calendar-month window Evidence: QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367
+- E4: not_met. Explicit negative synthetic interview covering entire window; self-report limitation retained Evidence: QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367
+- E5: not_met. Explicit negative synthetic interview covering entire window; self-report limitation retained Evidence: QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367, QuestionnaireResponse/876769b9-5310-5d45-a798-e209e2b05367
 
 ## SAD02 · fails_evaluated_criteria
 
-不满足项：I2；人工复核：需要。
+Failed criteria: I2; human review: required.
 
-- AGE：met。Age at screening=54 证据：Patient/717a30c9-adba-2d70-f1ba-28dcf0c048c4
-- I1：met。39156-5=22 kg/m2; predicate from 1.0.0/I1 证据：Observation/81b33a61-b849-5000-8589-8e11b3b5f10b, Observation/81b33a61-b849-5000-8589-8e11b3b5f10b
-- I2：not_met。18262-6=69 mg/dL; predicate from 1.0.0/I2 证据：Observation/cae029bc-18ee-5e56-a57f-01ae5808a401, Observation/cae029bc-18ee-5e56-a57f-01ae5808a401, Specimen/23011085-9669-501e-a19b-f32734b664f4
-- I3：met。43583-4=40 nmol/L; predicate from 1.0.0/I3 证据：Observation/46aeb9d2-640c-50cc-9539-49f14f1ea067, Observation/46aeb9d2-640c-50cc-9539-49f14f1ea067
-- I4：met。2571-8=150 mg/dL; predicate from 1.0.0/I4 证据：Observation/040c7345-45ce-5b98-815d-fbc0d4889e44, Observation/040c7345-45ce-5b98-815d-fbc0d4889e44, Specimen/23011085-9669-501e-a19b-f32734b664f4
-- I5：unknown。Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient
-- E1：not_met。Both ALT and AST at or below 1.5×ULN 证据：Observation/aa8a0658-ba77-5831-9ea8-a19419f00c64, Observation/aa8a0658-ba77-5831-9ea8-a19419f00c64, Observation/aa8a0658-ba77-5831-9ea8-a19419f00c64, Observation/2442978e-63f3-59c4-85b1-c8ed9aa9eca6, Observation/2442978e-63f3-59c4-85b1-c8ed9aa9eca6, Observation/2442978e-63f3-59c4-85b1-c8ed9aa9eca6
-- E2：not_met。4548-4=5.4 %; predicate from 1.0.0/E2 证据：Observation/b9e091b6-6233-5062-ad5f-4595f308c881, Observation/b9e091b6-6233-5062-ad5f-4595f308c881
-- E3：not_met。Explicit report of no smoking throughout three-calendar-month window 证据：QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1
-- E4：not_met。Explicit negative synthetic interview covering entire window; self-report limitation retained 证据：QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1
-- E5：not_met。Explicit negative synthetic interview covering entire window; self-report limitation retained 证据：QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1
+- AGE: met. Age at screening=54 Evidence: Patient/717a30c9-adba-2d70-f1ba-28dcf0c048c4
+- I1: met. 39156-5=22 kg/m2; predicate from 1.0.0/I1 Evidence: Observation/81b33a61-b849-5000-8589-8e11b3b5f10b, Observation/81b33a61-b849-5000-8589-8e11b3b5f10b
+- I2: not_met. 18262-6=69 mg/dL; predicate from 1.0.0/I2 Evidence: Observation/cae029bc-18ee-5e56-a57f-01ae5808a401, Observation/cae029bc-18ee-5e56-a57f-01ae5808a401, Specimen/23011085-9669-501e-a19b-f32734b664f4
+- I3: met. 43583-4=40 nmol/L; predicate from 1.0.0/I3 Evidence: Observation/46aeb9d2-640c-50cc-9539-49f14f1ea067, Observation/46aeb9d2-640c-50cc-9539-49f14f1ea067
+- I4: met. 2571-8=150 mg/dL; predicate from 1.0.0/I4 Evidence: Observation/040c7345-45ce-5b98-815d-fbc0d4889e44, Observation/040c7345-45ce-5b98-815d-fbc0d4889e44, Specimen/23011085-9669-501e-a19b-f32734b664f4
+- I5: unknown. Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient
+- E1: not_met. Both ALT and AST at or below 1.5×ULN Evidence: Observation/aa8a0658-ba77-5831-9ea8-a19419f00c64, Observation/aa8a0658-ba77-5831-9ea8-a19419f00c64, Observation/aa8a0658-ba77-5831-9ea8-a19419f00c64, Observation/2442978e-63f3-59c4-85b1-c8ed9aa9eca6, Observation/2442978e-63f3-59c4-85b1-c8ed9aa9eca6, Observation/2442978e-63f3-59c4-85b1-c8ed9aa9eca6
+- E2: not_met. 4548-4=5.4 %; predicate from 1.0.0/E2 Evidence: Observation/b9e091b6-6233-5062-ad5f-4595f308c881, Observation/b9e091b6-6233-5062-ad5f-4595f308c881
+- E3: not_met. Explicit report of no smoking throughout three-calendar-month window Evidence: QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1
+- E4: not_met. Explicit negative synthetic interview covering entire window; self-report limitation retained Evidence: QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1
+- E5: not_met. Explicit negative synthetic interview covering entire window; self-report limitation retained Evidence: QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1, QuestionnaireResponse/9521170a-19b7-50a3-9cae-c6e570eacfe1
 
 ## SAD03 · fails_evaluated_criteria
 
-不满足项：I3；人工复核：需要。
+Failed criteria: I3; human review: required.
 
-- AGE：met。Age at screening=60 证据：Patient/9b4ac753-3eaa-f373-a25d-4e0faf584cb6
-- I1：met。39156-5=22 kg/m2; predicate from 1.0.0/I1 证据：Observation/c2c81581-f51e-54b8-a793-311b3e0c68ba, Observation/c2c81581-f51e-54b8-a793-311b3e0c68ba
-- I2：met。18262-6=90 mg/dL; predicate from 1.0.0/I2 证据：Observation/9e15c2a1-93c9-54ed-a94a-f84a649edef6, Observation/9e15c2a1-93c9-54ed-a94a-f84a649edef6, Specimen/7857102b-79ff-562d-a15e-9b46c566d096
-- I3：not_met。43583-4=24 nmol/L; predicate from 1.0.0/I3 证据：Observation/49400d10-06c7-5350-b32d-b994a1c93e77, Observation/49400d10-06c7-5350-b32d-b994a1c93e77
-- I4：met。2571-8=150 mg/dL; predicate from 1.0.0/I4 证据：Observation/7487330c-5c80-5b78-8e86-706ead7bf743, Observation/7487330c-5c80-5b78-8e86-706ead7bf743, Specimen/7857102b-79ff-562d-a15e-9b46c566d096
-- I5：unknown。Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient
-- E1：not_met。Both ALT and AST at or below 1.5×ULN 证据：Observation/46e52167-5b94-5494-900b-794615a05607, Observation/46e52167-5b94-5494-900b-794615a05607, Observation/46e52167-5b94-5494-900b-794615a05607, Observation/c60c9398-c0ea-5383-bbbe-e08555d7c168, Observation/c60c9398-c0ea-5383-bbbe-e08555d7c168, Observation/c60c9398-c0ea-5383-bbbe-e08555d7c168
-- E2：not_met。4548-4=5.4 %; predicate from 1.0.0/E2 证据：Observation/4312b594-7c73-59db-b8c4-a7d0020cb257, Observation/4312b594-7c73-59db-b8c4-a7d0020cb257
-- E3：not_met。Explicit report of no smoking throughout three-calendar-month window 证据：QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437
-- E4：not_met。Explicit negative synthetic interview covering entire window; self-report limitation retained 证据：QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437
-- E5：not_met。Explicit negative synthetic interview covering entire window; self-report limitation retained 证据：QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437
+- AGE: met. Age at screening=60 Evidence: Patient/9b4ac753-3eaa-f373-a25d-4e0faf584cb6
+- I1: met. 39156-5=22 kg/m2; predicate from 1.0.0/I1 Evidence: Observation/c2c81581-f51e-54b8-a793-311b3e0c68ba, Observation/c2c81581-f51e-54b8-a793-311b3e0c68ba
+- I2: met. 18262-6=90 mg/dL; predicate from 1.0.0/I2 Evidence: Observation/9e15c2a1-93c9-54ed-a94a-f84a649edef6, Observation/9e15c2a1-93c9-54ed-a94a-f84a649edef6, Specimen/7857102b-79ff-562d-a15e-9b46c566d096
+- I3: not_met. 43583-4=24 nmol/L; predicate from 1.0.0/I3 Evidence: Observation/49400d10-06c7-5350-b32d-b994a1c93e77, Observation/49400d10-06c7-5350-b32d-b994a1c93e77
+- I4: met. 2571-8=150 mg/dL; predicate from 1.0.0/I4 Evidence: Observation/7487330c-5c80-5b78-8e86-706ead7bf743, Observation/7487330c-5c80-5b78-8e86-706ead7bf743, Specimen/7857102b-79ff-562d-a15e-9b46c566d096
+- I5: unknown. Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient
+- E1: not_met. Both ALT and AST at or below 1.5×ULN Evidence: Observation/46e52167-5b94-5494-900b-794615a05607, Observation/46e52167-5b94-5494-900b-794615a05607, Observation/46e52167-5b94-5494-900b-794615a05607, Observation/c60c9398-c0ea-5383-bbbe-e08555d7c168, Observation/c60c9398-c0ea-5383-bbbe-e08555d7c168, Observation/c60c9398-c0ea-5383-bbbe-e08555d7c168
+- E2: not_met. 4548-4=5.4 %; predicate from 1.0.0/E2 Evidence: Observation/4312b594-7c73-59db-b8c4-a7d0020cb257, Observation/4312b594-7c73-59db-b8c4-a7d0020cb257
+- E3: not_met. Explicit report of no smoking throughout three-calendar-month window Evidence: QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437
+- E4: not_met. Explicit negative synthetic interview covering entire window; self-report limitation retained Evidence: QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437
+- E5: not_met. Explicit negative synthetic interview covering entire window; self-report limitation retained Evidence: QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437, QuestionnaireResponse/d7687e23-a7c0-516c-ace4-eb3e99596437
 
 ## SAD04 · passes_evaluated_criteria
 
-不满足项：无明确项；人工复核：需要。
+Failed criteria: none; human review: required.
 
-- AGE：met。Age at screening=56 证据：Patient/8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc
-- I1：met。39156-5=18 kg/m2; predicate from 1.0.0/I1 证据：Observation/b0c987ad-4fb1-52ea-9465-c77dbb4bc646, Observation/b0c987ad-4fb1-52ea-9465-c77dbb4bc646
-- I2：met。18262-6=70 mg/dL; predicate from 1.0.0/I2 证据：Observation/7d9fd1ac-b275-5b6a-93b3-543a96d0fc8f, Observation/7d9fd1ac-b275-5b6a-93b3-543a96d0fc8f, Specimen/ffec01c1-9d0f-52db-b1cd-5d5ad454cad3
-- I3：met。43583-4=25 nmol/L; predicate from 1.0.0/I3 证据：Observation/c4948193-d3c4-566d-afed-4a45b9152fc7, Observation/c4948193-d3c4-566d-afed-4a45b9152fc7
-- I4：met。2571-8=399.9 mg/dL; predicate from 1.0.0/I4 证据：Observation/370291b5-9f21-5a6c-9176-90e79d7182e3, Observation/370291b5-9f21-5a6c-9176-90e79d7182e3, Specimen/ffec01c1-9d0f-52db-b1cd-5d5ad454cad3
-- I5：unknown。Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient
-- E1：not_met。Both ALT and AST at or below 1.5×ULN 证据：Observation/152f83f8-5785-5865-a43f-25dce8d6a723, Observation/152f83f8-5785-5865-a43f-25dce8d6a723, Observation/152f83f8-5785-5865-a43f-25dce8d6a723, Observation/bcfe6234-024b-5a31-b5d1-91d5545835e4, Observation/bcfe6234-024b-5a31-b5d1-91d5545835e4, Observation/bcfe6234-024b-5a31-b5d1-91d5545835e4
-- E2：not_met。4548-4=6.4 %; predicate from 1.0.0/E2 证据：Observation/51a98d78-9439-5360-97f4-0c28ba68c24d, Observation/51a98d78-9439-5360-97f4-0c28ba68c24d
-- E3：not_met。Explicit report of no smoking throughout three-calendar-month window 证据：QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda
-- E4：not_met。Explicit negative synthetic interview covering entire window; self-report limitation retained 证据：QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda
-- E5：not_met。Explicit negative synthetic interview covering entire window; self-report limitation retained 证据：QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda
+- AGE: met. Age at screening=56 Evidence: Patient/8c5bd0c2-9ff9-89cf-4efc-bdf3e6ff36cc
+- I1: met. 39156-5=18 kg/m2; predicate from 1.0.0/I1 Evidence: Observation/b0c987ad-4fb1-52ea-9465-c77dbb4bc646, Observation/b0c987ad-4fb1-52ea-9465-c77dbb4bc646
+- I2: met. 18262-6=70 mg/dL; predicate from 1.0.0/I2 Evidence: Observation/7d9fd1ac-b275-5b6a-93b3-543a96d0fc8f, Observation/7d9fd1ac-b275-5b6a-93b3-543a96d0fc8f, Specimen/ffec01c1-9d0f-52db-b1cd-5d5ad454cad3
+- I3: met. 43583-4=25 nmol/L; predicate from 1.0.0/I3 Evidence: Observation/c4948193-d3c4-566d-afed-4a45b9152fc7, Observation/c4948193-d3c4-566d-afed-4a45b9152fc7
+- I4: met. 2571-8=399.9 mg/dL; predicate from 1.0.0/I4 Evidence: Observation/370291b5-9f21-5a6c-9176-90e79d7182e3, Observation/370291b5-9f21-5a6c-9176-90e79d7182e3, Specimen/ffec01c1-9d0f-52db-b1cd-5d5ad454cad3
+- I5: unknown. Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient
+- E1: not_met. Both ALT and AST at or below 1.5×ULN Evidence: Observation/152f83f8-5785-5865-a43f-25dce8d6a723, Observation/152f83f8-5785-5865-a43f-25dce8d6a723, Observation/152f83f8-5785-5865-a43f-25dce8d6a723, Observation/bcfe6234-024b-5a31-b5d1-91d5545835e4, Observation/bcfe6234-024b-5a31-b5d1-91d5545835e4, Observation/bcfe6234-024b-5a31-b5d1-91d5545835e4
+- E2: not_met. 4548-4=6.4 %; predicate from 1.0.0/E2 Evidence: Observation/51a98d78-9439-5360-97f4-0c28ba68c24d, Observation/51a98d78-9439-5360-97f4-0c28ba68c24d
+- E3: not_met. Explicit report of no smoking throughout three-calendar-month window Evidence: QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda
+- E4: not_met. Explicit negative synthetic interview covering entire window; self-report limitation retained Evidence: QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda
+- E5: not_met. Explicit negative synthetic interview covering entire window; self-report limitation retained Evidence: QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda, QuestionnaireResponse/425a6978-8a1f-5cc1-8b68-863ed5ccffda
 
 ## SAD05 · fails_evaluated_criteria
 
-不满足项：E2；人工复核：需要。
+Failed criteria: E2; human review: required.
 
-- AGE：met。Age at screening=28 证据：Patient/cdf2fa34-57a1-ef59-6317-5db0d888d02c
-- I1：met。39156-5=22 kg/m2; predicate from 1.0.0/I1 证据：Observation/987028b9-c38c-5690-aab0-040761f9a468, Observation/987028b9-c38c-5690-aab0-040761f9a468
-- I2：met。18262-6=90 mg/dL; predicate from 1.0.0/I2 证据：Observation/057d5db7-8273-583c-8f4b-8848f2b51202, Observation/057d5db7-8273-583c-8f4b-8848f2b51202, Specimen/c75ad098-0aaf-5b25-a1ed-ebbddd77e40d
-- I3：met。43583-4=40 nmol/L; predicate from 1.0.0/I3 证据：Observation/f92eaa6c-2d59-567c-bbe1-0b6dc6e6d18f, Observation/f92eaa6c-2d59-567c-bbe1-0b6dc6e6d18f
-- I4：met。2571-8=150 mg/dL; predicate from 1.0.0/I4 证据：Observation/bec43419-3bf5-5897-977a-13490f00042e, Observation/bec43419-3bf5-5897-977a-13490f00042e, Specimen/c75ad098-0aaf-5b25-a1ed-ebbddd77e40d
-- I5：unknown。Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient
-- E1：not_met。Both ALT and AST at or below 1.5×ULN 证据：Observation/182ffe4e-e862-5da8-a9dd-9c193ddf6fa7, Observation/182ffe4e-e862-5da8-a9dd-9c193ddf6fa7, Observation/182ffe4e-e862-5da8-a9dd-9c193ddf6fa7, Observation/8ac4c2fc-319e-58cc-af69-55cf243425ea, Observation/8ac4c2fc-319e-58cc-af69-55cf243425ea, Observation/8ac4c2fc-319e-58cc-af69-55cf243425ea
-- E2：met。4548-4=6.5 %; predicate from 1.0.0/E2 证据：Observation/144d7b63-3657-5ec6-a6c7-d8d9b5e3316d, Observation/144d7b63-3657-5ec6-a6c7-d8d9b5e3316d
-- E3：not_met。Explicit report of no smoking throughout three-calendar-month window 证据：QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820
-- E4：not_met。Explicit negative synthetic interview covering entire window; self-report limitation retained 证据：QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820
-- E5：not_met。Explicit negative synthetic interview covering entire window; self-report limitation retained 证据：QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820
+- AGE: met. Age at screening=28 Evidence: Patient/cdf2fa34-57a1-ef59-6317-5db0d888d02c
+- I1: met. 39156-5=22 kg/m2; predicate from 1.0.0/I1 Evidence: Observation/987028b9-c38c-5690-aab0-040761f9a468, Observation/987028b9-c38c-5690-aab0-040761f9a468
+- I2: met. 18262-6=90 mg/dL; predicate from 1.0.0/I2 Evidence: Observation/057d5db7-8273-583c-8f4b-8848f2b51202, Observation/057d5db7-8273-583c-8f4b-8848f2b51202, Specimen/c75ad098-0aaf-5b25-a1ed-ebbddd77e40d
+- I3: met. 43583-4=40 nmol/L; predicate from 1.0.0/I3 Evidence: Observation/f92eaa6c-2d59-567c-bbe1-0b6dc6e6d18f, Observation/f92eaa6c-2d59-567c-bbe1-0b6dc6e6d18f
+- I4: met. 2571-8=150 mg/dL; predicate from 1.0.0/I4 Evidence: Observation/bec43419-3bf5-5897-977a-13490f00042e, Observation/bec43419-3bf5-5897-977a-13490f00042e, Specimen/c75ad098-0aaf-5b25-a1ed-ebbddd77e40d
+- I5: unknown. Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient
+- E1: not_met. Both ALT and AST at or below 1.5×ULN Evidence: Observation/182ffe4e-e862-5da8-a9dd-9c193ddf6fa7, Observation/182ffe4e-e862-5da8-a9dd-9c193ddf6fa7, Observation/182ffe4e-e862-5da8-a9dd-9c193ddf6fa7, Observation/8ac4c2fc-319e-58cc-af69-55cf243425ea, Observation/8ac4c2fc-319e-58cc-af69-55cf243425ea, Observation/8ac4c2fc-319e-58cc-af69-55cf243425ea
+- E2: met. 4548-4=6.5 %; predicate from 1.0.0/E2 Evidence: Observation/144d7b63-3657-5ec6-a6c7-d8d9b5e3316d, Observation/144d7b63-3657-5ec6-a6c7-d8d9b5e3316d
+- E3: not_met. Explicit report of no smoking throughout three-calendar-month window Evidence: QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820
+- E4: not_met. Explicit negative synthetic interview covering entire window; self-report limitation retained Evidence: QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820
+- E5: not_met. Explicit negative synthetic interview covering entire window; self-report limitation retained Evidence: QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820, QuestionnaireResponse/9cdb0049-971b-5c4d-b7a8-0e742e9ff820
 
 ## SAD06 · pending
 
-不满足项：无明确项；人工复核：需要。
+Failed criteria: none; human review: required.
 
-- AGE：met。Age at screening=30 证据：Patient/b8af990e-6f30-ef84-202f-a020dcaa0286
-- I1：met。39156-5=22 kg/m2; predicate from 1.0.0/I1 证据：Observation/5450ff99-481f-5065-bc8b-3c1d565ddbd7, Observation/5450ff99-481f-5065-bc8b-3c1d565ddbd7
-- I2：met。18262-6=90 mg/dL; predicate from 1.0.0/I2 证据：Observation/be4384c9-5197-5fbd-b2b8-c494b8d26689, Observation/be4384c9-5197-5fbd-b2b8-c494b8d26689, Specimen/676e7f34-d475-5285-920a-9cd32f8fb106
-- I3：unknown。No matching screening observation; no negative inference
-- I4：met。2571-8=150 mg/dL; predicate from 1.0.0/I4 证据：Observation/dedec623-e3d7-5222-a42e-f34591a8021b, Observation/dedec623-e3d7-5222-a42e-f34591a8021b, Specimen/676e7f34-d475-5285-920a-9cd32f8fb106
-- I5：unknown。Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient
-- E1：not_met。Both ALT and AST at or below 1.5×ULN 证据：Observation/7e1129e5-4851-5fe1-85b2-0fe9517a7977, Observation/7e1129e5-4851-5fe1-85b2-0fe9517a7977, Observation/7e1129e5-4851-5fe1-85b2-0fe9517a7977, Observation/76ba5d81-1bcc-598c-8822-32b1a035adcc, Observation/76ba5d81-1bcc-598c-8822-32b1a035adcc, Observation/76ba5d81-1bcc-598c-8822-32b1a035adcc
-- E2：not_met。4548-4=5.4 %; predicate from 1.0.0/E2 证据：Observation/91ade2fb-a40f-5b86-9a96-6e9f108d643b, Observation/91ade2fb-a40f-5b86-9a96-6e9f108d643b
-- E3：not_met。Explicit report of no smoking throughout three-calendar-month window 证据：QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263
-- E4：not_met。Explicit negative synthetic interview covering entire window; self-report limitation retained 证据：QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263
-- E5：not_met。Explicit negative synthetic interview covering entire window; self-report limitation retained 证据：QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263
+- AGE: met. Age at screening=30 Evidence: Patient/b8af990e-6f30-ef84-202f-a020dcaa0286
+- I1: met. 39156-5=22 kg/m2; predicate from 1.0.0/I1 Evidence: Observation/5450ff99-481f-5065-bc8b-3c1d565ddbd7, Observation/5450ff99-481f-5065-bc8b-3c1d565ddbd7
+- I2: met. 18262-6=90 mg/dL; predicate from 1.0.0/I2 Evidence: Observation/be4384c9-5197-5fbd-b2b8-c494b8d26689, Observation/be4384c9-5197-5fbd-b2b8-c494b8d26689, Specimen/676e7f34-d475-5285-920a-9cd32f8fb106
+- I3: unknown. No matching screening observation; no negative inference
+- I4: met. 2571-8=150 mg/dL; predicate from 1.0.0/I4 Evidence: Observation/dedec623-e3d7-5222-a42e-f34591a8021b, Observation/dedec623-e3d7-5222-a42e-f34591a8021b, Specimen/676e7f34-d475-5285-920a-9cd32f8fb106
+- I5: unknown. Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient
+- E1: not_met. Both ALT and AST at or below 1.5×ULN Evidence: Observation/7e1129e5-4851-5fe1-85b2-0fe9517a7977, Observation/7e1129e5-4851-5fe1-85b2-0fe9517a7977, Observation/7e1129e5-4851-5fe1-85b2-0fe9517a7977, Observation/76ba5d81-1bcc-598c-8822-32b1a035adcc, Observation/76ba5d81-1bcc-598c-8822-32b1a035adcc, Observation/76ba5d81-1bcc-598c-8822-32b1a035adcc
+- E2: not_met. 4548-4=5.4 %; predicate from 1.0.0/E2 Evidence: Observation/91ade2fb-a40f-5b86-9a96-6e9f108d643b, Observation/91ade2fb-a40f-5b86-9a96-6e9f108d643b
+- E3: not_met. Explicit report of no smoking throughout three-calendar-month window Evidence: QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263
+- E4: not_met. Explicit negative synthetic interview covering entire window; self-report limitation retained Evidence: QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263
+- E5: not_met. Explicit negative synthetic interview covering entire window; self-report limitation retained Evidence: QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263, QuestionnaireResponse/de3903ba-7e28-5bc4-ad3f-28801f729263
 
 ## SAD07 · review
 
-不满足项：无明确项；人工复核：需要。
+Failed criteria: none; human review: required.
 
-- AGE：met。Age at screening=43 证据：Patient/8a597cb9-8552-23cd-4024-69519d67f526
-- I1：met。39156-5=22 kg/m2; predicate from 1.0.0/I1 证据：Observation/a8d240b9-82f3-5cd7-ba1a-4fa31df65b97, Observation/a8d240b9-82f3-5cd7-ba1a-4fa31df65b97
-- I2：unknown。Multiple candidate results; selection unresolved 证据：Observation/84a36d2d-7e57-5cd3-82e2-fc304ab363f7, Observation/22bd12a5-6b4d-5fd6-a49d-caddfd928e14
-- I3：met。43583-4=40 nmol/L; predicate from 1.0.0/I3 证据：Observation/9e093084-34e6-53a1-a34c-ce0c8b8681d5, Observation/9e093084-34e6-53a1-a34c-ce0c8b8681d5
-- I4：met。2571-8=150 mg/dL; predicate from 1.0.0/I4 证据：Observation/20ce6537-598b-5731-8d46-1f5a93f8b45f, Observation/20ce6537-598b-5731-8d46-1f5a93f8b45f, Specimen/fdaa071f-94b8-573e-b751-ae650c48611a
-- I5：unknown。Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient
-- E1：not_met。Both ALT and AST at or below 1.5×ULN 证据：Observation/2c74b355-b506-56e0-9a21-df30f409c0e3, Observation/2c74b355-b506-56e0-9a21-df30f409c0e3, Observation/2c74b355-b506-56e0-9a21-df30f409c0e3, Observation/447049d8-bd8d-535e-bfa6-4ec57f88dea2, Observation/447049d8-bd8d-535e-bfa6-4ec57f88dea2, Observation/447049d8-bd8d-535e-bfa6-4ec57f88dea2
-- E2：not_met。4548-4=5.4 %; predicate from 1.0.0/E2 证据：Observation/e8a33389-a501-5936-8973-cc3c91f62a34, Observation/e8a33389-a501-5936-8973-cc3c91f62a34
-- E3：not_met。Explicit report of no smoking throughout three-calendar-month window 证据：QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c
-- E4：not_met。Explicit negative synthetic interview covering entire window; self-report limitation retained 证据：QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c
-- E5：not_met。Explicit negative synthetic interview covering entire window; self-report limitation retained 证据：QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c
+- AGE: met. Age at screening=43 Evidence: Patient/8a597cb9-8552-23cd-4024-69519d67f526
+- I1: met. 39156-5=22 kg/m2; predicate from 1.0.0/I1 Evidence: Observation/a8d240b9-82f3-5cd7-ba1a-4fa31df65b97, Observation/a8d240b9-82f3-5cd7-ba1a-4fa31df65b97
+- I2: unknown. Multiple candidate results; selection unresolved Evidence: Observation/84a36d2d-7e57-5cd3-82e2-fc304ab363f7, Observation/22bd12a5-6b4d-5fd6-a49d-caddfd928e14
+- I3: met. 43583-4=40 nmol/L; predicate from 1.0.0/I3 Evidence: Observation/9e093084-34e6-53a1-a34c-ce0c8b8681d5, Observation/9e093084-34e6-53a1-a34c-ce0c8b8681d5
+- I4: met. 2571-8=150 mg/dL; predicate from 1.0.0/I4 Evidence: Observation/20ce6537-598b-5731-8d46-1f5a93f8b45f, Observation/20ce6537-598b-5731-8d46-1f5a93f8b45f, Specimen/fdaa071f-94b8-573e-b751-ae650c48611a
+- I5: unknown. Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient
+- E1: not_met. Both ALT and AST at or below 1.5×ULN Evidence: Observation/2c74b355-b506-56e0-9a21-df30f409c0e3, Observation/2c74b355-b506-56e0-9a21-df30f409c0e3, Observation/2c74b355-b506-56e0-9a21-df30f409c0e3, Observation/447049d8-bd8d-535e-bfa6-4ec57f88dea2, Observation/447049d8-bd8d-535e-bfa6-4ec57f88dea2, Observation/447049d8-bd8d-535e-bfa6-4ec57f88dea2
+- E2: not_met. 4548-4=5.4 %; predicate from 1.0.0/E2 Evidence: Observation/e8a33389-a501-5936-8973-cc3c91f62a34, Observation/e8a33389-a501-5936-8973-cc3c91f62a34
+- E3: not_met. Explicit report of no smoking throughout three-calendar-month window Evidence: QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c
+- E4: not_met. Explicit negative synthetic interview covering entire window; self-report limitation retained Evidence: QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c
+- E5: not_met. Explicit negative synthetic interview covering entire window; self-report limitation retained Evidence: QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c, QuestionnaireResponse/b9d9ba11-148a-5159-be0c-cddcffee927c
 
 ## SAD08 · fails_evaluated_criteria
 
-不满足项：E3, E5；人工复核：需要。
+Failed criteria: E3, E5; human review: required.
 
-- AGE：met。Age at screening=49 证据：Patient/329bcd54-d577-b679-2232-96d50f40a302
-- I1：met。39156-5=22 kg/m2; predicate from 1.0.0/I1 证据：Observation/173944b8-96f6-54e5-abb5-63ccb78d7bf8, Observation/173944b8-96f6-54e5-abb5-63ccb78d7bf8
-- I2：met。18262-6=90 mg/dL; predicate from 1.0.0/I2 证据：Observation/c7c06477-8298-54f6-b971-8eb4b123a5a8, Observation/c7c06477-8298-54f6-b971-8eb4b123a5a8, Specimen/fe08ae21-9d40-5556-a42f-94d5f8476a09
-- I3：met。43583-4=40 nmol/L; predicate from 1.0.0/I3 证据：Observation/43cf06d4-9126-5d7f-9bef-246ad632ea6c, Observation/43cf06d4-9126-5d7f-9bef-246ad632ea6c
-- I4：met。2571-8=150 mg/dL; predicate from 1.0.0/I4 证据：Observation/ae511a2f-3078-59de-baaa-914b0a372be4, Observation/ae511a2f-3078-59de-baaa-914b0a372be4, Specimen/fe08ae21-9d40-5556-a42f-94d5f8476a09
-- I5：unknown。Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient
-- E1：not_met。Both ALT and AST at or below 1.5×ULN 证据：Observation/57d1c8f1-1ca5-51ee-9495-744182d0b08b, Observation/57d1c8f1-1ca5-51ee-9495-744182d0b08b, Observation/57d1c8f1-1ca5-51ee-9495-744182d0b08b, Observation/a0649760-a820-5858-b8ab-012499fb48a8, Observation/a0649760-a820-5858-b8ab-012499fb48a8, Observation/a0649760-a820-5858-b8ab-012499fb48a8
-- E2：not_met。4548-4=5.4 %; predicate from 1.0.0/E2 证据：Observation/4a4aacb7-deb0-5b2a-92aa-2186aaad794e, Observation/4a4aacb7-deb0-5b2a-92aa-2186aaad794e
-- E3：met。Current continuous smoking; compare reported day/week amounts 证据：QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25
-- E4：not_met。Explicit negative synthetic interview covering entire window; self-report limitation retained 证据：QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25
-- E5：met。Last reported class exposure compared to inclusive demo window 证据：QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25
+- AGE: met. Age at screening=49 Evidence: Patient/329bcd54-d577-b679-2232-96d50f40a302
+- I1: met. 39156-5=22 kg/m2; predicate from 1.0.0/I1 Evidence: Observation/173944b8-96f6-54e5-abb5-63ccb78d7bf8, Observation/173944b8-96f6-54e5-abb5-63ccb78d7bf8
+- I2: met. 18262-6=90 mg/dL; predicate from 1.0.0/I2 Evidence: Observation/c7c06477-8298-54f6-b971-8eb4b123a5a8, Observation/c7c06477-8298-54f6-b971-8eb4b123a5a8, Specimen/fe08ae21-9d40-5556-a42f-94d5f8476a09
+- I3: met. 43583-4=40 nmol/L; predicate from 1.0.0/I3 Evidence: Observation/43cf06d4-9126-5d7f-9bef-246ad632ea6c, Observation/43cf06d4-9126-5d7f-9bef-246ad632ea6c
+- I4: met. 2571-8=150 mg/dL; predicate from 1.0.0/I4 Evidence: Observation/ae511a2f-3078-59de-baaa-914b0a372be4, Observation/ae511a2f-3078-59de-baaa-914b0a372be4, Specimen/fe08ae21-9d40-5556-a42f-94d5f8476a09
+- I5: unknown. Investigator assessment of clinically significant hepatic/renal abnormality required; ALT/AST alone insufficient
+- E1: not_met. Both ALT and AST at or below 1.5×ULN Evidence: Observation/57d1c8f1-1ca5-51ee-9495-744182d0b08b, Observation/57d1c8f1-1ca5-51ee-9495-744182d0b08b, Observation/57d1c8f1-1ca5-51ee-9495-744182d0b08b, Observation/a0649760-a820-5858-b8ab-012499fb48a8, Observation/a0649760-a820-5858-b8ab-012499fb48a8, Observation/a0649760-a820-5858-b8ab-012499fb48a8
+- E2: not_met. 4548-4=5.4 %; predicate from 1.0.0/E2 Evidence: Observation/4a4aacb7-deb0-5b2a-92aa-2186aaad794e, Observation/4a4aacb7-deb0-5b2a-92aa-2186aaad794e
+- E3: met. Current continuous smoking; compare reported day/week amounts Evidence: QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25
+- E4: not_met. Explicit negative synthetic interview covering entire window; self-report limitation retained Evidence: QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25
+- E5: met. Last reported class exposure compared to inclusive demo window Evidence: QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25, QuestionnaireResponse/ce388a5f-48f8-57db-91e5-bbee4d384d25

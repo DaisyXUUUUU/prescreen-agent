@@ -1,7 +1,9 @@
-# T2：第二试验参考资料
+# T2: second-trial reference material
 
-NCT07610278，原发性高血压伴高胆固醇。保留官方API源记录及此前冻结的9条规则定义。
+> Translated from Ming's Chinese original on 2026-10-11.
 
-当前T6执行器不会评价T2，尚需相应FHIR映射和测试。该副本不改变原有临床待审状态。
+NCT07610278, primary hypertension with hypercholesterolemia. Keeps the official API source record and the 9 rule definitions frozen earlier.
 
-原始完整冻结包和校验清单位于 `../archive/2026-10-09-pre-sad/rules/1.0.0/`。此处rules.json中的旧source_locator来自该冻结包，可在归档中解析。
+The current T6 evaluator does not evaluate T2; that needs a FHIR mapping and tests of its own. This copy does not change the existing pending-clinical-review status.
+
+The original complete frozen package and checksum list are in `../archive/2026-10-09-pre-sad/rules/1.0.0/` (local, not in git). The old `source_locator` values in rules.json come from that frozen package and resolve within the archive.

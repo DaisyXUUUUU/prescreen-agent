@@ -4,7 +4,11 @@ AWS Community Day Bay Area 2026 hackathon — "Hand it off" challenge.
 
 Takes over a clinical research coordinator's weekly clinical-trial pre-screening: reads synthetic patients (Synthea FHIR R4) and trial eligibility criteria (ClinicalTrials.gov), and writes the same pre-screening log the CRC writes by hand: likely eligible / pending / excluded / needs review, with evidence for every verdict. Deterministic code makes every comparison; an agent on Amazon Bedrock (Strands Agents + Amazon Nova 2 Lite) handles only the exceptions (empty queries, changed criteria). No patient is ever contacted. **Synthetic data only.**
 
-**Primary trial:** [NCT07347678](https://clinicaltrials.gov/study/NCT07347678), SAD cohort (Ming's "T6"): 10 criteria plus age 18–65, 8 synthetic screening cases. Clinical rules, cases and the SAD evaluator are Ming's (`t6_sad_demo/`, see [its README](t6_sad_demo/README.md) and [her handoff notes](docs/MING_SUBMISSION.md)); the engineering pipeline in `src/` wraps her evaluator unchanged. NCT07610278 ("T2", hypertension with hypercholesterolemia) is kept as reference in `t2_backup/`.
+**See the run without installing anything:** open [`docs/demo/index.html`](docs/demo/index.html) (input, agent, output and evaluation for 58 patients, with every verdict's evidence and trace).
+
+**Primary trial:** [NCT07347678](https://clinicaltrials.gov/study/NCT07347678), SAD cohort (Ming's "T6"): 10 criteria plus age 18–65. Clinical rules, the 8 original screening cases and the SAD evaluator are Ming's (`t6_sad_demo/`; see [its README](t6_sad_demo/README.md), [her delivery notes](docs/MING_SUBMISSION.md), [data delivery checklist](docs/DATA_DELIVERY.md), [handoff record](docs/MING_HANDOFF.md) and [her standalone demo](MING_DEMO.md)). The engineering pipeline in `src/` wraps her evaluator unchanged. NCT07610278 ("T2", hypertension with hypercholesterolemia) is kept as reference in `t2_backup/`.
+
+**Data:** 58 synthetic patients: Ming's 8 cases (Synthea demographics, designed screening records) and 50 engineering cases in `data/eng_cases/`, generated deterministically by `scripts/build_eng_cases.py` from her template to cover both sides of every threshold, exact boundaries, unit conversion, missing data, hand-written free text, liver and kidney evidence and conflicting results. Each engineering case records its design intent (`data/eng_cases/design_labels.csv`), written before any run; it is used for evaluation and is not clinical ground truth.
 
 ## Quick start
 
@@ -33,7 +37,7 @@ python check_bedrock.py            # expect: response: bedrock ok
 python run.py --trial SAD --date 2026-10-09
 ```
 
-Open `out/prescreen_log_SAD_2026-10-09.md`. If Bedrock is unreachable, the run says so once and continues with rules only. The SAD run includes Ming's 8 cases plus 7 engineering-authored cases in `data/eng_cases/` (free text, boundaries, I5 evidence, material conflict; `--no-eng-cases` to leave them out). With `--no-agent` the result equals Ming's own evaluator (checked by `tests/test_sad.py`).
+Open `out/prescreen_log_SAD_2026-10-09.md`. If Bedrock is unreachable, the run says so once and continues with rules only. The SAD run includes Ming's 8 cases and the 50 engineering cases (`--no-eng-cases` to leave them out). With `--no-agent` the result equals Ming's own evaluator (checked by `tests/test_sad.py`).
 
 `tests/fixtures/` holds engineering's own sample data (four hand-written patients on NCT02178098, sample labels, a sample SAD amendment). None of it is a project trial or ground truth; see [tests/fixtures/README.md](tests/fixtures/README.md).
 
@@ -123,7 +127,17 @@ One command runs the baseline and every failure switch, then scores the baseline
 python eval/evaluate.py --trial SAD --labels data/ground_truth/trial_SAD.csv   # once Ming delivers labels
 ```
 
-On the fixtures (sample labels; the report says the numbers are not an evaluation):
+On SAD, against the engineering cases' design intent (runs the five scenarios in parallel, then scores them; about 20 minutes with the agent on):
+
+```bash
+python eval/evaluate.py --trial SAD --date 2026-10-09 \
+  --labels data/eng_cases/design_labels.csv --flips data/eng_cases/design_amendment_flips.txt \
+  --v1-snapshot tests/fixtures/sad/NCT07347678_v1.txt --v2-snapshot tests/fixtures/sad/NCT07347678_v2.txt \
+  --v2-predicates tests/fixtures/sad/sad-1.0.1-sample.json
+python scripts/build_report.py     # writes out/eval/SAD/report.html and docs/demo/index.html
+```
+
+On the engineering fixtures (sample labels; the report says the numbers are not an evaluation):
 
 ```bash
 python eval/evaluate.py --trial SAMPLE --labels tests/fixtures/sample_labels.csv \

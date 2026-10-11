@@ -1,30 +1,32 @@
-# Trial Pre-Screening Demo
+# Trial Pre-Screening Demo (Ming's local evaluator)
 
-当前主演示：**T6 / NCT07347678 / SAD队列**。第二试验：**T2 / NCT07610278**。T7已退出主演示。
+> Translated from Ming's Chinese original on 2026-10-11. This page describes Ming's standalone evaluator as handed off on 2026-10-09. The submission's main entry point is the [root README](README.md), which runs the same evaluator inside the full pipeline with the agent.
 
-从项目根目录运行：
+Current main demo: **T6 / NCT07347678 / SAD cohort**. Second trial: **T2 / NCT07610278**. T7 has left the main demo.
 
-```powershell
+From the project root:
+
+```bash
 python t6_sad_demo/run.py
 python t6_sad_demo/test_demo.py
 ```
 
-现有数据可直接重跑，无需AWS凭据或重新下载Synthea。
+The existing data re-runs directly, without AWS credentials or downloading Synthea again.
 
-- [本次运行报告](t6_sad_demo/outputs/REPORT.md)
-- [可展开证据的网页报告](t6_sad_demo/outputs/report.html)
-- [预筛选日志JSON](t6_sad_demo/outputs/prescreening_log.json)
-- [人工/缺失/冲突队列](t6_sad_demo/outputs/exception_queue.json)
-- [T6操作与限制](t6_sad_demo/README.md)
-- [I5证据检索与人工判断约定（待实现）](t6_sad_demo/I5_EVIDENCE_REVIEW.md)
+- [Run report](t6_sad_demo/outputs/REPORT.md)
+- [Web report with expandable evidence](t6_sad_demo/outputs/report.html)
+- [Pre-screening log JSON](t6_sad_demo/outputs/prescreening_log.json)
+- [Manual / missing / conflict queue](t6_sad_demo/outputs/exception_queue.json)
+- [T6 operation and limits](t6_sad_demo/README.md)
+- [I5 evidence retrieval and human-judgement agreement](t6_sad_demo/I5_EVIDENCE_REVIEW.md)
 
-当前目录：
+Directories:
 
-- `t6_sad_demo/`：当前可运行的SAD规则、8人合成数据、确定性执行器、测试和结果。
-- `t2_backup/`：第二试验的9条规则参考及官方源记录，尚未接入此执行器。
-- `tools/`：Synthea 3.3.0及本地FHIR验证虚拟环境，属于运行依赖。
-- `archive/2026-10-09-pre-sad/`：早期比较报告、T7规格/数据及旧脚本。归档未删除；内部旧绝对路径可能失效，当前运行不依赖它们。
+- `t6_sad_demo/`: the runnable SAD rules, 8 synthetic people, deterministic evaluator, tests and results.
+- `t2_backup/`: the second trial's 9 reference rules and official source record, not connected to this evaluator.
+- `tools/`: Synthea 3.3.0 and a local FHIR validation virtual environment (runtime dependency, not in git).
+- `archive/2026-10-09-pre-sad/`: earlier comparison reports, T7 specification / data and old scripts (not in git). Old absolute paths inside may no longer work; the current run does not depend on them.
 
-本地闭环已经完成“读取FHIR→按SAD规则评价→带证据日志→例外队列→本地交付”。尚未接入LLM/Bedrock Agent、FHIR服务、AWS交付或自动改版监控。当前测试是作者设计的技术测试，不是独立临床准确率评估。
+The local loop "read FHIR → evaluate against SAD rules → evidence-linked log → exception queue → local delivery" is complete. At handoff there was no LLM / Bedrock agent, FHIR service, AWS delivery or automatic amendment monitoring; these are now provided by the engineering pipeline. The current tests are author-designed technical tests, not an independent clinical-accuracy evaluation.
 
-I5的下一步已授权为：Agent在指定患者的FHIR记录中只读检索、整理肝肾相关证据并交给人工判断；自动结果仍为`unknown`且需要人工复核。目前I5代码只返回人工待审原因，尚未实现该证据检索。
+The authorized next step for I5: the agent searches the specified patient's FHIR record read-only and organizes liver- and kidney-related evidence for a human to judge; the automated result stays `unknown` and needs human review.

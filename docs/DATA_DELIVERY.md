@@ -1,59 +1,61 @@
-# Ming数据交付与工程对接清单
+# Ming's data delivery and engineering integration checklist
 
-整理日期：2026-10-09。所有路径相对仓库根目录。本文记录盘点时状态；本次轻量Git交付范围见[MING_SUBMISSION.md](MING_SUBMISSION.md)，是否已上传以远程分支为准。未上传S3。
+> Translated from Ming's Chinese original on 2026-10-11. This is the inventory as of 2026-10-09, before integration. Several items have since been resolved by engineering (SAD adapter around this evaluator, Specimen / Encounter / QuestionnaireResponse loading, fail-first aggregation for SAD, S3 bucket, I5 evidence retrieval); see the [root README](../README.md) and `CLAUDE.md`.
 
-## 交付原则
+Compiled 2026-10-09. All paths are relative to the repository root. This records the state at inventory time; the scope of this lightweight Git delivery is in [MING_SUBMISSION.md](MING_SUBMISSION.md), and the remote branch is authoritative for what was uploaded. Nothing was uploaded to S3.
 
-主试验为T6 / NCT07347678 / SAD，次试验为T2 / NCT07610278。不得将本地T6误认作工程任务T6或默认占位试验B。试验原文与当前T6规则一致性已由用户确认；空腹≥6小时是随后确认的demo policy，尚未进入执行器；method要求仍待明确。
+## Delivery principles
 
-GitHub保存代码、公开试验源、轻量合成筛查病例、配置、审核记录与独立标签。完整原始Synthea病历作为单独数据附件；不能与筛查病例直接混放。AWS目前不是输入文件交付的前提。仓库目录接通不代表规则语义已经适配。
+The primary trial is T6 / NCT07347678 / SAD; the secondary trial is T2 / NCT07610278. The local T6 must not be confused with engineering task T6 or with the default placeholder trial B. The user confirmed that the trial text and the current T6 rules agree; fasting ≥6 hours was confirmed afterwards as a demo policy and is not in the evaluator yet; the method requirement is still open.
 
-## 现有材料与目的地
+GitHub holds code, public trial sources, lightweight synthetic screening cases, configuration, review records and independent labels. The complete raw Synthea charts are a separate data attachment and must not be mixed with the screening cases. AWS is not a prerequisite for delivering input files. Connecting repository directories does not mean the rule semantics have been adapted.
 
-| 材料 | 当前路径 | 交付/运行目的地 | 状态与处理 |
+## Existing materials and destinations
+
+| Material | Current path | Delivery / run destination | Status and handling |
 |---|---|---|---|
-| 主/次试验身份 | `demo_scope.json` | GitHub原路径；工程注册到`src/config.py`的TRIALS，或显式CLI指定NCT | T6需注册为明确SAD范围，不擅自映射B |
-| T6官方完整源记录 | `t6_sad_demo/source/NCT07347678.json` | GitHub保留原路径 | 可直接交付；不要伪造下载时间 |
-| 工程规范化试验快照 | 现有完整JSON不是该格式 | `data/snapshots/NCT07347678/YYYY-MM-DD.txt` | 用`src/tools/ctgov.py`生成；含年龄/性别头及标准正文。保留原JSON，不把它改后缀冒充快照；新抓取需与已审核版本对比 |
-| T6已冻结规则和哈希 | `t6_sad_demo/rules/` | GitHub原路径；适配后另存`data/predicates/trial_T6.json` | 原文件可交付，但不能直接作为根run.py输入；新版本纳入6小时政策，不能覆盖已冻结1.0.0 |
-| 8份筛查FHIR病例 | `t6_sad_demo/data/cases/SAD01..08.json` | GitHub原路径；适配验证后发布至`data/patients/t6_sad/`并传`--patients` | 数据为设计的合成筛查记录，非完整病史；当前可供本地T6执行器测试 |
-| 8份筛查上下文 | `t6_sad_demo/data/context/SAD01..08.json` | GitHub原路径；工程新增`data/contexts/t6_sad/`读取约定 | 工程当前没有这个入口，不能复制后声称已接入；须保留case_id、真实Patient.id、Encounter、筛查时间和问卷ID |
-| 病例manifest/生成配置 | `t6_sad_demo/data/case_manifest.json`、`synthea.properties`、`generation.log` | GitHub原路径 | 来源哈希、种子和版本一并交付；清单不等于临床标签 |
-| 完整原始Synthea病历 | `t6_sad_demo/data/raw/fhir/*.json`，8份约61.73 MB | 单独GitHub Release数据附件（如`synthea-t6-seed20261009.zip`）；解压还原原路径 | 建议交付方式，尚未创建/上传；本地Git已忽略。使用现有文件以保持精确哈希，不承诺重新生成字节一致 |
-| T6执行器和技术测试 | `t6_sad_demo/{engine,prepare,run,test_demo}.py` | GitHub原路径 | 可直接交付，作为回归基线；不要替换Daisy的src文件 |
-| 现有日志和网页报告 | `t6_sad_demo/outputs/` | GitHub原路径，作为演示样例 | 不是ground truth；标明仍有空腹/method实现缺口 |
-| I5检索约定、SAD02复核 | `t6_sad_demo/I5_EVIDENCE_REVIEW.md`、`SAD02_REVIEW.md`及README | GitHub原路径 | 可直接交付；I5检索仍待实现；SAD02原始状态为Ex-smoker，未改病例 |
-| T2参考数据 | `t2_backup/` | GitHub原路径 | 参考交付；暂不放入可执行谓词目录，旧source_locator依赖归档，未来适配时修订引用 |
-| 工程运行结果 | 根`run.py`生成的`out/` | 本地out；配置桶后日志上传`s3://<S3_BUCKET>/logs/<trial>/<date>/` | T6尚未接入；不要将现有T6日志冒充工程输出 |
-| 工程抓取快照 | `data/snapshots/...` | 配置桶后上传`s3://<S3_BUCKET>/snapshots/<NCT>/<文件名>` | 为已有工程的输出约定；桶名未在本次核验，不进行上传 |
+| Primary / secondary trial identity | `demo_scope.json` | GitHub, same path; engineering registers it in `TRIALS` in `src/config.py`, or the NCT is passed explicitly on the CLI | T6 must be registered as an explicit SAD scope, not mapped to B on our own |
+| Official full T6 source record | `t6_sad_demo/source/NCT07347678.json` | GitHub, same path | Deliverable directly; do not fake a download time |
+| Engineering normalized trial snapshot | The existing full JSON is not in that format | `data/snapshots/NCT07347678/YYYY-MM-DD.txt` | Generate with `src/tools/ctgov.py`; contains the age/sex header and the criteria text. Keep the original JSON; do not rename it to pose as a snapshot; compare new fetches with the reviewed version |
+| Frozen T6 rules and hashes | `t6_sad_demo/rules/` | GitHub, same path; after adaptation store separately as `data/predicates/trial_T6.json` | The original files are deliverable but cannot be used directly as root run.py input; a new version carries the 6-hour policy and must not overwrite the frozen 1.0.0 |
+| 8 screening FHIR cases | `t6_sad_demo/data/cases/SAD01..08.json` | GitHub, same path; after adaptation and validation publish to `data/patients/t6_sad/` and pass `--patients` | Designed synthetic screening records, not full histories; usable now for testing the local T6 evaluator |
+| 8 screening contexts | `t6_sad_demo/data/context/SAD01..08.json` | GitHub, same path; engineering adds a `data/contexts/t6_sad/` reading convention | Engineering has no such entry point yet; copying them does not mean they are connected; case_id, real Patient.id, Encounter, screening time and questionnaire ID must be kept |
+| Case manifest / generation configuration | `t6_sad_demo/data/case_manifest.json`, `synthea.properties`, `generation.log` | GitHub, same path | Source hashes, seed and version delivered together; the manifest is not a clinical label |
+| Complete raw Synthea charts | `t6_sad_demo/data/raw/fhir/*.json`, 8 files, about 61.73 MB | Separate GitHub Release data attachment (e.g. `synthea-t6-seed20261009.zip`), unpacked to the original path | Recommended delivery route, not yet created / uploaded; git-ignored locally. Use the existing files to keep exact hashes; byte-identical regeneration is not promised |
+| T6 evaluator and technical tests | `t6_sad_demo/{engine,prepare,run,test_demo}.py` | GitHub, same path | Deliverable directly as the regression baseline; do not replace Daisy's src files |
+| Existing logs and web report | `t6_sad_demo/outputs/` | GitHub, same path, as demo samples | Not ground truth; note the open fasting / method implementation gaps |
+| I5 retrieval agreement, SAD02 review | `t6_sad_demo/I5_EVIDENCE_REVIEW.md`, `SAD02_REVIEW.md` and README | GitHub, same path | Deliverable directly; I5 retrieval still to implement; SAD02's original status is Ex-smoker and the case was not changed |
+| T2 reference data | `t2_backup/` | GitHub, same path | Reference delivery; not yet placed in the executable predicates directory; the old source_locator depends on the archive and will be revised when adapted |
+| Engineering run results | `out/` produced by the root `run.py` | Local out; once a bucket is configured, logs upload to `s3://<S3_BUCKET>/logs/<trial>/<date>/` | T6 not yet connected; existing T6 logs must not be passed off as engineering output |
+| Engineering fetched snapshots | `data/snapshots/...` | Once a bucket is configured, upload to `s3://<S3_BUCKET>/snapshots/<NCT>/<file name>` | Existing engineering output convention; the bucket name was not verified in this round, so nothing is uploaded |
 
-完整原始病历需分发给复核者或要执行`test_originals_unchanged`的人员；只用现有筛查病例运行`t6_sad_demo/run.py`不需要raw。不得把同一Patient的原始Bundle和筛查Bundle放进同一个工程患者目录：当前FhirStore按Patient.id赋值，后载入文件可能覆盖前者，并不会自动合并。
+The complete raw charts are needed by reviewers or anyone running `test_originals_unchanged`; running `t6_sad_demo/run.py` on the existing screening cases does not need raw. The original bundle and the screening bundle of the same Patient must not be placed in the same engineering patient directory: the current FhirStore indexes by Patient.id, so a later file may overwrite an earlier one instead of merging.
 
-## 还需要准备的材料
+## Materials still to prepare
 
-- **字段/编码映射**：先形成指标、资源、字段、单位、时间锚点、方法要求的审核记录；经确认的等价编码表放`data/mappings/local_code_map.json`，工程已有读取入口。不能把样例等价表直接当作经过临床确认的映射。
-- **人工参考答案**：拟放`data/ground_truth/trial_T6.csv`，现有工程基础字段为`patient_id,criterion_id,expected`。先完成88项独立标注，并保留证据、理由、审核人。unknown、人工项、患者四态和子谓词拆分后的ID对应需要先统一契约；现有示例标签不能代替临床标签。
-- **改版演示包**：准备明确标为模拟修订的`data/snapshots/NCT07347678/amendment_v2.txt`、`data/predicates/trial_T6_v2.json`、`data/ground_truth/trial_T6_amendment_flips.txt`。真实原文不修改；翻转患者由独立核查确定。
-- **失败注入病例映射**：用实际Patient.id而非SAD02等case_id登记`src/config.py`的FAILURE_TARGETS；另建吸烟冲突场景。LDL边界、缺失与冲突病例目的要分开。
-- **I5证据包/人工审核记录**：建议未来分别放`out/i5_evidence/`及`data/reviews/t6_sad/`；这是待实现目录，不是现有工具已支持的入口。审核结论不覆盖自动日志。
+- **Field / code mapping**: first produce a review record of labs, resources, fields, units, time anchors and method requirements; the confirmed equivalent-code table goes to `data/mappings/local_code_map.json`, which engineering already reads. The sample equivalence table must not be treated as a clinically confirmed mapping.
+- **Human reference answers**: planned at `data/ground_truth/trial_T6.csv`; the existing engineering fields are `patient_id,criterion_id,expected`. First complete the 88 independent labels with evidence, reasons and reviewer. The contract for unknown, manual items, the four patient states and IDs after sub-predicate splitting needs agreeing first; the existing sample labels cannot replace clinical labels.
+- **Amendment demo package**: prepare, clearly marked as a simulated amendment, `data/snapshots/NCT07347678/amendment_v2.txt`, `data/predicates/trial_T6_v2.json` and `data/ground_truth/trial_T6_amendment_flips.txt`. The real text is not modified; flipping patients are determined by independent checking.
+- **Failure-injection case mapping**: register real Patient.id values (not case IDs such as SAD02) in `FAILURE_TARGETS` in `src/config.py`; build a separate smoking-conflict scenario. Keep LDL-boundary, missing-data and conflict cases apart in purpose.
+- **I5 evidence pack / human review records**: suggested future locations `out/i5_evidence/` and `data/reviews/t6_sad/`; these are directories to implement, not entry points existing tools support. Review conclusions never overwrite the automated log.
 
-## 必须先解决的工程对接问题
+## Engineering integration issues to resolve first
 
-1. 当前冻结格式是`rules[].predicate`；工程读取`predicates[]`及`operator/value/codes/resource`。年龄/BMI区间、E1 OR与逐实验室ULN、吸烟定量和访谈窗口不能靠改键名保真转换。
-2. `src/adapters/fhir_store.py`当前不载入Specimen、Encounter、QuestionnaireResponse、MedicationStatement、DiagnosticReport、Provenance；Observation返回字段不含ULN、method、specimen及encounter引用。需补充读取/关联/证据返回，避免丢失T6判定前提。
-3. T6要求明确筛查就诊、空腹≥6小时政策和日历月窗口；工程只有window_days及最新记录等通用行为，必须逐项核对。不能把3个月随意转换为90天，或在冲突结果中静默选最新。
-4. 聚合语义尚未统一：T6明确失败优先，工程配置`PENDING_BEFORE_INCLUSION_FAIL=True`。I5应保留人工审核及证据，不因不阻塞计算就显示为完整资格成立。
-5. ground truth与评估分母尚未统一。现有工程敏感度把pending计入保留的阳性；Ming项目说明采用更严格的成功阳性定义。报告前应统一指标，不直接比较两个百分比。
+1. The current frozen format is `rules[].predicate`; engineering reads `predicates[]` with `operator/value/codes/resource`. Age/BMI ranges, E1 OR with per-lab ULN, quantified smoking and interview windows cannot be converted faithfully by renaming keys.
+2. `src/adapters/fhir_store.py` does not load Specimen, Encounter, QuestionnaireResponse, MedicationStatement, DiagnosticReport or Provenance; Observation results do not include ULN, method, specimen or encounter references. Reading / linking / evidence return must be added so T6 decision prerequisites are not lost.
+3. T6 requires an explicit screening encounter, the ≥6 h fasting policy and calendar-month windows; engineering has only window_days and generic most-recent behaviour, which must be checked item by item. 3 months must not be turned casually into 90 days, and the latest result must not be picked silently when results conflict.
+4. Aggregation semantics are not unified: T6 is explicitly fail-first, while engineering configures `PENDING_BEFORE_INCLUSION_FAIL=True`. I5 must keep human review and evidence, and must not display complete eligibility just because it does not block the computation.
+5. Ground truth and evaluation denominators are not unified. Engineering's sensitivity counts pending as a retained positive; Ming's project uses a stricter definition of a successful positive. Unify the metrics before reporting; do not compare the two percentages directly.
 
-## 下一步顺序
+## Next steps, in order
 
-1. 将现有轻量材料作为GitHub独立分支的待审核交付，另行提交/推送；保留当前历史。
-2. 与Daisy核对上述数据契约，再实现T6适配；优先保留病例和证据结构，不通过删掉条件使数据“能跑”。
-3. 应用6小时新版本政策、确定method范围，完成8例回归及I5证据场景测试。
-4. Ming完成独立标签后接评估；再接模拟修订。T2后续进行。
+1. Commit / push the existing lightweight materials as a separate GitHub branch for review; keep the current history.
+2. Check the above data contract with Daisy, then implement the T6 adaptation; keep the case and evidence structure, and do not make the data "runnable" by deleting conditions.
+3. Apply the new 6-hour version policy, settle the method scope, complete the 8-case regression and I5 evidence scenario tests.
+4. Connect the evaluation after Ming's independent labels; then the simulated amendment. T2 comes later.
 
-## 不交付到GitHub的内容
+## Not delivered to GitHub
 
-本地`tools/`依赖、旧`archive/`、`.env`和任何凭据、虚拟环境、缓存。完整raw通过单独数据附件交付，不混入常规提交。无需手工将输入上传Bedrock：模型由程序调用，输入仍由FHIR工具读取。
+Local `tools/` dependencies, the old `archive/`, `.env` and any credentials, virtual environments and caches. The complete raw data is delivered as a separate data attachment, not mixed into regular commits. Inputs do not need to be uploaded to Bedrock by hand: the program calls the model, and inputs are still read through the FHIR tools.
 
-文件级盘点见[data_inventory.json](data_inventory.json)：列出当前活动材料的路径、字节数与SHA-256；raw仅列清单，不复制或上传。它是交付清单，不替代冻结规则和病例manifest。
+The file-level inventory is in [data_inventory.json](data_inventory.json): paths, byte sizes and SHA-256 of the active materials; raw is only listed, not copied or uploaded. It is a delivery checklist and does not replace the frozen rules and case manifest.
