@@ -6,7 +6,7 @@ A clinical research coordinator (CRC) spends hours every week checking upcoming 
 
 This system takes over that work. It reads a trial's criteria from ClinicalTrials.gov and patient records as FHIR R4, and writes the log the CRC would write: **likely eligible / pending / excluded / needs review**, with the record, value and date behind every verdict. Deterministic rules decide everything a rule can decide. An agent on Amazon Bedrock handles what rules cannot read: results filed under another code, patients' own words about smoking and drug history, conflicting results, and evidence for criteria that need an investigator's judgement. When the criteria change, it classifies each change and re-screens. No patient is ever contacted. **Synthetic data only.**
 
-**See a full run without installing anything:** the reviewer page [`docs/demo/index.html`](docs/demo/index.html) shows the input, what the agent did, the coordinator's log with every verdict's evidence and trace, the amendment re-screen and the evaluation. GitHub displays HTML as source; download the file and open it in a browser, or use the hosted copy linked in the submission.
+**See a full run without installing anything:** **[open the reviewer page](https://claude.ai/artifact/HDMQgv8m1ttxJQ9MtckViX)**. It shows the input, what the agent did, the coordinator's log with every verdict's evidence and trace, the amendment re-screen and the evaluation. The same page is in the repository as [`docs/demo/index.html`](docs/demo/index.html) (GitHub displays HTML as source; download it and open it in a browser).
 
 ## Trial and data
 
