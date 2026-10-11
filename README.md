@@ -119,7 +119,7 @@ Agent calls have SDK turn limits and cancellation timers (60 seconds for structu
 
 Structured facts use JSON responses with local Pydantic validation and at most one format repair within a shared 60-second deadline; a second malformed output stays unknown instead of entering the SDK's automatic tool-schema repair loop. Explicit smoking ranges and approximate quantities are detected before model calls. The source remains unchanged, including EXT02's approximate quantity and EXT11's range.
 
-Independent clinical review is pending. `python scripts/prepare_independent_review.py` creates blank review sheets and source records. See [delivery status](docs/DELIVERY_STATUS.md), [video outline](docs/DEMO_SCRIPT.md), and [writeup draft](docs/WRITEUP_DRAFT.md).
+The required ground-truth cohort is **8 complete cases (SAD01-SAD08)**, replacing the previous 20-case minimum. The user-designated reference is `data/ground_truth/sad_confirmed_labels_v1.csv`; see [reference scope and scoring](data/ground_truth/README.md). Run `python -m eval.sad_reference --log out/prescreen_log_SAD_2026-10-09.csv` to check all eight cases, including unknowns and overall conclusions. The extended cases remain supplementary regression tests. The CSV does not record reviewer identity or date. `python scripts/prepare_independent_review.py` optionally creates blank review sheets and source records for these eight cases. See [delivery status](docs/DELIVERY_STATUS.md), [video outline](docs/DEMO_SCRIPT.md), and [writeup draft](docs/WRITEUP_DRAFT.md).
 
 ## Individual tools
 
