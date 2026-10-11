@@ -136,7 +136,25 @@ def diff_items(old: list[Item], new: list[Item]) -> list[Change]:
 
 
 def _normalised(text: str | None) -> str:
-    return re.sub(r"[^a-z0-9]", "", (text or "").lower())
+    # Preserve operators, decimal points, signs, units and word boundaries.
+    text = (text or '').lower().replace('≥', '>=').replace('≤', '<=').replace('−', '-')
+    text = re.sub(r'\\(?=[<>])', '', text)
+    text = re.sub(r'\s*([<>]=?|=)\s*', r'\1', text)
+    return ' '.join(text.split()).rstrip('.')
+
+
+def _numeric_signature(text):
+    # Digits inside names (HbA1c, PCSK9) are not numeric thresholds.
+    text = _normalised(text)
+    number = r'[+-]?\d+(?:\.\d+)?'
+    # Recognise explicit comparator wording without deciding broader text equivalence.
+    text = re.sub(rf'(?<!\w)({number})(\s*%?)\s+or\s+(higher|greater|more|lower|less)\b',
+                  lambda m: ('>=' if m[3] in ('higher','greater','more') else '<=') + m[1] + m[2], text)
+    for phrase, op in [('greater than or equal to','>='), ('less than or equal to','<='),
+                       ('no less than','>='), ('no more than','<='), ('at least','>='),
+                       ('at most','<='), ('greater than','>'), ('more than','>'), ('less than','<')]:
+        text = re.sub(rf'\b{phrase}\s+(?={number})', op, text)
+    return re.findall(r'(?<![\w.])[+-]?\d+(?:\.\d+)?(?![\w.])|[<>]=?|=', text)
 
 
 def make_model():
@@ -144,21 +162,24 @@ def make_model():
     return bedrock_model()
 
 
-def classify(change: Change, model=None) -> Change:
+def classify(change: Change, model=None, *, use_agent=True) -> Change:
     if change.kind == "modified" and _normalised(change.old) == _normalised(change.new):
         change.label, change.reason = "wording", "identical apart from case, spacing or punctuation"
         trace.add(change.trace, "rule:normalize", change.reason, "wording")
         return change
+    if change.kind == 'modified' and _numeric_signature(change.old) != _numeric_signature(change.new):
+        change.label, change.reason = 'substantive', 'numeric value, sign or comparison operator changed; verify amended predicates'
+        trace.add(change.trace, 'rule:numeric_change', change.reason, change.label)
+        return change
+    if not use_agent:
+        change.label, change.reason = 'ambiguous', 'model disabled; semantic wording change requires CRC confirmation'
+        trace.add(change.trace, 'rule:model_disabled', change.reason, change.label)
+        return change
     try:
-        from strands import Agent
-
-        from src.agent.agent import retry_strategy
-
-        agent = Agent(model=model or make_model(), system_prompt=CLASSIFY_PROMPT, structured_output_model=Classification,
-                      callback_handler=None, retry_strategy=retry_strategy())
+        from src.agent.llm import structured_call
         prompt = (f"Section: {change.section}\nChange type: {change.kind}\n"
                   f"Before: {change.old or '(none)'}\nAfter: {change.new or '(none)'}")
-        out = agent(prompt).structured_output
+        out = structured_call(CLASSIFY_PROMPT, prompt, Classification, model=model or make_model())
         change.label, change.reason = LABEL_FOR[out.same_patients], " ".join(out.reason.split())
         trace.add(change.trace, "classify_change", change.reason, change.label)
     except Exception as e:  # noqa: BLE001 - never re-screen on a guess
@@ -168,11 +189,11 @@ def classify(change: Change, model=None) -> Change:
     return change
 
 
-def check(old_text: str, new_text: str, old_source: str, new_source: str, model=None) -> AmendmentCheck:
+def check(old_text: str, new_text: str, old_source: str, new_source: str, model=None, *, use_agent=True) -> AmendmentCheck:
     result = AmendmentCheck(old_source, new_source, sha256(old_text), sha256(new_text))
     if not result.changed:
         return result
-    result.changes = [classify(c, model) for c in diff_items(split_items(old_text), split_items(new_text))]
+    result.changes = [classify(c, model, use_agent=use_agent) for c in diff_items(split_items(old_text), split_items(new_text))]
     return result
 
 

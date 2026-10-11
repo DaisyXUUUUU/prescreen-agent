@@ -46,18 +46,34 @@ def env(monkeypatch):
 
 def smoking(**kw):
     base = dict(currently_smokes="yes", smokes_every_day="yes", cigarettes_on_a_smoking_day=10,
-                smoking_days_per_week=None, quotes=["around 10 cigarettes, every day"], explanation="x")
+                smoking_days_per_week=None, quotes=["10 cigarettes, every day"], explanation="x",
+                uncertain=False, daily_range=None, weekly_range=None)
     return interpret.SmokingFacts(**{**base, **kw})
 
 
 def exposure(substance, quote, **kw):
-    base = dict(in_class="no", prescription="yes", last_use_date=None, ongoing=False, why="w")
+    base = dict(in_class="no", prescription="yes", last_use_date=None, ongoing=False, why="w", uncertain=False)
     return interpret.Exposure(substance=substance, quote=quote, **{**base, **kw})
 
 
 # ---------- free text: smoking ----------
 
+def exact_smoking_source(env):
+    # Local test input for exact facts; the frozen EXT02 source stays approximate.
+    qr = next(e['resource'] for e in env.cases['EXT02'].bundle['entry']
+              if e['resource']['resourceType'] == 'QuestionnaireResponse')
+    next(i for i in qr['item'] if i['linkId'] == 'smoking_free_text')['answer'] = [
+        {'valueString': 'Smokes 10 cigarettes, every day for the past five years.'}]
+
+
+@pytest.mark.parametrize('case_id', ['EXT01','EXT02','EXT11'])
+def test_source_uncertainty_abstains_before_model(env, monkeypatch, case_id):
+    monkeypatch.setattr(llm, 'structured_call', lambda *a, **kw: pytest.fail('source uncertainty needs no model'))
+    v = env.run(case_id, 'E3')
+    assert v.status == 'unknown' and v.trace[-1]['tool'] == 'rule:uncertain_fact'
+
 def test_daily_smoking_over_threshold_is_met_and_interpreted(env):
+    exact_smoking_source(env)
     env.answer(smoking())
     v = env.run("EXT02", "E3")
     assert v.status == "met" and v.interpreted and "10/day" in v.note
@@ -71,6 +87,7 @@ def test_intermittent_smoking_where_definitions_disagree_stays_unknown(env):
 
 
 def test_fabricated_quote_is_not_used(env):
+    exact_smoking_source(env)
     env.answer(smoking(quotes=["smokes two packs a day"]))  # not in EXT02's text
     v = env.run("EXT02", "E3")
     assert v.status == "unknown" and "no supporting quote" in v.note
@@ -112,6 +129,7 @@ def test_negative_with_supplements_is_not_met(env):
 
 
 def test_model_failure_keeps_rule_result(env, monkeypatch):
+    exact_smoking_source(env)
     def boom(*a, **k):
         raise RuntimeError("bedrock down")
     monkeypatch.setattr(llm, "structured_call", boom)
@@ -127,17 +145,43 @@ def _screen_one(env, case_id, patch):
     return aggregate(case_id, sa.predicates(env.spec), verdicts, failed_first=True)
 
 
-def test_firm_exclusion_from_free_text_excludes(env):
+def test_exclusion_from_free_text_requires_review(env):
+    exact_smoking_source(env)
     env.answer(smoking())
     r = _screen_one(env, "EXT02", lambda v: env.run("EXT02", "E3"))
-    assert r.category == "excluded" and r.decisive == ["E3"] and "(from free text)" in r.reasons[0]
+    assert r.category == "needs_review" and r.decisive == ["E3"]
 
 
-def test_terminology_confirmed_drug_excludes(env):
+def test_terminology_does_not_confirm_exposure_date_or_negation(env):
     env.answer(interpret.ExposureFacts(exposures=[exposure("Leqvio", "injection called Leqvio", in_class="no",
                                                             last_use_date="2026-03-12")], explicitly_none=False, explanation="x"))
     r = _screen_one(env, "EXT04", lambda v: env.run("EXT04", "E4"))
-    assert r.category == "excluded" and r.decisive == ["E4"]
+    assert r.category == "needs_review" and r.decisive == ["E4"]
+
+
+def test_ext11_source_range_overrides_model_upper_bound(env):
+    env.answer(smoking(cigarettes_on_a_smoking_day=2, cigarettes_per_week=14,
+                       quotes=['one or two cigarettes a day']))
+    v = env.run('EXT11', 'E3')
+    assert v.status == 'unknown' and 'range' in v.note
+
+
+@pytest.mark.parametrize('values', [{'uncertain': True}, {'daily_range': {'lower': 1, 'upper': 2}},
+                                  {'cigarettes_per_week': float('inf')}, {'smoking_days_per_week': 8}])
+def test_uncertain_or_invalid_extracted_facts_abstain(env, values):
+    exact_smoking_source(env)
+    env.answer(smoking(**values))
+    assert env.run('EXT02', 'E3').status == 'unknown'
+
+
+def test_real_quote_with_fabricated_amount_cannot_exclude(env):
+    # Correct quote, incorrect structured facts: quote matching cannot prove entailment.
+    text = 'I do not smoke and have never smoked.'
+    case = env.cases['EXT02']
+    qr = next(e['resource'] for e in case.bundle['entry'] if e['resource']['resourceType'] == 'QuestionnaireResponse')
+    next(i for i in qr['item'] if i['linkId'] == 'smoking_free_text')['answer'] = [{'valueString':text}]
+    env.answer(smoking(quotes=[text], cigarettes_on_a_smoking_day=20))
+    assert _screen_one(env, 'EXT02', lambda v:env.run('EXT02', 'E3')).category == 'needs_review'
 
 
 def test_drug_class_from_model_only_goes_to_review(env):
@@ -213,7 +257,7 @@ def test_flag_concern_needs_a_finding_not_just_normal_labs(env, monkeypatch):
         def __init__(self, tools, **kw):
             captured["tools"] = {t.tool_spec["name"]: t for t in tools}
 
-        def __call__(self, prompt):
+        def __call__(self, prompt, **kwargs):
             t = captured["tools"]
             labs = t["get_labs"](keywords=["ALT", "AST"])
             captured["normal"] = t["flag_concern"](resource_ids=[l["id"] for l in labs],

@@ -146,7 +146,7 @@ def test_injection_is_announced_in_log(monkeypatch, tmp_path):
     monkeypatch.setattr(config, "FAILURES", {k: False for k in config.FAILURES})
     assert run_cli(monkeypatch, tmp_path, "--fail", "drop_codes") == 0
     md = (tmp_path / "prescreen_log_SAMPLE_2026-10-09.md").read_text()
-    assert "Failure injection active" in md and "recoded 18262-6 -> 13457-7" in md
+    assert "Failure injection active" in md and "recoded 18262-6 -> 2089-1" in md
 
 
 def test_no_switch_means_no_injection_banner(monkeypatch, tmp_path):

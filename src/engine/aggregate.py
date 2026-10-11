@@ -62,17 +62,17 @@ def aggregate(patient_id: str, predicates: list[dict], verdicts: list[Verdict], 
 
     failing = [(p, v) for p, v in computable
                if (p["type"] == "exclusion" and v.status == "met") or (p["type"] == "inclusion" and v.status == "not_met")]
-    # A failure read from free text excludes like any other when its basis is firm (verified quote, rule-applied
-    # threshold, terminology-confirmed class); one with a weak basis (review_reason set) goes to review.
-    suggested = [(p, v) for p, v in failing if v.interpreted and v.review_reason]
+    # Quote existence and a terminology match do not verify extracted amount/date/negation.
+    # No model-interpreted failure can directly exclude, even if it omitted review_reason.
+    suggested = [(p, v) for p, v in failing if v.interpreted]
     excl_met = [(p, v) for p, v in computable if p["type"] == "exclusion" and v.status == "met"
-                and not (v.interpreted and v.review_reason)]
+                and not v.interpreted]
     conflicts = [(p, v) for p, v in computable if v.conflict]
     flagged = [(p, v) for p, v in pairs if v.review_reason and not v.interpreted]  # agent evidence, e.g. I5
     blocking_unknown = [(p, v) for p, v in computable if v.status == "unknown" and v.blocking]
     soft_unknown = [(p, v) for p, v in computable if v.status == "unknown" and not v.blocking]
     incl = [(p, v) for p, v in computable if p["type"] == "inclusion"]
-    incl_failed = [(p, v) for p, v in incl if v.status == "not_met" and not (v.interpreted and v.review_reason)]
+    incl_failed = [(p, v) for p, v in incl if v.status == "not_met" and not v.interpreted]
 
     def pending() -> PatientResult:
         r.category = "pending"

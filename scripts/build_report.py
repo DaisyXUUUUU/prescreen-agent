@@ -63,11 +63,16 @@ def case_facts(case):
 
 
 def main():
-    global R
+    global R, DATE
     import argparse
     ap = argparse.ArgumentParser(description="Build the reviewer report from evaluation runs")
     ap.add_argument("--runs", type=Path, default=R, help="folder with the five run folders (default out/eval/SAD)")
-    R = ap.parse_args().runs
+    ap.add_argument('--date', default=DATE)
+    args = ap.parse_args()
+    R, DATE = args.runs, args.date
+    status_path = R/'execution_status.json'
+    if not status_path.exists() or not json.loads(status_path.read_text(encoding='utf-8')).get('complete'):
+        raise SystemExit('Refusing to publish: complete execution_status.json is required; failed/missing runs must be resolved.')
     spec = sa.load_spec()
     cases = sa.load_cases() + sa.load_cases(config.DATA_DIR / "extended_cases" / "cases")
     rules_only, *_ = sa.screen(cases, spec, use_agent=False)
@@ -76,7 +81,7 @@ def main():
 
     runs = {}
     for run in RUNS:
-        meta = json.load(open(R / run / f"run_SAD_{DATE}.json"))
+        meta = json.loads((R / run / f"run_SAD_{DATE}.json").read_text(encoding='utf-8'))
         rs = rows(run)
         runs[run] = {"meta": meta, "cat": {r["patient_id"]: r["patient_category"] for r in rs}}
     base = rows("baseline")
@@ -122,15 +127,15 @@ def main():
         criteria.append({"id": r["id"], "type": r["type"], "text": r["source_text"].replace("\\<", "<").replace("\\>", ">"),
                          "rule": ", ".join(f"{k} {v}" for k, v in p.items()), "by": handled.get(r["id"], "Rules")})
 
-    impact = json.load(open(R / "amendment_v2" / f"amendment_impact_SAD_{DATE}.json"))
-    metrics = json.load(open(R / f"eval_metrics_SAD_{DATE}.json"))
+    impact = json.loads((R / "amendment_v2" / f"amendment_impact_SAD_{DATE}.json").read_text(encoding='utf-8'))
+    metrics = json.loads((R / f"eval_metrics_SAD_{DATE}.json").read_text(encoding='utf-8'))
 
     # Agent activity in the baseline run, by kind of task
     kinds = Counter()
     for key, steps in tr.items():
         tools = {t["tool"] for t in steps}
         if "lookup_equivalent_codes" in tools or "get_predicate" in tools:
-            kinds["Recovered a missing result"] += 1
+            kinds["Investigated a missing result"] += 1
         if "interpret_free_text" in tools:
             kinds["Read free-text history"] += 1
         if "explain_conflict" in tools or "rule:conflict_materiality" in tools:
@@ -151,16 +156,20 @@ def main():
 
     data = {
         "trial": {"nct": "NCT07347678", "cohort": "SAD", "date": DATE, "model": config.BEDROCK_MODEL_ID or "us.amazon.nova-2-lite-v1:0",
-                  "criteria_status": runs["baseline"]["meta"]["criteria_status"]},
+                  "criteria_status": runs["baseline"]["meta"]["criteria_status"],
+                  "mode":runs['baseline']['meta']['execution_mode']},
         "criteria": criteria, "patients": patients,
         "runs": {run: {"counts": runs[run]["meta"]["counts"], "agent": runs[run]["meta"]["agent"],
                        "injections": [i["text"] for i in runs[run]["meta"]["injections"]]} for run in RUNS},
-        "impact": {"changes": [{k: c[k] for k in ("kind", "section", "old", "new", "label", "reason")} for c in impact["changes"]],
+        "impact": {"valid":impact.get('comparison_valid',False), "blocked":impact.get('blocked',''),
+                   "mode":impact.get('execution_mode'),
+                   "changes": [{k: c[k] for k in ("kind", "section", "old", "new", "label", "reason")} for c in impact["changes"]],
                    "flips": impact["flips"], "patients": impact["patients"]},
         "metrics": metrics, "agent_kinds": dict(kinds), "safety": safety, "showcase": showcase,
     }
     page = TEMPLATE.replace("/*DATA*/", json.dumps(data, ensure_ascii=False).replace("</", "<\\/"))
     (R / "report.html").write_text(page, encoding="utf-8")
+    (R / 'reviewer_data.json').write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding='utf-8')
     demo = ROOT / "docs" / "demo"
     demo.mkdir(parents=True, exist_ok=True)
     (demo / "index.html").write_text("<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\">"
@@ -298,6 +307,7 @@ a { color: var(--accent); }
     <h1>SAD Pre-Screening Run</h1>
     <p class="lede">An agent takes over a research coordinator's weekly pre-screening for <a href="https://clinicaltrials.gov/study/NCT07347678" target="_blank" rel="noopener">NCT07347678</a> (SAD cohort). Deterministic rules decide everything a rule can decide; the agent handles what rules cannot read: missing results, free-text history, conflicting results and evidence for the investigator. Synthetic data only; no patient is contacted.</p>
     <div class="chips" id="chips"></div>
+    <p class="muted" id="validation-note"></p>
   </header>
   <nav class="index" aria-label="Sections">
     <a href="#flow">Overview</a><a href="#input">Input</a><a href="#agent">Agent</a><a href="#output">Output</a><a href="#amendment">Amendment</a><a href="#scenarios">Failure scenarios</a><a href="#evaluation">Evaluation</a>
@@ -311,7 +321,7 @@ a { color: var(--accent); }
   <section id="input">
     <span class="eyebrow">1 · Input</span>
     <h2>Eligibility criteria</h2>
-    <p class="muted">Fetched from the ClinicalTrials.gov API, snapshotted with SHA-256, and compiled and reviewed into the rule pack <code>sad-1.0.0</code>. The last column says who settles each criterion.</p>
+    <p class="muted">Fetched from the ClinicalTrials.gov API, snapshotted with SHA-256, and manually compiled into the rule pack <code>sad-1.0.0</code>. The last column says who settles each criterion.</p>
     <div class="panel scroll"><table id="crit-table"><thead><tr><th>ID</th><th>Type</th><th>Criterion text (registry)</th><th>Compiled rule</th><th>Settled by</th></tr></thead><tbody></tbody></table></div>
     <h2>Patients</h2>
     <p class="muted" id="roster-note"></p>
@@ -324,7 +334,7 @@ a { color: var(--accent); }
     <p class="muted">Strands Agents on Amazon Bedrock (Amazon Nova 2 Lite). The model reads, searches and explains; code compares numbers, applies windows and makes the call. Every step is traced.</p>
     <div class="split">
       <div class="panel"><h3>The model does</h3><ul>
-        <li>Chooses equivalent codes and re-queries when a result is missing</li>
+        <li>Chooses codes from the criterion allowlist and re-queries when a result is missing</li>
         <li>Reads patients' own words (smoking, drug history) into facts, each with a quote</li>
         <li>Decides which liver and kidney records to look up for the investigator</li>
         <li>Explains conflicting results and what to check</li>
@@ -332,7 +342,7 @@ a { color: var(--accent); }
       <div class="panel"><h3>Code does</h3><ul>
         <li>Every numeric comparison and time window, with the rule pack's thresholds</li>
         <li>Checks each quote really occurs in the source; drops it otherwise</li>
-        <li>Drug classes from the NLM RxNav terminology, never the model's memory</li>
+        <li>Uses NLM RxNav classes where available; model-only class suggestions require review</li>
         <li>Scans the text for drugs the model failed to report</li>
         <li>Decides whether a conflict changes the outcome; flags abnormal labs from reference ranges</li></ul></div>
     </div>
@@ -359,14 +369,14 @@ a { color: var(--accent); }
   <section id="amendment">
     <span class="eyebrow">Amendment monitoring</span>
     <h2>When the criteria change</h2>
-    <p class="muted">The fetched criteria are compared with the last snapshot. Each changed item is classified by the model; only substantive changes trigger a re-screen with the amended rules (a simulated amendment here: SAD LDL-C threshold 70 → 100 mg/dL, HbA1c line reworded).</p>
+    <p class="muted">Numeric/operator changes are classified by code; other semantic changes may require the model or CRC. Both versions use the same execution mode. Unchanged criteria reuse the same evidence interpretation. Agent errors block attribution. The example amends SAD LDL-C from 70 to 100 mg/dL.</p>
     <div class="panel scroll"><table id="changes"><thead><tr><th>Before</th><th>After</th><th>Classification</th><th>Model's reason</th></tr></thead><tbody></tbody></table></div>
     <p id="flips"></p>
   </section>
 
   <section id="scenarios">
     <span class="eyebrow">Failure paths</span>
-    <h2>Five scenarios, each reproducible with a switch</h2>
+    <h2>Baseline and four mandatory failure scenarios</h2>
     <div class="panel scroll"><table id="runs"><thead><tr><th>Scenario</th><th>What was injected</th><th class="num">Likely eligible</th><th class="num">Pending</th><th class="num">Excluded</th><th class="num">Needs review</th><th class="num">Agent tasks</th></tr></thead><tbody></tbody></table></div>
   </section>
 
@@ -386,6 +396,7 @@ a { color: var(--accent); }
 <script id="data" type="application/json">/*DATA*/</script>
 <script>
 const D = JSON.parse(document.getElementById('data').textContent);
+document.getElementById('validation-note').textContent = `Execution mode: ${D.trial.mode}. Design-intent labels cover ${D.metrics.criterion.labelled_criteria} of ${D.metrics.criterion.computable_verdicts} computable verdicts and ${D.metrics.patient.labelled_patients} patients. Independent clinical validation is pending; EXT11 and EXT43 require label/data review. Interpreted failures go to CRC review, never direct exclusion.`;
 const LABEL = {likely_eligible: 'Likely eligible', pending: 'Pending', excluded: 'Excluded', needs_review: 'Needs review'};
 const ORDER = ['likely_eligible', 'pending', 'excluded', 'needs_review'];
 const CRIT = ['AGE','I1','I2','I3','I4','I5','E1','E2','E3','E4','E5'];
@@ -421,9 +432,9 @@ const traceHTML = steps => steps.length ? steps.map(t =>
 const show = D.showcase;
 const card = (title, k, text, s) => `<article class="card panel"><span class="eyebrow">${title}</span><h3>${esc(s.case)} · ${s.criterion}</h3><p>${text}</p><div class="trace">${traceHTML(s.trace)}</div></article>`;
 document.getElementById('showcase').innerHTML = [
-  card('Missing result', 0, 'Under the <code>drop_codes</code> switch the LDL-C result is filed under the calculated-LDL code. The rule query finds nothing; the agent looks up equivalent codes, finds the record and hands its ID back to the evaluator, which decides.', show.recovery),
+  card('Missing result', 0, 'Under <code>drop_codes</code>, direct LDL is filed under generic code 2089-1 while retaining its method. Recovery is restricted to the criterion allowlist and the original patient/encounter; code checks the method and value. See the trace for this run\'s actual outcome.', show.recovery),
   card('Free text and drug knowledge', 0, '"Received a twice-yearly cholesterol injection called Leqvio". The model extracts the drug and date; RxNav resolves Leqvio to inclisiran, classed as RNA, Small Interfering; code checks the 12-month window.', show.free_text),
-  card('Fuzzy boundary', 0, '"4 or 5 cigarettes on a Friday or Saturday night". Over 2 a day on smoking days, under 10 a week: the protocol\'s two definitions disagree, so the criterion stays unknown for the coordinator.', show.boundary),
+  card('Fuzzy boundary', 0, '"4 or 5 cigarettes on a Friday or Saturday night" contains a range. The source guard keeps it unknown for the coordinator; it must not become a midpoint or upper-bound fact.', show.boundary),
   card('Conflicting results', 0, 'Two LDL-C results, 65 and 85 mg/dL, same time and specimen. Code re-runs the evaluator with each: the choice changes the outcome, so it goes to review with the model\'s explanation.', show.conflict),
   card('Evidence for the investigator (I5)', 0, 'Liver enzymes are normal, so the rules pass this patient. The agent finds creatinine 1.9, eGFR 38, a CKD stage 3 diagnosis and an ultrasound note, and sends the patient to review.', show.evidence),
 ].join('');
@@ -461,7 +472,7 @@ document.getElementById('f-agent').onchange = renderMatrix;
 renderSections(); renderMatrix(); select('EXT04');
 
 document.querySelector('#changes tbody').innerHTML = D.impact.changes.map(c => `<tr><td>${esc(c.old || '-')}</td><td>${esc(c.new || '-')}</td><td><span class="change-label ${c.label === 'substantive' ? 'bad' : 'ok'}">${c.label}</span></td><td>${esc(c.reason)}</td></tr>`).join('');
-document.getElementById('flips').innerHTML = `<strong>${D.impact.flips.length} patients change status</strong> after re-screening with the amended rule: <span class="mono">${D.impact.flips.join(', ')}</span>.`;
+document.getElementById('flips').textContent = D.impact.valid ? `${D.impact.flips.length} patients change status in ${D.impact.mode} mode: ${D.impact.flips.join(', ')}.` : `Comparison blocked: ${D.impact.blocked}`;
 
 const NAMES = {baseline: 'Normal run', ctgov_timeout: 'ClinicalTrials.gov times out', drop_codes: 'Result filed under another code', bad_units: 'Wrong unit / absurd value', amendment_v2: 'Criteria amended'};
 document.querySelector('#runs tbody').innerHTML = Object.entries(D.runs).map(([r, v]) => `<tr><td><strong>${NAMES[r]}</strong><br><code>${r}</code></td><td>${esc(v.injections.join('; ') || 'nothing')}</td>${ORDER.map(c => `<td class="num">${v.counts[c]}</td>`).join('')}<td class="num">${v.agent ? v.agent.attempted : '-'}</td></tr>`).join('');
@@ -477,7 +488,7 @@ const rowsM = [
   ['Trace coverage (model decisions with a recorded reason)', pct(M.trace.coverage), '100%', M.trace.coverage === 100],
   ['Recovery rate (planted wrong-code cases)', `${pct(M.recovery.rate)} (${M.recovery.recovered}/${M.recovery.planted})`, 'reported', null],
   ['Amendment recall (planted status flips detected)', pct(M.amendment.recall), '100%', M.amendment.recall === 100],
-  ['Failure paths reproducible with a switch', `${Object.values(M.failures).filter(Boolean).length} of ${Object.keys(M.failures).length}`, '5 of 5', null],
+  ['Required failure paths (note_conflict is optional)', `${['ctgov_timeout','drop_codes','bad_units','amendment_v2'].filter(k => M.failures[k]).length} of 4`, '4 of 4', null],
 ];
 document.querySelector('#metrics tbody').innerHTML = rowsM.map(([n, v, t, ok]) => `<tr><td>${n}</td><td class="mono ${ok === true ? 'ok' : ok === false ? 'bad' : ''}">${v}</td><td class="muted">${t}</td></tr>`).join('');
 </script>

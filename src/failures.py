@@ -4,7 +4,7 @@ Mutates the in-memory FHIR store only; files on disk are never touched. Every
 injection is described in one line that the log prints at the top, so an
 injected value is never mistaken for real data.
 
-  drop_codes  LDL observations of one patient recoded 18262-6 -> 13457-7 (an
+  drop_codes  LDL observations of one patient recoded 18262-6 -> 2089-1 (an
               equivalent code): rule query comes back empty, the agent recovers it.
   bad_units   most recent LDL of one patient rewritten in mmol/L (rule converts it)
               and of another made implausible (rule returns unknown).
@@ -19,7 +19,8 @@ from src.adapters.fhir_store import LOINC, FhirStore, _day, _when
 from src.engine.units import LIPID_MMOL_TO_MG
 
 LDL_CODE = "18262-6"
-LDL_ALT = {"system": LOINC, "code": "13457-7", "display": "Cholesterol in LDL [Mass/volume] in Serum or Plasma by calculation"}
+# Generic LDL preserves the recorded direct method; calculated LDL would contradict it.
+LDL_ALT = {"system": LOINC, "code": "2089-1", "display": "Cholesterol in LDL [Mass/volume] in Serum or Plasma"}
 
 
 def _ldl_observations(store: FhirStore, pid: str) -> list[dict]:

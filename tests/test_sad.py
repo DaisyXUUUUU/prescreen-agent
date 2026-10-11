@@ -77,12 +77,12 @@ def test_drop_codes_then_agent_tools_restore_the_verdict(sad):
                          evaluate_records=lambda recs: sa.evaluate_with_records(case, spec, "I2", recs))
     t = {x.tool_spec["name"]: x for x in ag.build_tools(rc)}
     t["lookup_equivalent_codes"]()
-    q = t["fhir_query_codes"](codes=["13457-7"])
+    q = t["fhir_query_codes"](codes=["2089-1"])
     out = t["evaluate_with_records"](resource_ids=[q["records"][0]["resource_id"]])
     assert out["status"] == "met"  # 70 mg/dL >= 70, decided by the SAD evaluator
     final = ag.finalize(v, rc, "")
-    assert final.status == "met" and "13457-7 -> 18262-6" in final.note
-    assert "equivalent code 13457-7" in final.recovery
+    assert final.status == "met" and "2089-1 -> 18262-6" in final.note
+    assert "equivalent code 2089-1" in final.recovery
 
 
 def test_bad_units_convert_and_implausible_guard(sad):
@@ -101,7 +101,7 @@ def test_sad_amendment_rescreen_reports_flips(sad, tmp_path, monkeypatch):
     spec, cases, _ = sad
     results, *_ = sa.screen(cases, spec, use_agent=False)
 
-    def fake_classify(change, model=None):
+    def fake_classify(change, model=None, **kwargs):
         change.label = "substantive" if "LDL" in (change.new or "") else "wording"
         change.reason = "fake"
         return change

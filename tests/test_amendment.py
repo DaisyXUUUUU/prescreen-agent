@@ -22,7 +22,7 @@ V2_TEXT = (FIX / "snapshots" / "NCT02178098_v2.txt").read_text()
 DATE = "2026-10-09"
 
 
-def fake_classify(change, model=None):
+def fake_classify(change, model=None, **kwargs):
     """Stand-in for the model: numbers changed -> substantive, otherwise wording."""
     nums = lambda t: re.findall(r"\d+", t or "")  # noqa: E731
     change.label = "substantive" if nums(change.old) != nums(change.new) else "wording"
@@ -65,8 +65,41 @@ def test_punctuation_only_is_wording_by_rule_without_model():
 
 
 def test_model_failure_is_ambiguous_never_substantive():
-    c = monitor.classify(monitor.Change("modified", "X", "LDL-C >= 100", "LDL-C >= 140"))  # no model in tests
+    c = monitor.classify(monitor.Change("modified", "X", "stable treatment", "adequate treatment"))  # no model in tests
     assert c.label == "ambiguous" and c.trace[0]["tool"] == "agent:error"
+
+
+@pytest.mark.parametrize('old,new', [
+    ('LDL >=70 mg/dL', 'LDL <=70 mg/dL'),
+    ('HbA1c >=6.5%', 'HbA1c >=65%'),
+    ('value >2', 'value >=2'),
+    ('value -2', 'value 2'),
+    ('age 18–65', 'age 18–60'),
+])
+def test_numeric_semantics_never_disappear(old, new):
+    c = monitor.classify(monitor.Change('modified', 'X', old, new))
+    assert c.label == 'substantive'
+    assert c.trace[0]['tool'] == 'rule:numeric_change'
+
+
+def test_equivalent_operator_glyph_is_only_formatting():
+    c = monitor.classify(monitor.Change('modified', 'X', 'LDL ≥ 70 mg/dL.', 'LDL >=70 mg/dL'))
+    assert c.label == 'wording'
+
+
+def test_comparator_words_are_not_false_numeric_changes():
+    c = monitor.classify(monitor.Change('modified', 'X', 'HbA1c >=6.5%',
+                                      'HbA1c of 6.5% or higher'), use_agent=False)
+    assert c.label == 'ambiguous'  # Broader wording still requires semantic review.
+    assert c.trace[-1]['tool'] == 'rule:model_disabled'
+    c = monitor.classify(monitor.Change('modified', 'X', 'HbA1c >=6.5%',
+                                      'HbA1c of 6.5% or lower'), use_agent=False)
+    assert c.label == 'substantive'
+
+
+def test_unit_change_cannot_be_erased_by_normalisation():
+    c = monitor.classify(monitor.Change('modified', 'X', 'LDL 70 mg/dL', 'LDL 70 mgdL'))
+    assert c.label == 'ambiguous'  # offline model: fail closed for a semantic text change
 
 
 def test_predicate_changes():
@@ -97,7 +130,7 @@ def setup(tmp_path, monkeypatch):
         config.enable_failure("amendment_v2")
         path = rescreen.run_amendment("SAMPLE", "NCT02178098", fetch, DATE, preds, results, tmp_path, use_agent=False,
                                       v1_snapshot=snap / "v1.txt", v2_snapshot=v2_text, v2_predicates=v2_preds)
-        return path.read_text() if path else None
+        return path.read_text(encoding='utf-8') if path else None
 
     return go, tmp_path
 
@@ -140,3 +173,18 @@ def test_unchanged_criteria_write_no_report(setup, tmp_path):
     p = tmp_path / "same.txt"
     p.write_text(V1_TEXT)
     assert go(v2_text=p) is None
+
+
+def test_agent_error_blocks_amendment_attribution(setup, monkeypatch):
+    go, out = setup
+    original = rescreen.screen
+    def failed_screen(*args, **kwargs):
+        results, a, b = original(*args, **kwargs)
+        results[0].verdicts[0].trace.append({'step': 99, 'tool': 'agent:error', 'result': 'timeout', 'decision': 'unknown'})
+        return results, a, b
+    monkeypatch.setattr(rescreen, 'screen', failed_screen)
+    go()
+    impact = json.loads((out/'amendment_impact_SAMPLE_2026-10-09.json').read_text(encoding='utf-8'))
+    assert impact['comparison_valid'] is False
+    assert impact['patients'] == impact['flips'] == []
+    assert 'agent errors' in impact['blocked']

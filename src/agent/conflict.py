@@ -59,8 +59,10 @@ def explain(case, spec: dict, v: Verdict, engine, model=None) -> Verdict:
         bundle = copy.deepcopy(case.bundle)
         drop = {c["id"] for c in cands if c["id"] != keep["id"]}
         bundle["entry"] = [e for e in bundle["entry"] if e["resource"].get("id") not in drop]
-        row = next(r for r in engine.evaluate(bundle, case.ctx, spec)["criteria"] if r["criterion_id"] == v.criterion_id)
-        outcomes[keep["id"]] = row["status"]
+        from src.engine.sad_adapter import SadCase, evaluate_case
+        verdict = next(r for r in evaluate_case(SadCase(case.case_id, case.ctx, bundle), spec, engine)[0]
+                       if r.criterion_id == v.criterion_id)
+        outcomes[keep["id"]] = verdict.status
     material = len(set(outcomes.values())) > 1
     summary = ", ".join(f"{_describe(c)['value']} -> {outcomes[c['id']]}" for c in cands)
     trace.add(v.trace, "rule:conflict_materiality",

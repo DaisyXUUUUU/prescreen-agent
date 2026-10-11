@@ -1,3 +1,4 @@
 # Preserve byte-exact evidence and frozen manifests across Windows/Linux clones.
 trials/nct07347678_sad/** -text whitespace=cr-at-eol
 trials/nct07610278/** -text whitespace=cr-at-eol
+data/snapshots/** text eol=lf
