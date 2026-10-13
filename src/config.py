@@ -20,9 +20,9 @@ CACHE_DIR = ROOT / "cache"
 
 AWS_PROFILE = os.getenv("AWS_PROFILE") or None
 # PRESCREEN_* names exist because hosts such as Vercel reserve the AWS_* variables for themselves.
-AWS_REGION = os.getenv("PRESCREEN_AWS_REGION") or os.getenv("AWS_REGION", "us-west-2")
+AWS_REGION = (os.getenv("PRESCREEN_AWS_REGION") or os.getenv("AWS_REGION", "us-west-2")).strip()
 S3_BUCKET = os.getenv("S3_BUCKET", "")
-BEDROCK_MODEL_ID = os.getenv("BEDROCK_MODEL_ID", "")
+BEDROCK_MODEL_ID = os.getenv("BEDROCK_MODEL_ID", "").strip()
 
 # Primary trial: NCT07347678, SAD cohort only.
 # NCT07610278 (hypertension + hypercholesterolemia) is kept as a reference rule set; no patients yet.

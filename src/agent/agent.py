@@ -237,9 +237,10 @@ def _session():
 
     import boto3
     if os.getenv("PRESCREEN_AWS_ACCESS_KEY_ID"):  # hosted deployments (Vercel reserves AWS_*)
-        return boto3.Session(aws_access_key_id=os.environ["PRESCREEN_AWS_ACCESS_KEY_ID"],
-                             aws_secret_access_key=os.environ["PRESCREEN_AWS_SECRET_ACCESS_KEY"],
-                             region_name=config.AWS_REGION)
+        # Values pasted into a hosting dashboard often carry a trailing newline.
+        return boto3.Session(aws_access_key_id=os.environ["PRESCREEN_AWS_ACCESS_KEY_ID"].strip(),
+                             aws_secret_access_key=os.environ["PRESCREEN_AWS_SECRET_ACCESS_KEY"].strip(),
+                             region_name=config.AWS_REGION.strip())
     return boto3.Session(profile_name=config.AWS_PROFILE, region_name=config.AWS_REGION)
 
 
@@ -265,7 +266,7 @@ def preflight():
                         messages=[{"role": "user", "content": [{"text": "ok"}]}])
         return model, None
     except Exception as e:  # noqa: BLE001
-        code = getattr(e, "response", {}).get("Error", {}).get("Code") if hasattr(e, "response") else None
+        code = (getattr(e, "response", None) or {}).get("Error", {}).get("Code")
         return None, f"{code or type(e).__name__}: {str(e)[:160]}"
 
 
