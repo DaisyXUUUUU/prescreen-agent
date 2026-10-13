@@ -458,7 +458,7 @@ async function startRun(){
 }
 async function poll(job){
   try {
-    const s = await (await fetch('api/jobs/' + job, {cache:'no-store'})).json();
+    const s = await (await fetch('/api/jobs/' + job, {cache:'no-store'})).json();
     for (const [id, st] of Object.entries(s.patients)) {
       const t = S.run.patients[id]; Object.assign(t, st);
       if (st.state==='done' && !t.done) { t.done = true; S.results[id] = {...st.result, elapsed: st.elapsed}; S.source[id] = 'live'; }
@@ -485,7 +485,7 @@ function liveRun(ids){
       t.state = 'running'; t.current = 'agent: ' + id + ' - working ...'; refresh();
       const timer = setInterval(() => { t.running_for = ((Date.now() - t0) / 1000).toFixed(1); refresh(); }, 500);
       try {
-        const res = await fetch('api/screen_one', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id})});
+        const res = await fetch('/api/screen_one', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id})});
         const out = await res.json(); if (!res.ok) throw new Error(out.reason || out.error || res.status);
         t.steps = agentStepsOf(id, out); t.result = out; t.state = 'done'; t.elapsed = out.elapsed ?? ((Date.now() - t0) / 1000).toFixed(1);
         S.results[id] = out; S.source[id] = 'live';
@@ -530,7 +530,7 @@ function setMode(live, reason){
 }
 async function health(tries = 0){
   try {
-    const h = await (await fetch('api/health', {cache:'no-store'})).json();
+    const h = await (await fetch('/api/health', {cache:'no-store'})).json();
     if (!h.checked && tries < 30) { $('modetext').textContent = 'Connecting to the agent…'; return setTimeout(() => health(tries + 1), 1000); }
     setMode(h.live, h.reason);
   } catch { setMode(false, 'No live server: opened as a static page'); }
