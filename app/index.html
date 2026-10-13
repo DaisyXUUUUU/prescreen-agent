@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PreScreen Workbench</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#f3f6f8;--surface:#fff;--ink:#14212b;--muted:#5b6b77;--faint:#8a98a3;--rule:#dfe6eb;--hover:#f0f5fa;
+  --accent:#1d4e89;--accent-soft:#e4edf7;
+  --ok:#1f7a4d;--ok-bg:#e2f2e9;--bad:#b3261e;--bad-bg:#fbe5e3;--unk:#9a6400;--unk-bg:#fbf0d9;--rev:#6b3fa0;--rev-bg:#efe7f8;
+  --ai:#0b7a86;--ai-bg:#dff3f5;
+  --sans:"Public Sans",Helvetica,Arial,sans-serif;--mono:"JetBrains Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f161c;--surface:#16212a;--ink:#e3eaef;--muted:#93a4b1;--faint:#6f808c;--rule:#2a3843;--hover:#1c2a35;
+  --accent:#7fb0e8;--accent-soft:#1b2d42;--ok:#6fcf9a;--ok-bg:#133224;--bad:#f08a82;--bad-bg:#3a1b19;--unk:#e7b75a;--unk-bg:#352812;
+  --rev:#c3a1ef;--rev-bg:#2b1f3d;--ai:#5ccfd9;--ai-bg:#12333a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f161c;--surface:#16212a;--ink:#e3eaef;--muted:#93a4b1;--faint:#6f808c;--rule:#2a3843;--hover:#1c2a35;
+  --accent:#7fb0e8;--accent-soft:#1b2d42;--ok:#6fcf9a;--ok-bg:#133224;--bad:#f08a82;--bad-bg:#3a1b19;--unk:#e7b75a;--unk-bg:#352812;
+  --rev:#c3a1ef;--rev-bg:#2b1f3d;--ai:#5ccfd9;--ai-bg:#12333a;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--sans);display:grid;grid-template-rows:auto 1fr;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+.mono{font-family:var(--mono)}
+.muted{color:var(--muted)}
+/* top bar */
+header{display:flex;align-items:center;gap:14px;padding:12px 20px;background:var(--surface);border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.brand{font-weight:800;font-size:18px;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+.brand .logo{width:28px;height:28px;border-radius:8px;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:15px}
+.chip{font:600 12.5px/1 var(--sans);padding:7px 10px;border-radius:999px;border:1px solid var(--rule);background:var(--surface);display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--faint)}
+.chip.live .dot{background:var(--ok);box-shadow:0 0 0 3px var(--ok-bg)}
+.chip.replay .dot{background:var(--unk)}
+.spacer{flex:1}
+.btn{border:1px solid var(--rule);background:var(--surface);border-radius:8px;padding:8px 14px;font-weight:600}
+.btn:hover{background:var(--hover)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.primary:disabled{opacity:.45;cursor:not-allowed}
+.btn.small{padding:5px 10px;font-size:13px}
+/* layout */
+main{display:grid;grid-template-columns:380px 1fr;min-height:0}
+aside{background:var(--surface);border-right:1px solid var(--rule);display:grid;grid-template-rows:auto auto 1fr auto;min-height:0}
+.side-head{padding:16px 16px 8px}
+.side-head h2{margin:0;font-size:16px}
+.search{width:100%;margin-top:10px;padding:9px 12px;border:1px solid var(--rule);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+.tabs{display:flex;gap:4px;padding:6px 12px 10px;flex-wrap:wrap;border-bottom:1px solid var(--rule)}
+.tab{border:0;background:transparent;padding:5px 9px;border-radius:6px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.tab[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.list{overflow:auto;min-height:0}
+.row{display:grid;grid-template-columns:24px 1fr auto;gap:10px;align-items:center;padding:10px 14px 10px 14px;border-bottom:1px solid var(--rule);cursor:pointer}
+.row:hover{background:var(--hover)}
+.row.sel{background:var(--accent-soft)}
+.row input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
+.row .nm{font-weight:650}
+.row .sub{font-size:12.5px;color:var(--muted)}
+.side-foot{padding:12px 14px;border-top:1px solid var(--rule);display:grid;gap:8px;background:var(--surface)}
+.side-foot .links{display:flex;gap:12px;font-size:13px;flex-wrap:wrap}
+.link{border:0;background:none;padding:0;color:var(--accent);font-weight:600;font-size:13px}
+.pill{display:inline-block;font:700 12px/1 var(--sans);padding:5px 9px;border-radius:999px;white-space:nowrap}
+.p-likely_eligible{color:var(--ok);background:var(--ok-bg)}
+.p-excluded{color:var(--bad);background:var(--bad-bg)}
+.p-pending{color:var(--unk);background:var(--unk-bg)}
+.p-needs_review{color:var(--rev);background:var(--rev-bg)}
+.p-none{color:var(--faint);background:var(--bg)}
+.p-running{color:var(--ai);background:var(--ai-bg)}
+.crc-tick{color:var(--ok);font-weight:800;margin-left:4px}
+/* content */
+.content{overflow:auto;min-height:0;padding:20px 28px 40px}
+.summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:20px}
+.sum{border:1px solid var(--rule);background:var(--surface);border-radius:12px;padding:12px 14px;text-align:left;display:grid;gap:4px}
+.sum[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:-2px}
+.sum .n{font-size:28px;font-weight:800;line-height:1}
+.sum .l{font-size:12.5px;font-weight:600;color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:14px}
+.empty{padding:60px 40px;text-align:center;display:grid;gap:12px;justify-items:center}
+.empty h2{margin:0;font-size:24px}
+.steps3{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+.steps3 div{display:flex;gap:10px;align-items:center;font-weight:600}
+.steps3 b{width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
+/* run view */
+.runhead{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.runhead h2{margin:0;font-size:20px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.rcard{padding:16px;display:grid;gap:10px;align-content:start;cursor:pointer;transition:border-color .2s}
+.rcard:hover{border-color:var(--accent)}
+.rcard .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.rcard .nm{font-weight:700;font-size:16px}
+.slog{display:grid;gap:5px;font-size:13px}
+.slog div{display:flex;gap:8px;align-items:flex-start}
+.slog .ic{width:16px;flex:none;text-align:center}
+.spin{width:13px;height:13px;border:2px solid var(--ai-bg);border-top-color:var(--ai);border-radius:50%;display:inline-block;animation:sp 0.8s linear infinite;vertical-align:-2px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.bar{height:4px;background:var(--bg);border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .4s}
+/* patient view */
+.phead{padding:20px 22px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start}
+.phead h2{margin:0;font-size:24px;letter-spacing:-.01em}
+.phead .meta{color:var(--muted);margin-top:4px}
+.why{margin-top:12px;font-size:16px;font-weight:600}
+.decide{display:grid;gap:8px;justify-items:end}
+.decide .btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.crc{font-size:13px;color:var(--ok);font-weight:700;text-align:right}
+.sec{margin-top:18px}
+.sec h3{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 8px 4px}
+.crit{border-top:1px solid var(--rule)}
+.crit:first-child{border-top:0}
+.ch{display:grid;grid-template-columns:30px 1fr auto;gap:12px;align-items:center;padding:12px 18px;cursor:pointer}
+.ch:hover{background:var(--hover)}
+.ico{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px}
+.i-pass{background:var(--ok-bg);color:var(--ok)} .i-fail{background:var(--bad-bg);color:var(--bad)} .i-unknown{background:var(--unk-bg);color:var(--unk)}
+.ct{font-weight:650}
+.cr{font-size:13.5px;color:var(--muted)}
+.tags{display:flex;gap:6px;align-items:center}
+.tag{font:700 11px/1 var(--sans);padding:5px 8px;border-radius:6px;white-space:nowrap}
+.t-ai{background:var(--ai-bg);color:var(--ai)} .t-rev{background:var(--rev-bg);color:var(--rev)} .t-inv{background:var(--accent-soft);color:var(--accent)}
+.cbody{padding:0 18px 16px 60px;display:grid;gap:10px}
+.quote{border-left:3px solid var(--ai);background:var(--bg);padding:10px 14px;border-radius:0 8px 8px 0;font-size:15px}
+.quote mark{background:#ffe08a;color:#14212b;border-radius:3px;padding:0 2px}
+.kv{font-size:13.5px}
+.trace{display:grid;gap:4px;font-size:12.5px;background:var(--bg);border-radius:8px;padding:10px 12px}
+.trace div{display:grid;grid-template-columns:190px 1fr;gap:10px}
+.trace .who{font-weight:700}
+.trace .w-agent{color:var(--ai)} .trace .w-rule,.trace .w-engine{color:var(--accent)}
+details summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:13px}
+.facts{display:flex;gap:18px;flex-wrap:wrap;padding:0 22px 18px;font-size:13.5px}
+.facts b{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(10,20,30,.45);display:none;place-items:center;z-index:50}
+.modal.open{display:grid}
+.dialog{width:min(520px,92vw);padding:22px;display:grid;gap:14px}
+.dialog h3{margin:0}
+.opts{display:grid;gap:8px}
+.opts label{display:flex;gap:10px;align-items:center;border:1px solid var(--rule);border-radius:8px;padding:9px 12px;cursor:pointer}
+textarea{font:inherit;padding:10px;border-radius:8px;border:1px solid var(--rule);background:var(--bg);color:var(--ink);min-height:80px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;font-weight:600;opacity:0;transition:opacity .25s;z-index:60;pointer-events:none}
+.toast.on{opacity:1}
+.banner{display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:10px;background:var(--unk-bg);color:var(--unk);font-weight:600;font-size:13.5px;margin-bottom:16px}
+@media (max-width:900px){body{overflow:auto;display:block}main{grid-template-columns:1fr}aside{display:block}.list{max-height:40vh}.content{overflow:visible;padding:16px}.summary{grid-template-columns:repeat(2,1fr)}.phead{grid-template-columns:1fr}.decide{justify-items:start}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="logo">✓</span>PreScreen</div>
+  <span class="chip"><b>NCT07347678</b> · SAD cohort · screening day 2026-10-09</span>
+  <span class="chip" id="mode"><span class="dot"></span><span id="modetext">Connecting…</span></span>
+  <span class="chip">Synthetic patients · no one is contacted</span>
+  <span class="spacer"></span>
+  <button class="btn" id="export">Export pre-screening log</button>
+</header>
+<main>
+  <aside>
+    <div class="side-head">
+      <h2>Patients this week <span class="muted" id="ptotal"></span></h2>
+      <input class="search" id="search" placeholder="Search by name or ID">
+    </div>
+    <div class="tabs" id="tabs"></div>
+    <div class="list" id="list"></div>
+    <div class="side-foot">
+      <div class="links">
+        <button class="link" id="demoset">Pick demo set (5)</button>
+        <button class="link" id="clearsel">Clear selection</button>
+        <button class="link" id="loadall">Load last full run (58)</button>
+      </div>
+      <button class="btn primary" id="run" disabled>Pre-screen selected</button>
+    </div>
+  </aside>
+  <section class="content" id="content"></section>
+</main>
+
+<div class="modal" id="modal"><div class="dialog panel">
+  <h3 id="mtitle">Change the decision</h3>
+  <div class="opts" id="mopts"></div>
+  <textarea id="mreason" placeholder="Reason (required, kept in the log)"></textarea>
+  <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" id="mcancel">Cancel</button><button class="btn primary" id="msave">Save decision</button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script src="replay.js"></script>
+<script>
+const R = window.REPLAY;
+const CAT = {needs_review:'Needs your decision', pending:'Waiting on information', likely_eligible:'Likely eligible', excluded:'Excluded'};
+const CAT_SHORT = {needs_review:'Needs decision', pending:'Waiting', likely_eligible:'Likely eligible', excluded:'Excluded'};
+const ORDER = ['needs_review','pending','likely_eligible','excluded'];
+const DEMO = ['SAD01','SAD03','EXT04','EXT01','EXT07'];
+const CRIT = {
+  AGE:{t:'Age 18–65', type:'inclusion', fact:'age'},
+  I1:{t:'BMI 18–35 kg/m²', type:'inclusion', fact:'BMI'},
+  I2:{t:'Fasting LDL-C ≥ 70 mg/dL', type:'inclusion', fact:'LDL-C'},
+  I3:{t:'Lp(a) ≥ 25 nmol/L', type:'inclusion', fact:'Lp(a)'},
+  I4:{t:'Fasting triglycerides < 400 mg/dL', type:'inclusion', fact:'TG'},
+  I5:{t:'No significant liver or kidney problems', type:'inclusion', inv:true},
+  E1:{t:'ALT and AST ≤ 1.5 × upper limit of normal', type:'exclusion', fact:['ALT','AST']},
+  E2:{t:'HbA1c below 6.5%', type:'exclusion', fact:'HbA1c'},
+  E3:{t:'Not a regular smoker in the last 3 months', type:'exclusion', text:'Smoking (free text)'},
+  E4:{t:'No siRNA, antisense or gene therapy in the last 12 months', type:'exclusion', text:'Advanced (free text)'},
+  E5:{t:'No prescription lipid-lowering drug in the last 30 days', type:'exclusion', text:'Lipid (free text)'},
+};
+const CODES = {'39156-5':'BMI','18262-6':'LDL-C','2089-1':'LDL-C','13457-7':'LDL-C (calculated)','43583-4':'Lp(a)','2571-8':'Triglycerides','4548-4':'HbA1c','1742-6':'ALT','1920-8':'AST'};
+const STEP = {recover:'Searching for the result under equivalent lab codes', interpret:"Reading the patient's own words", conflict:'Explaining conflicting results', evidence:'Gathering liver & kidney evidence for the investigator'};
+const TOOL = {fhir_query:'Looked up record', 'rule:sad_engine':'Rule check', interpret_free_text:"AI read the patient's words", rxnav:'Drug database (NLM RxNav)',
+  lookup_equivalent_codes:'AI looked up equivalent codes', fhir_query_codes:'AI searched equivalent codes', get_predicate:'AI read the criterion',
+  evaluate_with_records:'Rule re-check of the found record', record_decision:'AI recorded what it found', 'agent:summary':'AI summary', overview:'AI scanned the record',
+  get_labs:'AI searched lab results', get_diagnoses:'AI searched diagnoses', search_notes:'AI searched clinical notes', flag_concern:'AI flagged a concern',
+  'agent:error':'AI step failed (kept unknown)', 'rule:not_computable':'Needs investigator judgement'};
+
+const people = R.people; const byId = Object.fromEntries(people.map(p => [p.id, p]));
+const S = {results:{}, source:{}, sel:new Set(), current:null, filter:'all', bucket:null, live:false, job:null, run:null,
+           decisions: load('crc-decisions') || {}};
+function load(k){ try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
+function save(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('on'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('on'),2200); }
+
+// ---------- criterion helpers ----------
+function outcome(cid, st){ if (st==='unknown') return 'unknown'; const inc = CRIT[cid].type==='inclusion'; return (inc ? st==='met' : st==='not_met') ? 'pass' : 'fail'; }
+function factOf(p, cid){
+  const m = CRIT[cid]; if (m.fact==='age') return `${p.age} years`;
+  if (Array.isArray(m.fact)) return m.fact.map(f => p.facts[f] ? `${f} ${p.facts[f]}` : '').filter(Boolean).join(' · ');
+  return m.fact && p.facts[m.fact] ? p.facts[m.fact] : '';
+}
+function clean(note){
+  if (!note) return '';
+  let s = note.replace(/;?\s*predicate from \S+/g,'').replace(/\b(\d{4,5}-\d)=/g,(m,c)=>(CODES[c]||c)+' ').replace(/Observation\/[0-9a-f-]+:\s*/g,'');
+  s = s.replace(/\s*\(record found under an equivalent code:.*?evaluated by the SAD engine\)/,' (found under an equivalent lab code and re-checked by the rules)');
+  s = s.replace(/^(?:needs CRC judgement: )?counts: (.+)$/, (m, body) => body.split(/;\s(?=[A-Z][\w -]*\s\(class)/).map(one => {
+    const x = /^(.+?) \(class (\w+) per ([^:]+): (.+?) -> (.+?) \(([^)]+)\); prescription (\w+); last use ([^)]+)\)$/.exec(one.trim());
+    return x ? `${x[1]} = ${x[4]}, classed as ${x[5]} by ${x[3].replace('RxNav','NLM RxNav')}; prescription: ${x[7]}; last dose ${x[8]} — inside the look-back window` : one; }).join('. '));
+  s = s.replace(/^needs CRC judgement: /, 'Needs your judgement: ').replace(/\(class yes per model \(not in terminology\)/, '(class suggested by the AI only, not found in the drug database')
+       .replace(/class yes per RxNav: (\w+) -> ([^;]+)/, '$1, classed as $2 by NLM RxNav').replace(/last use unknown/, 'last dose date unclear')
+       .replace(/\.\s*Agent:.*$/, '.')
+       .replace(/source smoking amount is a range or approximate; CRC to judge; do not substitute a point estimate/, 'The amount is a range or an estimate, so the system does not pick a number. Please judge it yourself.')
+       .replace(/uncertain exposure facts/g, 'details unclear (date, dose or prescription)')
+       .replace(/^Multiple candidate results; selection unresolved; conflict immaterial \(all candidates met\), resolved by rule$/, 'Two results are on record; both meet the criterion, so the answer is the same either way.')
+       .replace(/^Multiple candidate results; selection unresolved$/, 'Two results are on record and they give different answers. Please choose which one applies.')
+       .replace(/^not counted: (.+?) \(class no per RxNav: [^;]+; prescription (\w+); last use [^)]+\)$/, (m, x, rx) => `${x}: not a prescription lipid-lowering drug according to NLM RxNav, so it does not count.`)
+       .replace(/missing or unsupported synthetic LDL method for code [\d-]+/, 'The lab method on this LDL result is missing or not recognised')
+       .replace(/\s*\(recovered by agent\)/, '')
+       .replace(/->\s*not_met/g, '→ does not meet').replace(/->\s*met/g, '→ meets').replace(/^conflict: /, 'Conflict: ')
+       .replace(/^Explicit negative synthetic interview covering entire window; self-report limitation retained$/, 'Patient reported none in the screening interview.')
+       .replace(/^Explicit report of no smoking throughout three-calendar-month window$/, 'Patient reported no smoking in the last 3 months.')
+       .replace(/^Age at screening=(\d+)$/, '$1 years at screening');
+  return s.trim();
+}
+function isAI(c){ return c.interpreted || c.agent_used; }
+function isConflict(c){ return c.conflict || (c.trace||[]).some(t => t.tool==='rule:conflict_materiality' && new Set([...t.result.matchAll(/->\s*(\w+)/g)].map(m => m[1])).size > 1); }
+function flagged(cid, c){ return (c.review && cid!=='I5') || (c.interpreted && outcome(cid,c.status)==='fail') || isConflict(c) || (cid==='I5' && c.review); }
+function why(p, r){
+  const cr = r.criteria, ids = Object.keys(CRIT);
+  const title = id => CRIT[id].t;
+  if (r.category==='excluded') return 'Does not meet: ' + ids.filter(id => outcome(id, cr[id].status)==='fail' && !cr[id].interpreted).map(title).join('; ');
+  if (r.category==='needs_review') { const f = ids.filter(id => flagged(id, cr[id])); return 'Please confirm: ' + (f.length ? f.map(title).join('; ') : 'items read by AI'); }
+  if (r.category==='pending') return 'Can’t tell yet: ' + ids.filter(id => id!=='I5' && cr[id].status==='unknown').map(title).join('; ');
+  return 'Every rule-checked criterion passes. The investigator confirms liver and kidney function.';
+}
+function highlight(text, c){
+  let t = esc(text);
+  const words = new Set();
+  for (const s of c.trace||[]) { const m = /^counts: (\w+)/.exec(s.result||''); if (m) words.add(m[1]); const q=/['"]([A-Za-z][\w-]{3,})['"]/.exec(s.result||''); }
+  const quoteMatch = (c.note||'').match(/\b(Leqvio|Kynamro|Lipitor|Repatha|ezetimibe|simvastatin|statin|atorvastatin|inclisiran)\b/gi) || [];
+  quoteMatch.forEach(w => words.add(w));
+  for (const w of words) t = t.replace(new RegExp(`\\b(${w})\\b`,'gi'), '<mark>$1</mark>');
+  t = t.replace(/\b(\d+(?:\.\d+)?\s*(?:or|to|-)\s*\d+\s+cigarettes?|about [^,.]+|around [^,.]+|roughly [^,.]+|\d{4}-\d{2}-\d{2})/gi, '<mark>$1</mark>');
+  return t;
+}
+
+// ---------- sidebar ----------
+function rowStatus(id){
+  if (S.run && S.run.patients[id] && !S.run.patients[id].done) return `<span class="pill p-running"><span class="spin"></span> screening</span>`;
+  const r = S.results[id]; if (!r) return `<span class="pill p-none">Not screened</span>`;
+  return `<span class="pill p-${r.category}">${CAT_SHORT[r.category]}</span>` + (S.decisions[id] ? '<span class="crc-tick" title="CRC decision recorded">✓</span>' : '');
+}
+function visible(){
+  const q = $('search').value.trim().toLowerCase();
+  return people.filter(p => (!q || p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q)) &&
+    (S.filter==='all' || (S.filter==='none' ? !S.results[p.id] : S.results[p.id]?.category===S.filter)));
+}
+function renderTabs(){
+  const n = c => c==='all' ? people.length : c==='none' ? people.filter(p=>!S.results[p.id]).length : people.filter(p=>S.results[p.id]?.category===c).length;
+  $('tabs').innerHTML = [['all','All'],['none','Not screened'],...ORDER.map(c=>[c,CAT_SHORT[c]])]
+    .map(([k,l]) => `<button class="tab" data-f="${k}" aria-pressed="${S.filter===k}">${l} ${n(k)}</button>`).join('');
+}
+function renderList(){
+  renderTabs(); $('ptotal').textContent = `(${people.length})`;
+  $('list').innerHTML = visible().map(p => `<div class="row ${S.current===p.id?'sel':''}" data-id="${p.id}">
+      <input type="checkbox" data-c="${p.id}" ${S.sel.has(p.id)?'checked':''} aria-label="select ${esc(p.name)}">
+      <div><div class="nm">${esc(p.name)}</div><div class="sub">${p.id} · ${p.age} ${p.sex==='female'?'F':'M'}</div></div>
+      <div>${rowStatus(p.id)}</div></div>`).join('');
+  const n = S.sel.size;
+  $('run').disabled = !n || (S.run && !S.run.done);
+  $('run').textContent = S.run && !S.run.done ? 'Screening…' : n ? `Pre-screen ${n} selected patient${n>1?'s':''}${S.live?'':' (replay)'}` : 'Select patients to pre-screen';
+}
+$('list').addEventListener('click', e => {
+  const c = e.target.closest('[data-c]'); if (c) { c.checked ? S.sel.add(c.dataset.c) : S.sel.delete(c.dataset.c); renderList(); return; }
+  const r = e.target.closest('.row'); if (r) openPatient(r.dataset.id);
+});
+$('tabs').addEventListener('click', e => { const t = e.target.closest('[data-f]'); if (t) { S.filter = t.dataset.f; renderList(); } });
+$('search').addEventListener('input', renderList);
+$('demoset').onclick = () => { S.sel = new Set(DEMO); renderList(); toast('Demo set selected: 5 patients'); };
+$('clearsel').onclick = () => { S.sel.clear(); renderList(); };
+$('loadall').onclick = () => { for (const p of people) if (!S.results[p.id]) { S.results[p.id] = R.results[p.id]; S.source[p.id] = 'saved'; } renderList(); render(); toast('Loaded the last full run: 58 patients'); };
+
+// ---------- main area ----------
+function summary(){
+  const counts = Object.fromEntries(ORDER.map(c => [c, people.filter(p => S.results[p.id]?.category===c).length]));
+  const none = people.filter(p => !S.results[p.id]).length;
+  return `<div class="summary">${ORDER.map(c => `<button class="sum" data-b="${c}" aria-pressed="${S.bucket===c}"><span class="pill p-${c}" style="justify-self:start">${CAT[c]}</span><span class="n">${counts[c]}</span></button>`).join('')}
+    <button class="sum" data-b="none" aria-pressed="${S.bucket==='none'}"><span class="pill p-none" style="justify-self:start">Not screened</span><span class="n">${none}</span></button></div>`;
+}
+function render(){
+  const c = $('content');
+  if (S.view==='run' && S.run) c.innerHTML = summary() + runView();
+  else if (S.current && S.results[S.current]) c.innerHTML = summary() + patientView(S.current);
+  else if (S.current) c.innerHTML = summary() + notScreened(S.current);
+  else if (S.bucket) c.innerHTML = summary() + bucketView(S.bucket);
+  else c.innerHTML = summary() + welcome();
+}
+$('content').addEventListener('click', e => {
+  const b = e.target.closest('[data-b]'); if (b) { S.bucket = S.bucket===b.dataset.b ? null : b.dataset.b; S.filter = S.bucket || 'all'; S.current = null; S.view = null; renderList(); render(); return; }
+  const o = e.target.closest('[data-open]'); if (o) { openPatient(o.dataset.open); return; }
+  const h = e.target.closest('.ch'); if (h) { h.parentElement.querySelector('.cbody')?.toggleAttribute('hidden'); return; }
+  const a = e.target.closest('[data-act]'); if (a) act(a.dataset.act);
+  if (e.target.id==='back-run') { S.view='run'; S.current=null; render(); }
+});
+function welcome(){
+  return `<div class="panel empty"><h2>Good morning. 58 patients are scheduled this week.</h2>
+    <p class="muted" style="max-width:640px;margin:0">Pick the patients to pre-screen. Rules check every number and date; an AI agent reads what rules can't. Anything the AI read comes back to you to confirm.</p>
+    <div class="steps3"><div><b>1</b>Select patients on the left</div><div><b>2</b>Press “Pre-screen”</div><div><b>3</b>Confirm or change each result</div></div>
+    <div style="margin-top:10px"><button class="btn primary" onclick="document.getElementById('demoset').click()">Pick the demo set</button></div></div>`;
+}
+function bucketView(b){
+  const list = people.filter(p => b==='none' ? !S.results[p.id] : S.results[p.id]?.category===b);
+  if (!list.length) return `<div class="panel empty"><p class="muted">No patients here yet.</p></div>`;
+  return `<div class="panel">${list.map(p => `<div class="crit"><div class="ch" data-open="${p.id}"><span class="pill p-${S.results[p.id]?.category||'none'}" style="width:auto">${S.results[p.id]?CAT_SHORT[S.results[p.id].category]:'—'}</span>
+     <div><div class="ct">${esc(p.name)} <span class="muted mono" style="font-size:12px">${p.id}</span></div><div class="cr">${S.results[p.id] ? esc(why(p,S.results[p.id])) : 'Not screened yet'}</div></div>
+     <div>${S.decisions[p.id] ? '<span class="tag t-inv">CRC: '+esc(S.decisions[p.id].label)+'</span>' : ''}</div></div></div>`).join('')}</div>`;
+}
+function notScreened(id){
+  const p = byId[id];
+  return `<div class="panel"><div class="phead"><div><h2>${esc(p.name)}</h2><div class="meta">${p.id} · ${p.age} years · ${p.sex}</div>
+    <div class="why muted">Not screened yet. Tick the box next to this patient and press “Pre-screen”.</div></div></div>${factsHTML(p)}</div>`;
+}
+function factsHTML(p){
+  const f = Object.entries(p.facts).filter(([k]) => !k.includes('free text'));
+  return `<div class="facts">${f.map(([k,v]) => `<div><b>${esc(k)}</b>${esc(v)}</div>`).join('')}</div>`;
+}
+function openPatient(id){ S.current = id; S.view = null; renderList(); render(); $('content').scrollTop = 0; }
+
+function critHTML(p, r, cid, open){
+  const c = r.criteria[cid]; const m = CRIT[cid]; const o = outcome(cid, c.status);
+  const icon = {pass:'✓', fail:'✕', unknown:'?'}[o];
+  const value = factOf(p, cid);
+  const text = m.text && p.facts[m.text];
+  let result = value ? value : '';
+  if (cid==='I5') result = 'Investigator decides. The agent collected the evidence below.';
+  else if (o==='unknown') result = (value ? value + ' · ' : '') + 'Can’t tell yet';
+  else if (text && !value) result = o==='pass' ? 'No exclusion found in the patient’s answers' : 'Exclusion found in the patient’s answers';
+  const tags = [isAI(c) && cid!=='I5' ? '<span class="tag t-ai">AI-read · please confirm</span>' : '',
+                cid==='I5' ? '<span class="tag t-inv">Investigator</span>' : '',
+                c.review || isConflict(c) ? '<span class="tag t-rev">Review</span>' : ''].join('');
+  const note = clean(c.note); const agent = clean((c.agent||'').replace(/^conflict: .*?;\s*/,'').replace(/^.*?Agent:\s*/,'')).replace(/\*\*/g,'').replace(/\s-\s(?=[A-Z*])/g,' · ');
+  const trace = (c.trace||[]).map(t => `<div><span class="who w-${t.actor}">${esc(TOOL[t.tool] || t.tool.replace('rule:','Rule: '))}</span><span>${esc(t.result)}${t.decision ? ' → <b>'+esc(t.decision)+'</b>' : ''}</span></div>`).join('');
+  return `<div class="crit"><div class="ch"><span class="ico i-${o}">${icon}</span><div><div class="ct">${m.t}</div><div class="cr">${esc(result)}</div></div><div class="tags">${tags}</div></div>
+    <div class="cbody" ${open?'':'hidden'}>
+      ${text ? `<div class="quote"><span class="muted" style="font-size:12px;font-weight:700">PATIENT’S OWN WORDS</span><br>“${highlight(text, c)}”</div>` : ''}
+      ${note && cid!=='I5' && (o!=='pass' || isAI(c) || !value) ? `<div class="kv"><b>Finding:</b> ${esc(note)}</div>` : ''}
+      ${cid==='I5' && c.review ? `<div class="kv"><b>Flag:</b> ${esc(c.review)}</div>` : ''}
+      ${agent ? `<div class="kv"><b>${cid==='I5'?'Evidence summary':'AI note'}:</b> ${esc(agent.slice(0,600))}${agent.length>600?'…':''}</div>` : ''}
+      <details><summary>How was this determined?</summary><div class="trace" style="margin-top:8px">${trace || '<span class="muted">no steps recorded</span>'}</div></details>
+    </div></div>`;
+}
+function patientView(id){
+  const p = byId[id], r = S.results[id], d = S.decisions[id];
+  const ids = Object.keys(CRIT);
+  const attention = ids.filter(cid => { const c = r.criteria[cid]; const o = outcome(cid, c.status); return cid==='I5' ? !!c.review : (o!=='pass' || flagged(cid,c) || isAI(c)); });
+  const rest = ids.filter(cid => !attention.includes(cid));
+  const src = S.source[id]==='live' ? `<span class="chip live" style="margin-left:6px"><span class="dot"></span>screened live · ${r.elapsed ?? ''}s</span>` : `<span class="chip" style="margin-left:6px">saved result</span>`;
+  return `${S.run ? '<button class="link" id="back-run" style="margin-bottom:10px">← Back to this screening run</button>' : ''}
+  <div class="panel"><div class="phead"><div><h2>${esc(p.name)} <span class="pill p-${r.category}" style="font-size:14px;vertical-align:4px">${CAT[r.category]}</span></h2>
+      <div class="meta">${p.id} · ${p.age} years · ${p.sex} ${src}</div><div class="why">${esc(why(p,r))}</div></div>
+    <div class="decide">${d ? `<div class="crc">✓ ${esc(d.label)}${d.reason?' — '+esc(d.reason):''}<br><span class="muted" style="font-weight:500">${new Date(d.at).toLocaleString()}</span></div>` : '<div class="muted" style="font-size:13px">Your decision</div>'}
+      <div class="btns"><button class="btn" data-act="confirm">Confirm</button><button class="btn" data-act="change">Change…</button><button class="btn" data-act="pi">Send to investigator</button>${d?'<button class="btn small" data-act="undo">Undo</button>':''}</div></div></div>
+    ${factsHTML(p)}</div>
+  ${attention.length ? `<div class="sec"><h3>Needs your attention (${attention.length})</h3><div class="panel">${attention.map(cid => critHTML(p,r,cid,true)).join('')}</div></div>` : ''}
+  <div class="sec"><h3>${attention.length ? 'Other criteria' : 'All criteria'} (${rest.length})</h3><div class="panel">${rest.map(cid => critHTML(p,r,cid,false)).join('')}</div></div>`;
+}
+
+// ---------- CRC decisions ----------
+function act(a){
+  const id = S.current, r = S.results[id]; if (!id) return;
+  if (a==='undo') { delete S.decisions[id]; save('crc-decisions', S.decisions); renderList(); render(); return; }
+  if (a==='confirm') return decide(id, {action:'confirmed', final:r.category, label:`Confirmed: ${CAT[r.category]}`});
+  if (a==='pi') return decide(id, {action:'investigator', final:r.category, label:'Sent to investigator'});
+  if (a==='change') openModal(id);
+}
+function decide(id, d){ S.decisions[id] = {...d, at:new Date().toISOString()}; save('crc-decisions', S.decisions); renderList(); render(); toast(d.label); }
+function openModal(id){
+  const r = S.results[id];
+  $('mtitle').textContent = `Change the decision for ${byId[id].name}`;
+  $('mopts').innerHTML = ORDER.filter(c => c!==r.category).map((c,i) => `<label><input type="radio" name="mcat" value="${c}" ${i===0?'checked':''}><span class="pill p-${c}">${CAT[c]}</span></label>`).join('');
+  $('mreason').value = ''; $('modal').classList.add('open'); $('mreason').focus();
+}
+$('mcancel').onclick = () => $('modal').classList.remove('open');
+$('msave').onclick = () => {
+  const reason = $('mreason').value.trim(); if (!reason) { $('mreason').focus(); toast('A reason is required'); return; }
+  const c = document.querySelector('input[name=mcat]:checked').value;
+  $('modal').classList.remove('open');
+  decide(S.current, {action:'changed', final:c, reason, label:`Changed to ${CAT[c]}`});
+};
+
+// ---------- export ----------
+$('export').onclick = () => {
+  const rows = [['patient_id','name','system_result','crc_action','final_result','crc_reason','decided_at','why']];
+  for (const p of people) { const r = S.results[p.id]; if (!r) continue; const d = S.decisions[p.id] || {};
+    rows.push([p.id, p.name, CAT[r.category], d.action || 'not yet reviewed', d.final ? CAT[d.final] : '', d.reason || '', d.at || '', why(p, r)]); }
+  if (rows.length===1) { toast('Nothing screened yet'); return; }
+  const csv = rows.map(r => r.map(x => `"${String(x).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+  a.download = 'prescreening_log_NCT07347678_SAD_2026-10-09.csv'; a.click(); toast(`Exported ${rows.length-1} patients`);
+};
+
+// ---------- screening runs ----------
+function stepText(line){
+  const m = /agent(?: \(v2\))?: (\S+) (\S+) (\w+) \.\.\.\s*(.*)$/.exec(line); if (!m) return {txt: line, done: true};
+  const [, , cid, what, out] = m; return {txt: `${STEP[what] || what} · ${CRIT[cid]?.t || cid}`, done: !!out, out: out.trim()};
+}
+function runView(){
+  const run = S.run, ids = Object.keys(run.patients);
+  const done = ids.filter(i => run.patients[i].done).length;
+  const head = `<div class="runhead"><h2>${run.done ? 'Pre-screening finished' : 'Pre-screening in progress'} · ${done} / ${ids.length}</h2>
+    <span class="chip ${run.live?'live':'replay'}"><span class="dot"></span>${run.live ? 'Live · Amazon Nova 2 Lite on Bedrock' : 'Replay of saved results'}</span>
+    <span class="muted">${run.elapsed ? run.elapsed.toFixed(0)+' s' : ''}</span></div>
+    <div class="bar" style="margin-bottom:16px"><i style="width:${100*done/ids.length}%"></i></div>`;
+  const cards = ids.map(id => { const st = run.patients[id], p = byId[id];
+    const r = st.result; const pill = st.error ? '<span class="pill p-excluded">error</span>' : r ? `<span class="pill p-${r.category}">${CAT_SHORT[r.category]}</span>` : st.state==='queued' ? '<span class="pill p-none">queued</span>' : '<span class="pill p-running"><span class="spin"></span> working</span>';
+    const lines = [];
+    if (st.state!=='queued') lines.push({txt:'Checked 11 criteria with rules', done:true});
+    for (const l of st.steps) lines.push(stepText(l));
+    if (st.current) lines.push(stepText(st.current));
+    const last = lines.slice(-5);
+    return `<div class="panel rcard" data-open="${id}"><div class="top"><div><div class="nm">${esc(p.name)}</div><div class="muted" style="font-size:12.5px">${id} · ${p.age} ${p.sex==='female'?'F':'M'}</div></div>${pill}</div>
+      <div class="slog">${last.map(l => `<div><span class="ic">${l.done ? '✓' : '<span class="spin"></span>'}</span><span>${esc(l.txt)}${l.out ? ' <span class="muted">→ '+esc(l.out.replace('[review]','· to review').replace('[conflict]','· conflict'))+'</span>' : ''}</span></div>`).join('')}</div>
+      ${r ? `<div style="font-size:13.5px;font-weight:600">${esc(why(p,r))}</div>` : ''}${st.error ? `<div class="muted" style="font-size:12.5px">${esc(st.error)}</div>` : ''}
+      ${st.elapsed!=null ? `<div class="muted" style="font-size:12px">${st.elapsed}s</div>` : st.running_for!=null ? `<div class="muted" style="font-size:12px">${st.running_for}s…</div>` : ''}</div>`; }).join('');
+  return head + `<div class="cards">${cards}</div>`;
+}
+async function startRun(){
+  const ids = [...S.sel]; if (!ids.length) return;
+  S.run = {live:S.live, done:false, t0:Date.now(), patients:Object.fromEntries(ids.map(i => [i, {state:'queued', steps:[], current:'', done:false}]))};
+  S.view = 'run'; S.current = null; S.filter = 'all'; S.bucket = null; renderList(); render();
+  if (S.live) {
+    try {
+      const res = await fetch('api/screen', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ids})});
+      if (!res.ok) throw new Error((await res.json()).reason || res.status);
+      const {job} = await res.json(); return poll(job);
+    } catch (e) { toast('Live agent unavailable — showing saved results'); setMode(false, String(e)); S.run.live = false; }
+  }
+  replayRun(ids);
+}
+async function poll(job){
+  try {
+    const s = await (await fetch('api/jobs/' + job, {cache:'no-store'})).json();
+    for (const [id, st] of Object.entries(s.patients)) {
+      const t = S.run.patients[id]; Object.assign(t, st);
+      if (st.state==='done' && !t.done) { t.done = true; S.results[id] = {...st.result, elapsed: st.elapsed}; S.source[id] = 'live'; }
+      if (st.state==='error' && !t.done) { t.done = true; if (R.results[id]) { S.results[id] = R.results[id]; S.source[id] = 'saved'; } }
+    }
+    S.run.elapsed = (Date.now() - S.run.t0) / 1000;
+    if (s.done) { S.run.done = true; toast('Pre-screening finished'); }
+    renderList(); if (S.view==='run') render();
+    if (!s.done) setTimeout(() => poll(job), 700);
+  } catch (e) { setTimeout(() => poll(job), 1500); }
+}
+function replayRun(ids){
+  // Plays back the saved run's agent steps for the chosen patients, three at a time.
+  const queue = [...ids]; let active = 0;
+  const next = () => {
+    if (!queue.length) { if (!active) { S.run.done = true; renderList(); render(); toast('Pre-screening finished (replay)'); } return; }
+    const id = queue.shift(); active++; const t = S.run.patients[id]; const r = R.results[id]; t.state = 'running';
+    const agentSteps = Object.entries(r.criteria).filter(([, c]) => c.agent_used).map(([cid, c]) => {
+      const tools = new Set(c.trace.map(x => x.tool)); const what = tools.has('interpret_free_text') ? 'interpret' : tools.has('lookup_equivalent_codes') ? 'recover' : cid==='I5' ? 'evidence' : 'conflict';
+      return `agent: ${id} ${cid} ${what} ... ${c.status}${c.review ? ' [review]' : ''}`; });
+    let i = 0; const t0 = Date.now();
+    const tick = () => {
+      t.running_for = ((Date.now() - t0) / 1000).toFixed(1);
+      if (i < agentSteps.length) { t.current = agentSteps[i].replace(/\.\.\. .*$/, '...'); renderList(); if (S.view==='run') render();
+        setTimeout(() => { t.steps.push(agentSteps[i]); t.current = ''; i++; tick(); }, 900 + Math.random() * 700); return; }
+      t.done = true; t.state = 'done'; t.result = r; t.elapsed = ((Date.now() - t0) / 1000).toFixed(1); S.results[id] = r; S.source[id] = 'saved';
+      active--; S.run.elapsed = (Date.now() - S.run.t0) / 1000; renderList(); if (S.view==='run') render(); next();
+    };
+    setTimeout(tick, 400);
+  };
+  next(); next(); next();
+}
+$('run').onclick = startRun;
+
+// ---------- mode ----------
+function setMode(live, reason){
+  S.live = live; const m = $('mode');
+  m.className = 'chip ' + (live ? 'live' : 'replay');
+  $('modetext').textContent = live ? 'Live agent · Amazon Nova 2 Lite on Bedrock' : 'Replay mode · saved results';
+  m.title = live ? '' : (reason || 'Live server not reachable');
+  renderList();
+}
+async function health(tries = 0){
+  try {
+    const h = await (await fetch('api/health', {cache:'no-store'})).json();
+    if (!h.checked && tries < 30) { $('modetext').textContent = 'Connecting to the agent…'; return setTimeout(() => health(tries + 1), 1000); }
+    setMode(h.live, h.reason);
+  } catch { setMode(false, 'No live server: opened as a static page'); }
+}
+renderList(); render(); health();
+</script>
+</body>
+</html>

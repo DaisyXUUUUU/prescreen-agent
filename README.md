@@ -50,6 +50,20 @@ python run.py --trial SAD --date 2026-10-09
 
 Open `out/prescreen_log_SAD_2026-10-09.md`. If Bedrock is unreachable, the run says so once and continues with rules only. `--no-extended-cases` screens the core set only.
 
+## CRC workbench (interactive demo)
+
+A coordinator-facing page for the same pipeline: pick this week's patients, pre-screen them, and confirm or change each result.
+
+```bash
+python app/server.py          # http://localhost:8765
+```
+
+- **Live:** the selected patients go through the real pipeline (SAD rules + the Bedrock agent), three at a time, with each agent step shown as it happens. A demo set of 5 patients takes about 10 seconds.
+- **Replay fallback:** if Bedrock is unreachable, or `app/index.html` is opened as a static file, the page plays back `app/replay.js`, the saved results of the last full evaluation, and says so in the header. Refresh it with `python app/server.py --build-replay`.
+- Each patient shows the criteria that need attention first, the patient's own words with the relevant phrase highlighted, and an "AI-read · please confirm" tag on anything the model read. Agent steps sit in a collapsed "How was this determined?" section.
+- CRC decisions (confirm, change with a required reason, send to investigator) are kept in the browser and included in the exported CSV log.
+- Extended cases reuse one Synthea identity, so the page gives them distinct synthetic display names.
+
 ## Outputs
 
 Each run writes to `out/` (and to `s3://$S3_BUCKET/logs/{trial}/{date}/` when `S3_BUCKET` is set):
