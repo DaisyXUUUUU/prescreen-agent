@@ -233,7 +233,13 @@ def retry_strategy() -> ModelRetryStrategy:
 
 
 def _session():
+    import os
+
     import boto3
+    if os.getenv("PRESCREEN_AWS_ACCESS_KEY_ID"):  # hosted deployments (Vercel reserves AWS_*)
+        return boto3.Session(aws_access_key_id=os.environ["PRESCREEN_AWS_ACCESS_KEY_ID"],
+                             aws_secret_access_key=os.environ["PRESCREEN_AWS_SECRET_ACCESS_KEY"],
+                             region_name=config.AWS_REGION)
     return boto3.Session(profile_name=config.AWS_PROFILE, region_name=config.AWS_REGION)
 
 

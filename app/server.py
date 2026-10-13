@@ -227,6 +227,19 @@ class Handler(SimpleHTTPRequestHandler):
         return super().do_GET()
 
     def do_POST(self):
+        if self.path == "/api/screen_one":  # same contract as the hosted function api/screen_one.py
+            body = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
+            if not self.bench.health()["live"]:
+                return self._json({"error": "agent unavailable", "reason": self.bench.model_error}, 503)
+            case = self.bench.by_id.get(body.get("id"))
+            if case is None:
+                return self._json({"error": "unknown patient"}, 404)
+            t0 = time.time()
+            try:
+                results, *_ = sa.screen([case], self.bench.spec, use_agent=True, model=self.bench.model, preflight_done=True)
+            except Exception as e:  # noqa: BLE001
+                return self._json({"error": f"{type(e).__name__}: {str(e)[:200]}"}, 500)
+            return self._json({**serialize(results[0]), "elapsed": round(time.time() - t0, 1)})
         if self.path == "/api/screen":
             body = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
             if not self.bench.health()["live"]:

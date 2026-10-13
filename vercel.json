@@ -1,0 +1,14 @@
+{
+  "functions": {
+    "api/*.py": {
+      "maxDuration": 60,
+      "memory": 1024,
+      "includeFiles": "{src,app,trials,data/extended_cases,cache/rxnav}/**"
+    }
+  },
+  "rewrites": [
+    { "source": "/", "destination": "/app/index.html" },
+    { "source": "/replay.js", "destination": "/app/replay.js" },
+    { "source": "/report", "destination": "/docs/demo/index.html" }
+  ]
+}

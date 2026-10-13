@@ -19,7 +19,8 @@ SNAPSHOT_DIR = DATA_DIR / "snapshots"
 CACHE_DIR = ROOT / "cache"
 
 AWS_PROFILE = os.getenv("AWS_PROFILE") or None
-AWS_REGION = os.getenv("AWS_REGION", "us-west-2")
+# PRESCREEN_* names exist because hosts such as Vercel reserve the AWS_* variables for themselves.
+AWS_REGION = os.getenv("PRESCREEN_AWS_REGION") or os.getenv("AWS_REGION", "us-west-2")
 S3_BUCKET = os.getenv("S3_BUCKET", "")
 BEDROCK_MODEL_ID = os.getenv("BEDROCK_MODEL_ID", "")
 

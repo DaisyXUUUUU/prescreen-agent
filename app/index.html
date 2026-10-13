@@ -425,6 +425,7 @@ $('export').onclick = () => {
 
 // ---------- screening runs ----------
 function stepText(line){
+  if (/ - working \.\.\.$/.test(line)) return {txt: 'AI agent reading what the rules could not decide', done: false};
   const m = /agent(?: \(v2\))?: (\S+) (\S+) (\w+) \.\.\.\s*(.*)$/.exec(line); if (!m) return {txt: line, done: true};
   const [, , cid, what, out] = m; return {txt: `${STEP[what] || what} · ${CRIT[cid]?.t || cid}`, done: !!out, out: out.trim()};
 }
@@ -452,13 +453,7 @@ async function startRun(){
   const ids = [...S.sel]; if (!ids.length) return;
   S.run = {live:S.live, done:false, t0:Date.now(), patients:Object.fromEntries(ids.map(i => [i, {state:'queued', steps:[], current:'', done:false}]))};
   S.view = 'run'; S.current = null; S.filter = 'all'; S.bucket = null; renderList(); render();
-  if (S.live) {
-    try {
-      const res = await fetch('api/screen', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ids})});
-      if (!res.ok) throw new Error((await res.json()).reason || res.status);
-      const {job} = await res.json(); return poll(job);
-    } catch (e) { toast('Live agent unavailable — showing saved results'); setMode(false, String(e)); S.run.live = false; }
-  }
+  if (S.live) return liveRun(ids);
   replayRun(ids);
 }
 async function poll(job){
@@ -475,15 +470,42 @@ async function poll(job){
     if (!s.done) setTimeout(() => poll(job), 700);
   } catch (e) { setTimeout(() => poll(job), 1500); }
 }
+function agentStepsOf(id, r){
+  return Object.entries(r.criteria).filter(([, c]) => c.agent_used).map(([cid, c]) => {
+    const tools = new Set(c.trace.map(x => x.tool)); const what = tools.has('interpret_free_text') ? 'interpret' : tools.has('lookup_equivalent_codes') ? 'recover' : cid==='I5' ? 'evidence' : 'conflict';
+    return `agent: ${id} ${cid} ${what} ... ${c.status}${c.review ? ' [review]' : ''}`; });
+}
+function liveRun(ids){
+  // One request per patient, three at a time: works on the local server and on serverless hosting.
+  const queue = [...ids]; let active = 0;
+  const refresh = () => { S.run.elapsed = (Date.now() - S.run.t0) / 1000; renderList(); if (S.view==='run') render(); };
+  const worker = async () => {
+    while (queue.length) {
+      const id = queue.shift(), t = S.run.patients[id], t0 = Date.now(); active++;
+      t.state = 'running'; t.current = 'agent: ' + id + ' - working ...'; refresh();
+      const timer = setInterval(() => { t.running_for = ((Date.now() - t0) / 1000).toFixed(1); refresh(); }, 500);
+      try {
+        const res = await fetch('api/screen_one', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id})});
+        const out = await res.json(); if (!res.ok) throw new Error(out.reason || out.error || res.status);
+        t.steps = agentStepsOf(id, out); t.result = out; t.state = 'done'; t.elapsed = out.elapsed ?? ((Date.now() - t0) / 1000).toFixed(1);
+        S.results[id] = out; S.source[id] = 'live';
+      } catch (e) {
+        t.state = 'error'; t.error = 'Live call failed (' + String(e.message || e).slice(0, 120) + '); showing the saved result';
+        if (R.results[id]) { t.result = R.results[id]; S.results[id] = R.results[id]; S.source[id] = 'saved'; }
+      }
+      clearInterval(timer); t.current = ''; t.done = true; active--; refresh();
+    }
+    if (!active && !S.run.done && Object.values(S.run.patients).every(p => p.done)) { S.run.done = true; refresh(); toast('Pre-screening finished'); }
+  };
+  worker(); worker(); worker();
+}
 function replayRun(ids){
   // Plays back the saved run's agent steps for the chosen patients, three at a time.
   const queue = [...ids]; let active = 0;
   const next = () => {
     if (!queue.length) { if (!active) { S.run.done = true; renderList(); render(); toast('Pre-screening finished (replay)'); } return; }
     const id = queue.shift(); active++; const t = S.run.patients[id]; const r = R.results[id]; t.state = 'running';
-    const agentSteps = Object.entries(r.criteria).filter(([, c]) => c.agent_used).map(([cid, c]) => {
-      const tools = new Set(c.trace.map(x => x.tool)); const what = tools.has('interpret_free_text') ? 'interpret' : tools.has('lookup_equivalent_codes') ? 'recover' : cid==='I5' ? 'evidence' : 'conflict';
-      return `agent: ${id} ${cid} ${what} ... ${c.status}${c.review ? ' [review]' : ''}`; });
+    const agentSteps = agentStepsOf(id, r);
     let i = 0; const t0 = Date.now();
     const tick = () => {
       t.running_for = ((Date.now() - t0) / 1000).toFixed(1);

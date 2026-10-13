@@ -1,0 +1,14 @@
+.venv
+.env
+.env.*
+out
+logs
+internal
+tests
+tools
+archive
+cache/ctgov
+trials/nct07347678_sad/data/raw
+**/__pycache__
+.claude
+CLAUDE.md
