@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PreScreen 演示手册</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: a single reading column for a presenter; the run sheet is the centrepiece, reference sections follow. */
+:root{
+  --bg:#f3f6f8;--surface:#ffffff;--ink:#14212b;--muted:#566673;--rule:#d9e1e6;
+  --accent:#1d4e89;--accent-soft:#e4edf7;
+  --ok:#1f7a4d;--ok-bg:#e2f2e9;--bad:#b3261e;--bad-bg:#fbe5e3;--unk:#8a5a00;--unk-bg:#fbf0d9;--rev:#6b3fa0;--rev-bg:#efe7f8;--ai:#0b7a86;--ai-bg:#dff3f5;
+  --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f161c;--surface:#16212a;--ink:#e3eaef;--muted:#97a7b3;--rule:#2a3843;--accent:#7fb0e8;--accent-soft:#1b2d42;
+  --ok:#6fcf9a;--ok-bg:#133224;--bad:#f08a82;--bad-bg:#3a1b19;--unk:#e7b75a;--unk-bg:#352812;--rev:#c3a1ef;--rev-bg:#2b1f3d;--ai:#5ccfd9;--ai-bg:#12333a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f161c;--surface:#16212a;--ink:#e3eaef;--muted:#97a7b3;--rule:#2a3843;--accent:#7fb0e8;--accent-soft:#1b2d42;
+  --ok:#6fcf9a;--ok-bg:#133224;--bad:#f08a82;--bad-bg:#3a1b19;--unk:#e7b75a;--unk-bg:#352812;--rev:#c3a1ef;--rev-bg:#2b1f3d;--ai:#5ccfd9;--ai-bg:#12333a;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.75 var(--sans)}
+.wrap{max-width:880px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:40px}
+h1,h2,h3{margin:0;text-wrap:balance;line-height:1.3}
+h1{font-size:clamp(28px,5vw,40px);font-weight:900;letter-spacing:-.01em}
+h2{font-size:24px;font-weight:900}
+h3{font-size:17px;font-weight:700}
+p{margin:0}
+.eyebrow{font:700 13px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.lede{font-size:18px;color:var(--muted);max-width:62ch}
+section{display:grid;gap:16px}
+.muted{color:var(--muted)}
+code,.mono{font-family:var(--mono);font-size:.9em}
+.links{display:grid;gap:12px}
+.link{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:16px 18px;display:grid;grid-template-columns:1fr auto;gap:6px 16px;align-items:center}
+.link .t{font-weight:700}
+.link a{font:600 15px/1.4 var(--mono);color:var(--accent);word-break:break-all}
+.link .d{grid-column:1/-1;color:var(--muted);font-size:14.5px}
+button.copy{font:600 13px var(--sans);border:1px solid var(--rule);background:var(--bg);color:var(--ink);border-radius:8px;padding:7px 12px;cursor:pointer}
+button.copy:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.check{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.check li{display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start}
+.check input{width:20px;height:20px;margin-top:4px;accent-color:var(--accent)}
+.steps{display:grid;gap:14px;counter-reset:s;margin:0;padding:0;list-style:none}
+.steps>li{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:18px 20px;display:grid;gap:10px;counter-increment:s;position:relative;padding-left:66px}
+.steps>li::before{content:counter(s);position:absolute;left:18px;top:18px;width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font:800 15px var(--mono)}
+.do{font-weight:700}
+.btn{display:inline-block;font:600 13.5px/1.2 var(--sans);border:1px solid var(--rule);border-radius:7px;padding:3px 9px;background:var(--bg);white-space:nowrap}
+.btn.p{background:var(--accent);border-color:var(--accent);color:#fff}
+.say{border-left:3px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 8px 8px 0;font-size:15px}
+.say b{display:block;font-size:12px;letter-spacing:.08em;color:var(--accent);margin-bottom:2px}
+.pill{display:inline-block;font:700 12.5px/1 var(--sans);padding:5px 9px;border-radius:999px;white-space:nowrap}
+.el{color:var(--ok);background:var(--ok-bg)} .ex{color:var(--bad);background:var(--bad-bg)} .pe{color:var(--unk);background:var(--unk-bg)} .rv{color:var(--rev);background:var(--rev-bg)}
+.ai{color:var(--ai);background:var(--ai-bg)}
+.live{color:var(--ok);background:var(--ok-bg)} .rep{color:var(--unk);background:var(--unk-bg)}
+.table{overflow-x:auto;background:var(--surface);border:1px solid var(--rule);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:15px;min-width:600px}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font:700 12.5px/1.3 var(--sans);color:var(--muted);letter-spacing:.04em}
+tr:last-child td{border-bottom:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:16px 18px;display:grid;gap:6px;align-content:start;min-width:0}
+.stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat div{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:14px 16px}
+.stat b{display:block;font:900 30px/1.1 var(--mono);font-variant-numeric:tabular-nums}
+.stat span{font-size:14px;color:var(--muted)}
+.faq{display:grid;gap:10px}
+.faq details{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:12px 16px}
+.faq summary{cursor:pointer;font-weight:700}
+.faq details[open] summary{margin-bottom:6px}
+.note{background:var(--unk-bg);color:var(--ink);border-radius:12px;padding:14px 16px;font-size:15px}
+footer{color:var(--muted);font-size:14px;border-top:1px solid var(--rule);padding-top:16px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header style="display:grid;gap:12px">
+    <span class="eyebrow">AWS Community Day Bay Area 2026 · 决赛演示</span>
+    <h1>PreScreen 演示手册</h1>
+    <p class="lede">给 Ming 的上台操作说明。PreScreen 是 CRC（临床研究协调员）每周做临床试验预筛时用的工作台：选患者、让 agent 筛查，再由 CRC 确认或改判。所有患者都是合成数据，系统不会联系任何人。</p>
+  </header>
+
+  <section>
+    <h2>两个链接</h2>
+    <div class="links">
+      <div class="link"><span class="t">CRC 工作台（决赛演示用）</span><button class="copy" data-copy="https://prescreen-workbench.vercel.app">复制</button>
+        <a href="https://prescreen-workbench.vercel.app" target="_blank" rel="noopener">https://prescreen-workbench.vercel.app</a>
+        <span class="d">真实接入 Amazon Bedrock 上的 agent。不需要登录，任何浏览器都能打开。</span></div>
+      <div class="link"><span class="t">评委评审页（初赛版本，备用）</span><button class="copy" data-copy="https://prescreen-workbench.vercel.app/report">复制</button>
+        <a href="https://prescreen-workbench.vercel.app/report" target="_blank" rel="noopener">https://prescreen-workbench.vercel.app/report</a>
+        <span class="d">58 名患者的完整运行记录、故障场景和评估指标。评委问技术细节时可以切过去。</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>上台前 5 分钟</h2>
+    <ul class="check">
+      <li><input type="checkbox" id="c1"><label for="c1">打开工作台链接，<b>等左上角出现绿色的 <span class="pill live">● Live agent · Amazon Nova 2 Lite on Bedrock</span></b>。第一次打开服务器要冷启动，可能要 5–10 秒。</label></li>
+      <li><input type="checkbox" id="c2"><label for="c2">先完整跑一遍演示流程（下面第 1–2 步），让服务器热起来。正式演示时会更快。</label></li>
+      <li><input type="checkbox" id="c3"><label for="c3">演练完<b>刷新页面</b>（<code>Cmd R</code>），回到干净的"Not screened"状态。CRC 的决定会保存在浏览器里，要清掉就在每名患者页面点 <span class="btn">Undo</span>，或者直接用<b>无痕窗口</b>演示。</label></li>
+      <li><input type="checkbox" id="c4"><label for="c4">投影上字小的话，按 <code>Cmd +</code> 放大到 125% 左右。</label></li>
+      <li><input type="checkbox" id="c5"><label for="c5">另开一个标签页放好评审页 <code>/report</code>，以备评委追问。</label></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>演示流程（约 4 分钟）</h2>
+    <ol class="steps">
+      <li><span class="do">介绍场景：周一早上，这周有 58 名患者要预筛。</span>
+        <span>首页写着 "Good morning. 58 patients are scheduled this week."，左侧是患者名单，全部是 <span class="pill" style="background:var(--bg);color:var(--muted)">Not screened</span>。</span>
+        <div class="say"><b>可以这样说</b>CRC 每周要把每个患者的病历和试验的入排标准逐条对照，很费时间。我们把这件事交给 agent：规则检查所有数字和日期，AI 只读规则读不懂的内容，读出来的东西一定交回给人确认。</div></li>
+      <li><span class="do">点左下角 <span class="btn">Pick demo set (5)</span>，再点 <span class="btn p">Pre-screen 5 selected patients</span>。</span>
+        <span>右侧出现 5 张卡片，每张显示 "Checked 11 criteria with rules"，然后是 agent 正在做的事（读患者原话、找另一种编码下的结果、收集肝肾证据……）。一般 10–15 秒全部完成，每张卡片会显示用时。</span>
+        <div class="say"><b>可以这样说</b>这是真实调用，不是录屏：每个患者都在 Amazon Bedrock 上的 Nova 2 Lite 现场跑，几秒一个。左上角绿灯说明 agent 在线。</div></li>
+      <li><span class="do">点 <b>Olivia Brooks</b>（紫色 <span class="pill rv">Needs decision</span>）。</span>
+        <span>"Needs your attention" 里第一条是 siRNA 类药物。展开后能看到患者原话："Received a twice-yearly cholesterol injection called <mark>Leqvio</mark> … on <mark>2026-03-12</mark>"，关键词已经高亮，右边标着 <span class="pill ai">AI-read · please confirm</span>。Finding 写的是：Leqvio = inclisiran，NLM RxNav 分类为 siRNA，末次用药在 12 个月内。</span>
+        <div class="say"><b>可以这样说</b>药物类别是药物数据库 RxNav 给的，不是模型凭记忆说的；12 个月的时间窗由代码算。因为这条信息是 AI 从原话里读出来的，系统不会自动排除她，而是交给 CRC 确认。</div>
+        <span>点右上角 <span class="btn">Confirm</span>，右上角会显示 "✓ Confirmed: Needs your decision" 和时间。</span>
+        <span class="muted">想展示透明度的话，可以点 "How was this determined?"，展开 agent 每一步做了什么，包括"模型原本说不在类别里，被 RxNav 纠正"。</span></li>
+      <li><span class="do">点 <b>Chloe Nguyen</b>（两条 LDL 结果冲突）。</span>
+        <span>同一次就诊有两条 LDL-C：65 和 85 mg/dL，一条低于 70 的门槛，一条高于。系统不替人挑。</span>
+        <span>点 <span class="btn">Change…</span>，选 <span class="pill el">Likely eligible</span>，理由写比如 "Lab confirmed the fasting sample is 85 mg/dL"，点 <span class="btn p">Save decision</span>。不写理由保存不了。</span>
+        <div class="say"><b>可以这样说</b>AI 可以解释冲突，但最后由人决定。CRC 每一次改判都要写理由，会进入审计日志。</div></li>
+      <li><span class="do">（可选）点 <b>Ava Thompson</b>（<span class="pill pe">Waiting</span>）。</span>
+        <span>原话 "usually 4 or 5 cigarettes on a Friday or Saturday night" 是个范围。方案对"规律吸烟"有两种定义（每天 &gt; 2 支 / 每周 &gt; 10 支），这个范围在两种定义下结论不同，所以系统标为"无法判断"，不编一个数字。</span></li>
+      <li><span class="do">点左下角 <span class="btn">Load last full run (58)</span>，展示一整周。</span>
+        <span>顶部五个方块：<span class="pill rv">Needs your decision</span> <span class="pill pe">Waiting on information</span> <span class="pill el">Likely eligible</span> <span class="pill ex">Excluded</span> <span class="pill" style="background:var(--bg);color:var(--muted)">Not screened</span>。点任一方块可以只看这一类，列表里每人都有一句"为什么"。</span>
+        <div class="say"><b>可以这样说</b>CRC 打开就知道先处理哪些人：紫色的要她判断，黄色的缺资料，绿色的可以送研究者，红色的有明确的排除理由。</div></li>
+      <li><span class="do">点右上角 <span class="btn">Export pre-screening log</span>。</span>
+        <span>下载一个 CSV，就是 CRC 的预筛日志：每人的系统结果、CRC 的操作、最终结果、理由和时间。</span></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>5 位演示患者</h2>
+    <div class="table"><table>
+      <thead><tr><th>患者</th><th>系统结果</th><th>看点</th></tr></thead>
+      <tbody>
+        <tr><td><b>Cecil Graham</b><br><span class="mono muted">SAD01</span></td><td><span class="pill el">Likely eligible</span></td><td>所有规则都通过，正常可入组。肝肾功能（I5）按规定由研究者确认。</td></tr>
+        <tr><td><b>Christian Satterfield</b><br><span class="mono muted">SAD03</span></td><td><span class="pill ex">Excluded</span></td><td>Lp(a) 24 nmol/L，低于 25 的门槛，规则直接排除，不需要 AI。</td></tr>
+        <tr><td><b>Olivia Brooks</b><br><span class="mono muted">EXT04</span></td><td><span class="pill rv">Needs decision</span></td><td>原话里提到 Leqvio（siRNA 类药物）。AI 读出、RxNav 确认、代码算时间窗，最后交人确认。</td></tr>
+        <tr><td><b>Ava Thompson</b><br><span class="mono muted">EXT01</span></td><td><span class="pill pe">Waiting</span></td><td>吸烟量是范围，两种定义结论不同，标为无法判断，不编数字。</td></tr>
+        <tr><td><b>Chloe Nguyen</b><br><span class="mono muted">EXT07</span></td><td><span class="pill rv">Needs decision</span></td><td>两条 LDL 结果一高一低跨过门槛，由人决定用哪条。演示"改判"用这位。</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>界面上每个东西是什么</h2>
+    <div class="grid2">
+      <div class="card"><h3>左上角状态灯</h3><p><span class="pill live">● Live agent</span> 真实 agent 在线。<br><span class="pill rep">● Replay mode</span> 连不上 agent，用保存好的结果回放，所有操作一样。</p></div>
+      <div class="card"><h3>左侧患者名单</h3><p>勾选框选人，标签显示每人当前状态，✓ 表示 CRC 已经做过决定。上方标签可以按类别筛选，也可以搜索姓名或 ID。</p></div>
+      <div class="card"><h3>患者页：Needs your attention</h3><p>只列出没通过、无法判断或经过 AI 读取的标准。其余标准折叠在 "Other criteria" 里，点开能看数值。</p></div>
+      <div class="card"><h3>标签</h3><p><span class="pill ai">AI-read · please confirm</span> 这条是 AI 从文字里读出来的。<br><span class="pill" style="background:var(--accent-soft);color:var(--accent)">Investigator</span> 需要研究者判断（肝肾功能）。<br><span class="pill rv">Review</span> 需要人复核。</p></div>
+      <div class="card"><h3>How was this determined?</h3><p>每条标准下面都有，点开是完整的追踪记录：查了哪条记录、规则怎么判、AI 每一步做了什么。平时不用点，评委问"怎么得出的"时再展开。</p></div>
+      <div class="card"><h3>CRC 的三个按钮</h3><p><span class="btn">Confirm</span> 同意系统结果。<br><span class="btn">Change…</span> 改判，必须写理由。<br><span class="btn">Send to investigator</span> 交给研究者。<br>做错了点 <span class="btn">Undo</span>。</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>出问题怎么办</h2>
+    <div class="faq">
+      <details open><summary>左上角是黄色 "Replay mode"，不是绿色</summary><p>先等 10 秒再刷新一次（冷启动）。还是黄色就直接继续演示：所有点击都一样，agent 步骤是回放保存好的真实结果。可以说"现场网络问题，这里回放的是同一套系统之前的真实运行结果"。</p></details>
+      <details><summary>某张卡片显示 "Live call failed … showing the saved result"</summary><p>这名患者的现场调用失败了（多半是 Bedrock 限流），页面已经自动换成保存好的结果，结论不变。继续演示就行。</p></details>
+      <details><summary>筛查卡住很久没完成</summary><p>单个患者最多等 60 秒，超时会自动换成保存好的结果。等不及就刷新页面，换成 <span class="btn">Load last full run (58)</span> 继续讲。</p></details>
+      <details><summary>不小心点错了 Confirm 或 Change</summary><p>在该患者页面点 <span class="btn">Undo</span>。</p></details>
+      <details><summary>想重新开始</summary><p>刷新页面：筛查结果清空，CRC 的决定还在（保存在浏览器里）。要全部清空就用无痕窗口重新打开。</p></details>
+      <details><summary>Export 没有下载</summary><p>检查浏览器是否拦截了下载；Safari 有时需要在弹出提示里点"允许"。这一步不是演示重点，可以跳过。</p></details>
+    </div>
+  </section>
+
+  <section>
+    <h2>评委可能会问</h2>
+    <div class="faq">
+      <details><summary>AI 会不会自己把患者排除掉？</summary><p>不会。所有数字、单位、日期都由代码比较。AI 只负责读规则读不懂的内容（患者原话、换了编码的结果、冲突结果、研究者需要的证据），凡是 AI 读出来的不符合项都交给人确认，不会自动排除。</p></details>
+      <details><summary>怎么证明这是实时在跑？</summary><p>左上角绿灯；每张卡片显示实际用时（3–6 秒）；也可以现场随便勾几个别的患者再跑一次。</p></details>
+      <details><summary>用的是什么模型和服务？</summary><p>Amazon Nova 2 Lite（Amazon Bedrock），用 Strands Agents 编排；试验标准来自 ClinicalTrials.gov，药物分类来自 NLM RxNav；患者记录是 FHIR R4 格式；网页部署在 Vercel。</p></details>
+      <details><summary>准确率怎么样？</summary><p>见下面的数字。标签是按每个测试病例的设计意图写的，独立的临床复核还没有做，回答时要说明这一点。</p></details>
+      <details><summary>方案修改了怎么办？</summary><p>系统会对比新旧标准、逐条分类变化，然后重新筛查所有人并列出状态变了的患者。比如 LDL 门槛从 70 改到 100，58 人里有 39 人状态改变。细节在评审页 <code>/report</code> 的 "When the criteria change" 部分。</p></details>
+    </div>
+    <div class="stat">
+      <div><b>58</b><span>合成患者，一整周</span></div>
+      <div><b>0</b><span>可入组的患者被错误排除</span></div>
+      <div><b>100%</b><span>系统做出判断时与标签一致</span></div>
+      <div><b>7</b><span>次主动交给人判断</span></div>
+      <div><b>4 / 4</b><span>故障场景都处理了</span></div>
+    </div>
+  </section>
+
+  <footer>PreScreen · NCT07347678 SAD cohort · 合成数据，不联系任何患者 · 源码 github.com/DaisyXUUUUU/prescreen-agent</footer>
+</div>
+
+<script>
+document.querySelectorAll('button.copy').forEach(b => b.addEventListener('click', async () => {
+  const text = b.dataset.copy;
+  try { await navigator.clipboard.writeText(text); b.textContent = '已复制'; }
+  catch { const r = document.createRange(); r.selectNodeContents(b.parentElement.querySelector('a')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = '已选中'; }
+  setTimeout(() => b.textContent = '复制', 1600);
+}));
+</script>
+</body>
+</html>

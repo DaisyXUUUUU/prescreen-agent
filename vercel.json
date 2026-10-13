@@ -12,6 +12,10 @@
     {
       "source": "/report",
       "destination": "/docs/demo/index.html"
+    },
+    {
+      "source": "/guide",
+      "destination": "/docs/guide/index.html"
     }
   ],
   "redirects": [
