@@ -99,14 +99,14 @@ footer{color:var(--muted);font-size:14px;border-top:1px solid var(--rule);paddin
     <ul class="check">
       <li><input type="checkbox" id="c1"><label for="c1">打开工作台链接，<b>等左上角出现绿色的 <span class="pill live">● Live agent · Amazon Nova 2 Lite on Bedrock</span></b>。第一次打开服务器要冷启动，可能要 5–10 秒。</label></li>
       <li><input type="checkbox" id="c2"><label for="c2">先完整跑一遍演示流程（下面第 1–2 步），让服务器热起来。正式演示时会更快。</label></li>
-      <li><input type="checkbox" id="c3"><label for="c3">演练完<b>刷新页面</b>（<code>Cmd R</code>），回到干净的"Not screened"状态。CRC 的决定会保存在浏览器里，要清掉就在每名患者页面点 <span class="btn">Undo</span>，或者直接用<b>无痕窗口</b>演示。</label></li>
+      <li><input type="checkbox" id="c3"><label for="c3">演练完<b>关掉，再用无痕窗口打开</b>，或者<b>刷新页面</b>（<code>Cmd R</code>），回到干净的"Not screened"状态。CRC 的决定会保存在浏览器里，要清掉就在每名患者页面点 <span class="btn">Undo</span>，或者直接用<b>无痕窗口</b>演示。</label></li>
       <li><input type="checkbox" id="c4"><label for="c4">投影上字小的话，按 <code>Cmd +</code> 放大到 125% 左右。</label></li>
       <li><input type="checkbox" id="c5"><label for="c5">另开一个标签页放好评审页 <code>/report</code>，以备评委追问。</label></li>
     </ul>
   </section>
 
   <section>
-    <h2>演示流程（约 4 分钟）</h2>
+    <h2>演示流程（约 5 分钟）</h2>
     <ol class="steps">
       <li><span class="do">介绍场景：周一早上，这周有 58 名患者要预筛。</span>
         <span>首页写着 "Good morning. 58 patients are scheduled this week."，左侧是患者名单，全部是 <span class="pill" style="background:var(--bg);color:var(--muted)">Not screened</span>。</span>
@@ -123,13 +123,24 @@ footer{color:var(--muted);font-size:14px;border-top:1px solid var(--rule);paddin
         <span>同一次就诊有两条 LDL-C：65 和 85 mg/dL，一条低于 70 的门槛，一条高于。系统不替人挑。</span>
         <span>点 <span class="btn">Change…</span>，选 <span class="pill el">Likely eligible</span>，理由写比如 "Lab confirmed the fasting sample is 85 mg/dL"，点 <span class="btn p">Save decision</span>。不写理由保存不了。</span>
         <div class="say"><b>可以这样说</b>AI 可以解释冲突，但最后由人决定。CRC 每一次改判都要写理由，会进入审计日志。</div></li>
+      <li><span class="do">点顶部第六个方块 <span class="pill" style="background:var(--ok);color:#fff">✓ Confirmed by CRC</span>。</span>
+        <span>这里列出所有 CRC 已经确认或改判过的患者（刚才的 Olivia 和 Chloe），每行显示最终结果和理由，右边有 <span class="btn">Contact</span> 按钮。</span>
+        <span>点 Chloe 那一行的 <span class="btn">Contact</span>，弹出她的联系信息（电话、邮箱、地址、偏好的联系方式等，都是虚构的演示数据）。点 <span class="btn p">Log contact attempt</span>，这一行会显示 "✓ Contacted" 和时间。</span>
+        <div class="say"><b>可以这样说</b>这是 CRC 工作流的最后一步：确认完资格，直接拿到联系方式去联系患者，并记录联系时间。页面本身不发送任何消息，只做记录。</div></li>
       <li><span class="do">（可选）点 <b>Ava Thompson</b>（<span class="pill pe">Waiting</span>）。</span>
         <span>原话 "usually 4 or 5 cigarettes on a Friday or Saturday night" 是个范围。方案对"规律吸烟"有两种定义（每天 &gt; 2 支 / 每周 &gt; 10 支），这个范围在两种定义下结论不同，所以系统标为"无法判断"，不编一个数字。</span></li>
       <li><span class="do">点左下角 <span class="btn">Load last full run (58)</span>，展示一整周。</span>
         <span>顶部五个方块：<span class="pill rv">Needs your decision</span> <span class="pill pe">Waiting on information</span> <span class="pill el">Likely eligible</span> <span class="pill ex">Excluded</span> <span class="pill" style="background:var(--bg);color:var(--muted)">Not screened</span>。点任一方块可以只看这一类，列表里每人都有一句"为什么"。</span>
         <div class="say"><b>可以这样说</b>CRC 打开就知道先处理哪些人：紫色的要她判断，黄色的缺资料，绿色的可以送研究者，红色的有明确的排除理由。</div></li>
+      <li><span class="do">点顶部的 <span class="btn">Eligibility criteria</span>（或左上角的蓝色标签 "Criteria v1.0.0 · 2026-10-09"）。</span>
+        <span>左边是标准的版本列表：<b>v1.0.0</b>（2026-10-09，注册库快照，当前使用）和 <b>v1.0.1</b>（2026-10-11，修订版）。右边是该版本的全部入选和排除标准。</span>
+        <span>点 <b>v1.0.1</b>：改动过的两条会用黄色底标出来，并逐字对比新旧内容（红色删除线是旧的，绿色是新的）：</span>
+        <span>· LDL-C 门槛 ≥70 → ≥100 mg/dL，标为 <span class="pill ex">Substantive change</span>，规则随之更新，需要重新筛查。<br>· HbA1c 那条只是换了说法，标为 <span class="pill" style="background:var(--accent-soft);color:var(--accent)">Wording only</span>，规则不变。</span>
+        <span>点 <span class="btn p">Use v1.0.1 for screening</span>，回到首页，左上角变成 "Criteria v1.0.1 · 2026-10-11 · amended"。再点 <span class="btn">Pick demo set (5)</span> 和 <span class="btn p">Pre-screen</span>：这次 agent 按新标准实时跑，5 人全部被排除，因为他们的 LDL 是 90（Chloe 是 65 和 85），都低于新的 100。患者页的 LDL 那条会标 "Changed in v1.0.1"。</span>
+        <div class="say"><b>可以这样说</b>方案一修改，系统把新旧标准逐条比对，标出哪些是实质修改、哪些只是措辞。CRC 选择用哪个版本，agent 就按那个版本重新筛查。在完整的 58 人里，这次修改让 39 人的状态发生了变化。</div>
+        <span class="muted">两个版本的结果和 CRC 决定是分开保存的；切回 v1.0.0 时，之前的结果还在。</span></li>
       <li><span class="do">点右上角 <span class="btn">Export pre-screening log</span>。</span>
-        <span>下载一个 CSV，就是 CRC 的预筛日志：每人的系统结果、CRC 的操作、最终结果、理由和时间。</span></li>
+        <span>下载一个 CSV，就是 CRC 的预筛日志：所用标准版本、每人的系统结果、CRC 的操作、最终结果、理由、决定时间和联系时间。</span></li>
     </ol>
   </section>
 
@@ -151,7 +162,9 @@ footer{color:var(--muted);font-size:14px;border-top:1px solid var(--rule);paddin
     <h2>界面上每个东西是什么</h2>
     <div class="grid2">
       <div class="card"><h3>左上角状态灯</h3><p><span class="pill live">● Live agent</span> 真实 agent 在线。<br><span class="pill rep">● Replay mode</span> 连不上 agent，用保存好的结果回放，所有操作一样。</p></div>
-      <div class="card"><h3>左侧患者名单</h3><p>勾选框选人，标签显示每人当前状态，✓ 表示 CRC 已经做过决定。上方标签可以按类别筛选，也可以搜索姓名或 ID。</p></div>
+      <div class="card"><h3>左上角标准版本</h3><p>蓝色标签显示当前按哪个版本的入排标准筛查，点它进入标准页面，可以查看、比较和切换版本。</p></div>
+      <div class="card"><h3>左侧患者名单</h3><p>勾选框选人，标签显示每人当前状态，✓ 表示 CRC 已经做过决定。上方标签可以按类别筛选，也可以搜索姓名或 ID。<span class="btn">Select all shown</span> 会勾选当前列表里看得到的所有人（比如先点 "Not screened" 再全选）。全选 58 人实时跑大约要 1–2 分钟，演示时建议只选 5 人。</p></div>
+      <div class="card"><h3>✓ Confirmed by CRC</h3><p>CRC 确认或改判过的患者都在这里，每人后面有 <span class="btn">Contact</span>：打开联系信息，并记录联系时间。</p></div>
       <div class="card"><h3>患者页：Needs your attention</h3><p>只列出没通过、无法判断或经过 AI 读取的标准。其余标准折叠在 "Other criteria" 里，点开能看数值。</p></div>
       <div class="card"><h3>标签</h3><p><span class="pill ai">AI-read · please confirm</span> 这条是 AI 从文字里读出来的。<br><span class="pill" style="background:var(--accent-soft);color:var(--accent)">Investigator</span> 需要研究者判断（肝肾功能）。<br><span class="pill rv">Review</span> 需要人复核。</p></div>
       <div class="card"><h3>How was this determined?</h3><p>每条标准下面都有，点开是完整的追踪记录：查了哪条记录、规则怎么判、AI 每一步做了什么。平时不用点，评委问"怎么得出的"时再展开。</p></div>
@@ -166,7 +179,7 @@ footer{color:var(--muted);font-size:14px;border-top:1px solid var(--rule);paddin
       <details><summary>某张卡片显示 "Live call failed … showing the saved result"</summary><p>这名患者的现场调用失败了（多半是 Bedrock 限流），页面已经自动换成保存好的结果，结论不变。继续演示就行。</p></details>
       <details><summary>筛查卡住很久没完成</summary><p>单个患者最多等 60 秒，超时会自动换成保存好的结果。等不及就刷新页面，换成 <span class="btn">Load last full run (58)</span> 继续讲。</p></details>
       <details><summary>不小心点错了 Confirm 或 Change</summary><p>在该患者页面点 <span class="btn">Undo</span>。</p></details>
-      <details><summary>想重新开始</summary><p>刷新页面：筛查结果清空，CRC 的决定还在（保存在浏览器里）。要全部清空就用无痕窗口重新打开。</p></details>
+      <details><summary>想重新开始</summary><p>刷新页面：筛查结果清空，标准回到 v1.0.0；CRC 的决定和联系记录还在（按版本分别保存在浏览器里）。要全部清空就用无痕窗口重新打开。</p></details>
       <details><summary>Export 没有下载</summary><p>检查浏览器是否拦截了下载；Safari 有时需要在弹出提示里点"允许"。这一步不是演示重点，可以跳过。</p></details>
     </div>
   </section>

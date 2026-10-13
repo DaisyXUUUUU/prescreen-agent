@@ -12,7 +12,7 @@ class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         body = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
         try:
-            code, out = screen_one(str(body.get("id", "")))
+            code, out = screen_one(str(body.get("id", "")), str(body.get("version", "1.0.0")))
         except Exception as e:  # noqa: BLE001 - the page falls back to the saved result
             code, out = 500, {"error": f"{type(e).__name__}: {str(e)[:200]}"}
         data = json.dumps(out, ensure_ascii=False).encode()

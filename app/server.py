@@ -47,6 +47,45 @@ def _clean(name_part: str) -> str:
     return re.sub(r"\d+", "", name_part)
 
 
+# Criteria versions the workbench can screen against. 1.0.1 is the sample amendment used in the
+# amendment demo (LDL-C 70 -> 100 mg/dL; HbA1c line reworded), dated for the demo.
+CRITERIA_DIR = APP / "criteria"
+VERSIONS = [
+    {"id": "1.0.0", "date": "2026-10-09", "label": "Registry snapshot", "snapshot": "NCT07347678_2026-10-09.txt", "spec": None},
+    {"id": "1.0.1", "date": "2026-10-11", "label": "Amendment 1 (sample)", "snapshot": "NCT07347678_2026-10-11.txt",
+     "spec": "sad-1.0.1.json"},
+]
+CHANGE_NOTES = {"I2": ("substantive", "Threshold changed: fasting LDL-C 70 → 100 mg/dL. Rules updated; patients are re-screened."),
+                "E2": ("wording", "Wording only. The rule is unchanged.")}
+
+
+def load_spec(version: str = "1.0.0") -> dict:
+    v = next((x for x in VERSIONS if x["id"] == version), VERSIONS[0])
+    return sa.load_spec(CRITERIA_DIR / v["spec"]) if v["spec"] else sa.load_spec()
+
+
+def criteria_versions() -> list[dict]:
+    out, prev = [], None
+    for v in VERSIONS:
+        text = (CRITERIA_DIR / v["snapshot"]).read_text(encoding="utf-8")
+        bullets = [l[2:].replace("\\<", "<").replace("\\>", ">").strip() for l in text.splitlines() if l.startswith("* ")]
+        ids = ["I1", "I2", "I3", "I4", "I5", "E1", "E2", "E3", "E4", "E5"]
+        items = [{"id": "AGE", "type": "inclusion", "text": "Age 18 to 65 years at screening"}] + [
+            {"id": i, "type": "inclusion" if i[0] == "I" else "exclusion", "text": b} for i, b in zip(ids, bullets)]
+        changes = []
+        if prev:
+            old = {x["id"]: x["text"] for x in prev["items"]}
+            for it in items:
+                if old.get(it["id"]) != it["text"]:
+                    kind, note = CHANGE_NOTES.get(it["id"], ("ambiguous", "Changed; review the rule."))
+                    changes.append({"id": it["id"], "kind": kind, "old": old.get(it["id"]), "new": it["text"], "note": note})
+        entry = {k: v[k] for k in ("id", "date", "label")} | {"items": items, "changes": changes,
+                                                              "previous": prev["id"] if prev else None}
+        out.append(entry)
+        prev = entry
+    return out
+
+
 def load_world():
     spec = sa.load_spec()
     cases = sa.load_cases() + sa.load_cases(config.DATA_DIR / "extended_cases" / "cases")
@@ -183,6 +222,24 @@ class Workbench:
 
 # ---------- replay data ----------
 
+def build_replay_v2():
+    """Screen all patients under criteria 1.0.1 with the live agent; saved for the replay fallback."""
+    from src.agent.agent import preflight
+    model, err = preflight()
+    if model is None:
+        raise SystemExit(f"agent unavailable: {err}")
+    spec, cases = load_spec("1.0.1"), load_world()[1]
+
+    def one(c):
+        results, *_ = sa.screen([c], spec, use_agent=True, model=model, preflight_done=True)
+        return c.case_id, serialize(results[0])
+
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        out = dict(pool.map(one, cases))
+    (APP / "replay_v2.json").write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
+    print(f"wrote replay_v2.json ({len(out)} patients)")
+
+
 def build_replay():
     src = config.OUT_DIR / "eval" / "SAD" / "reviewer_data.json"
     data = json.loads(src.read_text(encoding="utf-8"))
@@ -191,8 +248,13 @@ def build_replay():
     results = {p["id"]: {"category": p["category"],
                          "criteria": {k: {**v, "conflict": "conflict" in (v.get("note") or "").lower()} for k, v in p["criteria"].items()}}
                for p in data["patients"]}
+    by_version = {}  # 1.0.0 is "results"; only later versions are stored here
+    v2_path = APP / "replay_v2.json"
+    if v2_path.exists():
+        by_version["1.0.1"] = json.loads(v2_path.read_text(encoding="utf-8"))
     payload = {"source": "saved results of the full evaluation run (agent mode, 2026-10-11)",
-               "trial": data["trial"], "criteria": data["criteria"], "people": people, "results": results}
+               "trial": data["trial"], "criteria": data["criteria"], "people": people, "results": results,
+               "versions": criteria_versions(), "results_by_version": by_version}
     out = APP / "replay.js"
     out.write_text("window.REPLAY = " + json.dumps(payload, ensure_ascii=False) + ";\n", encoding="utf-8")
     print(f"wrote {out} ({out.stat().st_size // 1024} KB, {len(results)} patients)")
@@ -236,7 +298,8 @@ class Handler(SimpleHTTPRequestHandler):
                 return self._json({"error": "unknown patient"}, 404)
             t0 = time.time()
             try:
-                results, *_ = sa.screen([case], self.bench.spec, use_agent=True, model=self.bench.model, preflight_done=True)
+                results, *_ = sa.screen([case], load_spec(body.get("version", "1.0.0")), use_agent=True,
+                                        model=self.bench.model, preflight_done=True)
             except Exception as e:  # noqa: BLE001
                 return self._json({"error": f"{type(e).__name__}: {str(e)[:200]}"}, 500)
             return self._json({**serialize(results[0]), "elapsed": round(time.time() - t0, 1)})
@@ -252,8 +315,11 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--port", type=int, default=8765)
     ap.add_argument("--build-replay", action="store_true")
+    ap.add_argument("--build-replay-v2", action="store_true", help="live-screen all patients under criteria 1.0.1 first")
     args = ap.parse_args()
-    if args.build_replay:
+    if args.build_replay_v2:
+        build_replay_v2()
+    if args.build_replay or args.build_replay_v2:
         return build_replay()
     Handler.bench = Workbench()
     srv = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)

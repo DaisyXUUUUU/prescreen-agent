@@ -22,7 +22,7 @@ def state(retry_model: bool = False) -> dict:
     return _STATE
 
 
-def screen_one(cid: str) -> tuple[int, dict]:
+def screen_one(cid: str, version: str = "1.0.0") -> tuple[int, dict]:
     st = state(retry_model=True)
     if st["model"] is None:
         return 503, {"error": "agent unavailable", "reason": st["error"]}
@@ -30,5 +30,8 @@ def screen_one(cid: str) -> tuple[int, dict]:
     if case is None:
         return 404, {"error": f"unknown patient {cid}"}
     t0 = time.time()
-    results, *_ = sa.screen([case], st["spec"], use_agent=True, model=st["model"], preflight_done=True)
+    specs = st.setdefault("specs", {})
+    if version not in specs:
+        specs[version] = wb.load_spec(version)
+    results, *_ = sa.screen([case], specs[version], use_agent=True, model=st["model"], preflight_done=True)
     return 200, {**wb.serialize(results[0]), "elapsed": round(time.time() - t0, 1)}

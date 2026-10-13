@@ -70,7 +70,26 @@ aside{background:var(--surface);border-right:1px solid var(--rule);display:grid;
 .crc-tick{color:var(--ok);font-weight:800;margin-left:4px}
 /* content */
 .content{overflow:auto;min-height:0;padding:20px 28px 40px}
-.summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:20px}
+.summary{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-bottom:20px}
+.p-confirmed{color:#fff;background:var(--ok)}
+.vchip{cursor:pointer;border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.vchip:hover{filter:brightness(.97)}
+.cv{display:grid;grid-template-columns:280px 1fr;gap:18px;align-items:start}
+.vcard{padding:14px 16px;display:grid;gap:6px;text-align:left;width:100%;border:1px solid var(--rule);background:var(--surface);border-radius:12px;cursor:pointer}
+.vcard[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:-2px}
+.vcard .vt{font-weight:800;font-size:16px}
+.citem{display:grid;grid-template-columns:52px 1fr;gap:12px;padding:12px 18px;border-top:1px solid var(--rule)}
+.citem:first-child{border-top:0}
+.citem.chg{background:var(--unk-bg)}
+.citem .cid{font:700 13px/1.6 var(--mono);color:var(--muted)}
+.del{background:var(--bad-bg);color:var(--bad);text-decoration:line-through;border-radius:3px;padding:0 2px}
+.ins{background:var(--ok-bg);color:var(--ok);font-weight:700;border-radius:3px;padding:0 2px}
+.kind{font:700 11px/1 var(--sans);padding:5px 8px;border-radius:6px;display:inline-block;margin-right:6px}
+.k-substantive{background:var(--bad-bg);color:var(--bad)} .k-wording{background:var(--accent-soft);color:var(--accent)}
+.contact dl{display:grid;grid-template-columns:150px 1fr;gap:8px 14px;margin:0}
+.contact dt{color:var(--muted);font-size:13px;font-weight:600}
+.contact dd{margin:0;font-weight:600}
+@media (max-width:900px){.cv{grid-template-columns:1fr}.summary{grid-template-columns:repeat(2,1fr)}}
 .sum{border:1px solid var(--rule);background:var(--surface);border-radius:12px;padding:12px 14px;text-align:left;display:grid;gap:4px}
 .sum[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:-2px}
 .sum .n{font-size:28px;font-weight:800;line-height:1}
@@ -146,9 +165,11 @@ textarea{font:inherit;padding:10px;border-radius:8px;border:1px solid var(--rule
 <header>
   <div class="brand"><span class="logo">✓</span>PreScreen</div>
   <span class="chip"><b>NCT07347678</b> · SAD cohort · screening day 2026-10-09</span>
+  <button class="chip vchip" id="vchip" title="View and switch eligibility criteria versions">Criteria</button>
   <span class="chip" id="mode"><span class="dot"></span><span id="modetext">Connecting…</span></span>
-  <span class="chip">Synthetic patients · no one is contacted</span>
+  <span class="chip">Synthetic patients · demo contact details only</span>
   <span class="spacer"></span>
+  <button class="btn" id="critbtn">Eligibility criteria</button>
   <button class="btn" id="export">Export pre-screening log</button>
 </header>
 <main>
@@ -161,6 +182,7 @@ textarea{font:inherit;padding:10px;border-radius:8px;border:1px solid var(--rule
     <div class="list" id="list"></div>
     <div class="side-foot">
       <div class="links">
+        <button class="link" id="selall">Select all shown</button>
         <button class="link" id="demoset">Pick demo set (5)</button>
         <button class="link" id="clearsel">Clear selection</button>
         <button class="link" id="loadall">Load last full run (58)</button>
@@ -176,6 +198,11 @@ textarea{font:inherit;padding:10px;border-radius:8px;border:1px solid var(--rule
   <div class="opts" id="mopts"></div>
   <textarea id="mreason" placeholder="Reason (required, kept in the log)"></textarea>
   <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" id="mcancel">Cancel</button><button class="btn primary" id="msave">Save decision</button></div>
+</div></div>
+<div class="modal" id="cmodal"><div class="dialog panel contact">
+  <h3 id="ctitle">Contact</h3>
+  <div id="cbody"></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" id="cclose">Close</button><button class="btn primary" id="clog">Log contact attempt</button></div>
 </div></div>
 <div class="toast" id="toast"></div>
 
@@ -208,8 +235,21 @@ const TOOL = {fhir_query:'Looked up record', 'rule:sad_engine':'Rule check', int
   'agent:error':'AI step failed (kept unknown)', 'rule:not_computable':'Needs investigator judgement'};
 
 const people = R.people; const byId = Object.fromEntries(people.map(p => [p.id, p]));
+const VERSIONS = R.versions || [{id:'1.0.0', date:'2026-10-09', label:'Registry snapshot', items:[], changes:[]}];
 const S = {results:{}, source:{}, sel:new Set(), current:null, filter:'all', bucket:null, live:false, job:null, run:null,
-           decisions: load('crc-decisions') || {}};
+           ver: VERSIONS[0].id, store:{}, decisions:{}, contacts:{}};
+const RV = () => (R.results_by_version || {})[S.ver] || (S.ver === '1.0.0' ? R.results : null);
+const verOf = id => VERSIONS.find(v => v.id === id);
+function useVersion(id){
+  S.store[S.ver] = {results:S.results, source:S.source};
+  S.ver = id; const st = S.store[id] || {results:{}, source:{}}; S.results = st.results; S.source = st.source;
+  S.decisions = load('crc-decisions-' + id) || {}; S.contacts = load('crc-contacts-' + id) || {};
+  const v = verOf(id);
+  CRIT.I2.t = id === '1.0.1' ? 'Fasting LDL-C ≥ 100 mg/dL' : 'Fasting LDL-C ≥ 70 mg/dL';
+  $('vchip').textContent = `Criteria v${v.id} · ${v.date}${v.changes.length ? ' · amended' : ''}`;
+  S.run = null; S.current = null; S.bucket = null; S.view = null; S.filter = 'all';
+  renderList(); render();
+}
 function load(k){ try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
 function save(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
 const $ = id => document.getElementById(id);
@@ -302,17 +342,22 @@ $('tabs').addEventListener('click', e => { const t = e.target.closest('[data-f]'
 $('search').addEventListener('input', renderList);
 $('demoset').onclick = () => { S.sel = new Set(DEMO); renderList(); toast('Demo set selected: 5 patients'); };
 $('clearsel').onclick = () => { S.sel.clear(); renderList(); };
-$('loadall').onclick = () => { for (const p of people) if (!S.results[p.id]) { S.results[p.id] = R.results[p.id]; S.source[p.id] = 'saved'; } renderList(); render(); toast('Loaded the last full run: 58 patients'); };
+$('loadall').onclick = () => { const src = RV(); if (!src) { toast('No saved run for this criteria version yet'); return; }
+  for (const p of people) if (!S.results[p.id] && src[p.id]) { S.results[p.id] = src[p.id]; S.source[p.id] = 'saved'; } renderList(); render(); toast(`Loaded the last full run under criteria v${S.ver}: 58 patients`); };
+$('selall').onclick = () => { const ids = visible().map(p => p.id); ids.forEach(i => S.sel.add(i)); renderList(); toast(`${ids.length} patients selected`); };
+$('vchip').onclick = $('critbtn').onclick = () => { S.view = 'criteria'; S.current = null; S.bucket = null; S.critSel = S.critSel || S.ver; render(); $('content').scrollTop = 0; };
 
 // ---------- main area ----------
 function summary(){
   const counts = Object.fromEntries(ORDER.map(c => [c, people.filter(p => S.results[p.id]?.category===c).length]));
   const none = people.filter(p => !S.results[p.id]).length;
   return `<div class="summary">${ORDER.map(c => `<button class="sum" data-b="${c}" aria-pressed="${S.bucket===c}"><span class="pill p-${c}" style="justify-self:start">${CAT[c]}</span><span class="n">${counts[c]}</span></button>`).join('')}
-    <button class="sum" data-b="none" aria-pressed="${S.bucket==='none'}"><span class="pill p-none" style="justify-self:start">Not screened</span><span class="n">${none}</span></button></div>`;
+    <button class="sum" data-b="none" aria-pressed="${S.bucket==='none'}"><span class="pill p-none" style="justify-self:start">Not screened</span><span class="n">${none}</span></button>
+    <button class="sum" data-b="confirmed" aria-pressed="${S.bucket==='confirmed'}"><span class="pill p-confirmed" style="justify-self:start">✓ Confirmed by CRC</span><span class="n">${confirmedIds().length}</span></button></div>`;
 }
 function render(){
   const c = $('content');
+  if (S.view==='criteria') { c.innerHTML = criteriaView(); return; }
   if (S.view==='run' && S.run) c.innerHTML = summary() + runView();
   else if (S.current && S.results[S.current]) c.innerHTML = summary() + patientView(S.current);
   else if (S.current) c.innerHTML = summary() + notScreened(S.current);
@@ -320,19 +365,91 @@ function render(){
   else c.innerHTML = summary() + welcome();
 }
 $('content').addEventListener('click', e => {
-  const b = e.target.closest('[data-b]'); if (b) { S.bucket = S.bucket===b.dataset.b ? null : b.dataset.b; S.filter = S.bucket || 'all'; S.current = null; S.view = null; renderList(); render(); return; }
+  const b = e.target.closest('[data-b]'); if (b) { S.bucket = S.bucket===b.dataset.b ? null : b.dataset.b; S.filter = S.bucket && S.bucket !== 'confirmed' ? S.bucket : 'all'; S.current = null; S.view = null; renderList(); render(); return; }
+  const k = e.target.closest('[data-contact]'); if (k) { openContact(k.dataset.contact); return; }
+  const vv = e.target.closest('[data-ver]'); if (vv) { S.critSel = vv.dataset.ver; render(); return; }
+  const uv = e.target.closest('[data-usever]'); if (uv) { if (S.run && !S.run.done) { toast('Wait for the current screening to finish'); return; }
+    useVersion(uv.dataset.usever); toast(`Now screening under criteria v${S.ver}`); return; }
   const o = e.target.closest('[data-open]'); if (o) { openPatient(o.dataset.open); return; }
   const h = e.target.closest('.ch'); if (h) { h.parentElement.querySelector('.cbody')?.toggleAttribute('hidden'); return; }
   const a = e.target.closest('[data-act]'); if (a) act(a.dataset.act);
   if (e.target.id==='back-run') { S.view='run'; S.current=null; render(); }
 });
 function welcome(){
-  return `<div class="panel empty"><h2>Good morning. 58 patients are scheduled this week.</h2>
+  const v = verOf(S.ver);
+  return `<div class="panel empty"><span class="pill ${v.changes.length ? 'p-pending' : 'p-none'}">Screening under criteria v${v.id} · ${esc(v.date)}${v.changes.length ? ' · amended' : ''}</span><h2>Good morning. 58 patients are scheduled this week.</h2>
     <p class="muted" style="max-width:640px;margin:0">Pick the patients to pre-screen. Rules check every number and date; an AI agent reads what rules can't. Anything the AI read comes back to you to confirm.</p>
     <div class="steps3"><div><b>1</b>Select patients on the left</div><div><b>2</b>Press “Pre-screen”</div><div><b>3</b>Confirm or change each result</div></div>
     <div style="margin-top:10px"><button class="btn primary" onclick="document.getElementById('demoset').click()">Pick the demo set</button></div></div>`;
 }
+function confirmedIds(){ return people.filter(p => S.results[p.id] && ['confirmed','changed'].includes(S.decisions[p.id]?.action)).map(p => p.id); }
+function confirmedView(){
+  const ids = confirmedIds();
+  if (!ids.length) return `<div class="panel empty"><h2 style="font-size:20px">No confirmed patients yet</h2><p class="muted" style="margin:0">Open a screened patient and press “Confirm” or “Change…”. Confirmed patients appear here, ready to contact.</p></div>`;
+  return `<div class="panel">${ids.map(id => { const p = byId[id], d = S.decisions[id], c = S.contacts[id];
+    return `<div class="crit"><div class="ch" style="grid-template-columns:auto 1fr auto;cursor:default">
+      <span class="pill p-${d.final}">${CAT_SHORT[d.final]}</span>
+      <div><div class="ct" data-open="${id}" style="cursor:pointer">${esc(p.name)} <span class="muted mono" style="font-size:12px">${id}</span></div>
+        <div class="cr">${esc(d.label)}${d.reason ? ' — ' + esc(d.reason) : ''}${c ? ` · <b style="color:var(--ok)">✓ Contacted ${new Date(c.at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</b>` : ''}</div></div>
+      <button class="btn" data-contact="${id}">Contact</button></div></div>`; }).join('')}</div>`;
+}
+function contactInfo(p){
+  const i = people.indexOf(p), [first, ...rest] = p.name.split(' '), last = rest.join(' ');
+  const n = String(10 + (i % 90)).padStart(2, '0');
+  return {Phone: `(415) 555-01${n}`, Email: `${first}.${last}`.toLowerCase().replace(/[^a-z.]/g, '') + '@example.com',
+    Address: `${120 + i * 7} Example Street, San Francisco, CA 941${String(i % 30).padStart(2, '0')}`,
+    'Preferred contact': ['Phone, weekday mornings', 'Email', 'Phone, weekday afternoons', 'Text message'][i % 4],
+    Language: 'English', 'Date of birth': p.facts['Birth date'] || '', 'Referring clinic': ['Cardiology', 'Lipid clinic', 'Primary care'][i % 3]};
+}
+function openContact(id){
+  const p = byId[id], info = contactInfo(p); S.contactId = id;
+  $('ctitle').textContent = `Contact ${p.name}`;
+  $('cbody').innerHTML = `<dl>${Object.entries(info).map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl>
+    <p class="muted" style="font-size:12.5px;margin:12px 0 0">Synthetic demo details (555 numbers, example.com). Nothing is sent from this page; logging records that you reached out.</p>
+    ${S.contacts[id] ? `<p style="color:var(--ok);font-weight:700;margin:8px 0 0">✓ Contact attempt logged ${new Date(S.contacts[id].at).toLocaleString()}</p>` : ''}`;
+  $('cmodal').classList.add('open');
+}
+$('cclose').onclick = () => $('cmodal').classList.remove('open');
+$('clog').onclick = () => { const id = S.contactId; S.contacts[id] = {at:new Date().toISOString()}; save('crc-contacts-' + S.ver, S.contacts);
+  $('cmodal').classList.remove('open'); renderList(); render(); toast(`Contact attempt logged for ${byId[id].name}`); };
+
+// ---------- criteria versions ----------
+const mark = (cls, t) => /^\s+$/.test(t) ? esc(t) : `<span class="${cls}">${esc(t)}</span>`;
+function wordDiff(a, b){
+  const x = (a || '').split(/(\s+)/), y = (b || '').split(/(\s+)/), m = x.length, n = y.length;
+  const L = Array.from({length:m + 1}, () => new Array(n + 1).fill(0));
+  for (let i = m - 1; i >= 0; i--) for (let j = n - 1; j >= 0; j--) L[i][j] = x[i] === y[j] ? L[i+1][j+1] + 1 : Math.max(L[i+1][j], L[i][j+1]);
+  let i = 0, j = 0, oldH = '', newH = '';
+  while (i < m && j < n) { if (x[i] === y[j]) { oldH += esc(x[i]); newH += esc(y[j]); i++; j++; }
+    else if (L[i+1][j] >= L[i][j+1]) { oldH += mark('del', x[i]); i++; } else { newH += mark('ins', y[j]); j++; } }
+  while (i < m) oldH += mark('del', x[i++]); while (j < n) newH += mark('ins', y[j++]);
+  return [oldH, newH];
+}
+function criteriaView(){
+  const sel = verOf(S.critSel) || verOf(S.ver), chg = Object.fromEntries(sel.changes.map(c => [c.id, c]));
+  const cards = VERSIONS.slice().reverse().map(v => `<button class="vcard" data-ver="${v.id}" aria-pressed="${v.id === sel.id}">
+      <span class="vt">v${v.id}</span><span>${esc(v.date)} · ${esc(v.label)}</span>
+      <span class="muted" style="font-size:13px">${v.changes.length ? v.changes.length + ' changes from v' + v.previous : 'Baseline version'}</span>
+      ${v.id === S.ver ? '<span class="pill p-confirmed" style="justify-self:start">In use for screening</span>' : ''}</button>`).join('');
+  const rows = sel.items.map(it => { const c = chg[it.id];
+    if (!c) return `<div class="citem"><span class="cid">${it.id}</span><div>${esc(it.text)}</div></div>`;
+    const [o, n] = wordDiff(c.old, c.new);
+    return `<div class="citem chg"><span class="cid">${it.id}</span><div style="display:grid;gap:6px">
+      <div><span class="kind k-${c.kind}">${c.kind === 'substantive' ? 'Substantive change' : 'Wording only'}</span><span class="muted" style="font-size:13px">${esc(c.note)}</span></div>
+      <div><span class="muted" style="font-size:12px;font-weight:700">BEFORE (v${sel.previous})</span><br>${o}</div>
+      <div><span class="muted" style="font-size:12px;font-weight:700">NOW (v${sel.id})</span><br>${n}</div></div></div>`; });
+  const inc = sel.items.filter(i => i.type === 'inclusion').map(i => i.id), exc = sel.items.filter(i => i.type === 'exclusion').map(i => i.id);
+  const block = (label, ids) => `<div class="sec"><h3>${label}</h3><div class="panel">${rows.filter((_, k) => ids.includes(sel.items[k].id)).join('')}</div></div>`;
+  return `<div class="runhead"><h2>Eligibility criteria · NCT07347678 SAD cohort</h2></div>
+    <div class="cv"><div style="display:grid;gap:10px">${cards}
+      <p class="muted" style="font-size:12.5px;margin:4px 2px">Criteria come from ClinicalTrials.gov and are snapshotted on each check. v1.0.1 is a sample amendment for this demo.</p></div>
+    <div><div class="panel" style="padding:16px 18px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+        <div><b>v${sel.id}</b> · ${esc(sel.date)} · ${esc(sel.label)}${sel.changes.length ? ` · <span style="color:var(--unk);font-weight:700">${sel.changes.length} changed items highlighted</span>` : ''}</div>
+        ${sel.id === S.ver ? '<span class="muted">Currently used for screening</span>' : `<button class="btn primary" data-usever="${sel.id}">Use v${sel.id} for screening</button>`}</div>
+      ${block('Inclusion criteria', inc)}${block('Exclusion criteria', exc)}</div></div>`;
+}
 function bucketView(b){
+  if (b === 'confirmed') return confirmedView();
   const list = people.filter(p => b==='none' ? !S.results[p.id] : S.results[p.id]?.category===b);
   if (!list.length) return `<div class="panel empty"><p class="muted">No patients here yet.</p></div>`;
   return `<div class="panel">${list.map(p => `<div class="crit"><div class="ch" data-open="${p.id}"><span class="pill p-${S.results[p.id]?.category||'none'}" style="width:auto">${S.results[p.id]?CAT_SHORT[S.results[p.id].category]:'—'}</span>
@@ -361,7 +478,8 @@ function critHTML(p, r, cid, open){
   else if (text && !value) result = o==='pass' ? 'No exclusion found in the patient’s answers' : 'Exclusion found in the patient’s answers';
   const tags = [isAI(c) && cid!=='I5' ? '<span class="tag t-ai">AI-read · please confirm</span>' : '',
                 cid==='I5' ? '<span class="tag t-inv">Investigator</span>' : '',
-                c.review || isConflict(c) ? '<span class="tag t-rev">Review</span>' : ''].join('');
+                c.review || isConflict(c) ? '<span class="tag t-rev">Review</span>' : '',
+                verOf(S.ver).changes.some(x => x.id === cid && x.kind === 'substantive') ? `<span class="tag" style="background:var(--unk-bg);color:var(--unk)">Changed in v${S.ver}</span>` : ''].join('');
   const note = clean(c.note); const agent = clean((c.agent||'').replace(/^conflict: .*?;\s*/,'').replace(/^.*?Agent:\s*/,'')).replace(/\*\*/g,'').replace(/\s-\s(?=[A-Z*])/g,' · ');
   const trace = (c.trace||[]).map(t => `<div><span class="who w-${t.actor}">${esc(TOOL[t.tool] || t.tool.replace('rule:','Rule: '))}</span><span>${esc(t.result)}${t.decision ? ' → <b>'+esc(t.decision)+'</b>' : ''}</span></div>`).join('');
   return `<div class="crit"><div class="ch"><span class="ico i-${o}">${icon}</span><div><div class="ct">${m.t}</div><div class="cr">${esc(result)}</div></div><div class="tags">${tags}</div></div>
@@ -392,12 +510,12 @@ function patientView(id){
 // ---------- CRC decisions ----------
 function act(a){
   const id = S.current, r = S.results[id]; if (!id) return;
-  if (a==='undo') { delete S.decisions[id]; save('crc-decisions', S.decisions); renderList(); render(); return; }
+  if (a==='undo') { delete S.decisions[id]; save('crc-decisions-' + S.ver, S.decisions); renderList(); render(); return; }
   if (a==='confirm') return decide(id, {action:'confirmed', final:r.category, label:`Confirmed: ${CAT[r.category]}`});
   if (a==='pi') return decide(id, {action:'investigator', final:r.category, label:'Sent to investigator'});
   if (a==='change') openModal(id);
 }
-function decide(id, d){ S.decisions[id] = {...d, at:new Date().toISOString()}; save('crc-decisions', S.decisions); renderList(); render(); toast(d.label); }
+function decide(id, d){ S.decisions[id] = {...d, at:new Date().toISOString()}; save('crc-decisions-' + S.ver, S.decisions); renderList(); render(); toast(d.label); }
 function openModal(id){
   const r = S.results[id];
   $('mtitle').textContent = `Change the decision for ${byId[id].name}`;
@@ -414,13 +532,13 @@ $('msave').onclick = () => {
 
 // ---------- export ----------
 $('export').onclick = () => {
-  const rows = [['patient_id','name','system_result','crc_action','final_result','crc_reason','decided_at','why']];
+  const rows = [['criteria_version','patient_id','name','system_result','crc_action','final_result','crc_reason','decided_at','contacted_at','why']];
   for (const p of people) { const r = S.results[p.id]; if (!r) continue; const d = S.decisions[p.id] || {};
-    rows.push([p.id, p.name, CAT[r.category], d.action || 'not yet reviewed', d.final ? CAT[d.final] : '', d.reason || '', d.at || '', why(p, r)]); }
+    rows.push([S.ver, p.id, p.name, CAT[r.category], d.action || 'not yet reviewed', d.final ? CAT[d.final] : '', d.reason || '', d.at || '', S.contacts[p.id]?.at || '', why(p, r)]); }
   if (rows.length===1) { toast('Nothing screened yet'); return; }
   const csv = rows.map(r => r.map(x => `"${String(x).replace(/"/g,'""')}"`).join(',')).join('\n');
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
-  a.download = 'prescreening_log_NCT07347678_SAD_2026-10-09.csv'; a.click(); toast(`Exported ${rows.length-1} patients`);
+  a.download = `prescreening_log_NCT07347678_SAD_criteria-v${S.ver}.csv`; a.click(); toast(`Exported ${rows.length-1} patients`);
 };
 
 // ---------- screening runs ----------
@@ -462,7 +580,7 @@ async function poll(job){
     for (const [id, st] of Object.entries(s.patients)) {
       const t = S.run.patients[id]; Object.assign(t, st);
       if (st.state==='done' && !t.done) { t.done = true; S.results[id] = {...st.result, elapsed: st.elapsed}; S.source[id] = 'live'; }
-      if (st.state==='error' && !t.done) { t.done = true; if (R.results[id]) { S.results[id] = R.results[id]; S.source[id] = 'saved'; } }
+      if (st.state==='error' && !t.done) { t.done = true; const src = RV(); if (src && src[id]) { S.results[id] = src[id]; S.source[id] = 'saved'; } }
     }
     S.run.elapsed = (Date.now() - S.run.t0) / 1000;
     if (s.done) { S.run.done = true; toast('Pre-screening finished'); }
@@ -485,13 +603,13 @@ function liveRun(ids){
       t.state = 'running'; t.current = 'agent: ' + id + ' - working ...'; refresh();
       const timer = setInterval(() => { t.running_for = ((Date.now() - t0) / 1000).toFixed(1); refresh(); }, 500);
       try {
-        const res = await fetch('/api/screen_one', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id})});
+        const res = await fetch('/api/screen_one', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id, version:S.ver})});
         const out = await res.json(); if (!res.ok) throw new Error(out.reason || out.error || res.status);
         t.steps = agentStepsOf(id, out); t.result = out; t.state = 'done'; t.elapsed = out.elapsed ?? ((Date.now() - t0) / 1000).toFixed(1);
         S.results[id] = out; S.source[id] = 'live';
       } catch (e) {
         t.state = 'error'; t.error = 'Live call failed (' + String(e.message || e).slice(0, 120) + '); showing the saved result';
-        if (R.results[id]) { t.result = R.results[id]; S.results[id] = R.results[id]; S.source[id] = 'saved'; }
+        const src = RV(); if (src && src[id]) { t.result = src[id]; S.results[id] = src[id]; S.source[id] = 'saved'; }
       }
       clearInterval(timer); t.current = ''; t.done = true; active--; refresh();
     }
@@ -504,7 +622,7 @@ function replayRun(ids){
   const queue = [...ids]; let active = 0;
   const next = () => {
     if (!queue.length) { if (!active) { S.run.done = true; renderList(); render(); toast('Pre-screening finished (replay)'); } return; }
-    const id = queue.shift(); active++; const t = S.run.patients[id]; const r = R.results[id]; t.state = 'running';
+    const id = queue.shift(); active++; const t = S.run.patients[id]; const r = (RV() || R.results)[id]; t.state = 'running';
     const agentSteps = agentStepsOf(id, r);
     let i = 0; const t0 = Date.now();
     const tick = () => {
@@ -535,7 +653,7 @@ async function health(tries = 0){
     setMode(h.live, h.reason);
   } catch { setMode(false, 'No live server: opened as a static page'); }
 }
-renderList(); render(); health();
+useVersion(VERSIONS[0].id); health();
 </script>
 </body>
 </html>
