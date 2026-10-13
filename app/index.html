@@ -57,6 +57,7 @@ aside{background:var(--surface);border-right:1px solid var(--rule);display:grid;
 .row input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
 .row .nm{font-weight:650}
 .row .sub{font-size:12.5px;color:var(--muted)}
+.new{font:700 10.5px/1 var(--sans);color:var(--accent);background:var(--accent-soft);padding:3px 6px;border-radius:5px;margin-left:6px;vertical-align:2px}
 .side-foot{padding:12px 14px;border-top:1px solid var(--rule);display:grid;gap:8px;background:var(--surface)}
 .side-foot .links{display:flex;gap:12px;font-size:13px;flex-wrap:wrap}
 .link{border:0;background:none;padding:0;color:var(--accent);font-weight:600;font-size:13px}
@@ -70,7 +71,7 @@ aside{background:var(--surface);border-right:1px solid var(--rule);display:grid;
 .crc-tick{color:var(--ok);font-weight:800;margin-left:4px}
 /* content */
 .content{overflow:auto;min-height:0;padding:20px 28px 40px}
-.summary{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-bottom:20px}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px;margin-bottom:20px}
 .p-confirmed{color:#fff;background:var(--ok)}
 .vchip{cursor:pointer;border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
 .vchip:hover{filter:brightness(.97)}
@@ -175,7 +176,12 @@ textarea{font:inherit;padding:10px;border-radius:8px;border:1px solid var(--rule
 <main>
   <aside>
     <div class="side-head">
-      <h2>Patients this week <span class="muted" id="ptotal"></span></h2>
+      <label for="group" class="muted" style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase">Patient list</label>
+      <select id="group" class="search" style="margin-top:4px;font-weight:700;font-size:15px;cursor:pointer">
+        <option value="week">This week's patients</option>
+        <option value="previous">Previous patients</option>
+        <option value="all">All patients</option>
+      </select>
       <input class="search" id="search" placeholder="Search by name or ID">
     </div>
     <div class="tabs" id="tabs"></div>
@@ -237,7 +243,15 @@ const TOOL = {fhir_query:'Looked up record', 'rule:sad_engine':'Rule check', int
 const people = R.people; const byId = Object.fromEntries(people.map(p => [p.id, p]));
 const VERSIONS = R.versions || [{id:'1.0.0', date:'2026-10-09', label:'Registry snapshot', items:[], changes:[]}];
 const S = {results:{}, source:{}, sel:new Set(), current:null, filter:'all', bucket:null, live:false, job:null, run:null,
-           ver: VERSIONS[0].id, store:{}, decisions:{}, contacts:{}};
+           ver: VERSIONS[0].id, store:{}, decisions:{}, contacts:{}, group:'week'};
+// Patients who joined the site's list this week vs. earlier weeks (synthetic intake dates).
+const isThisWeek = id => id.startsWith('SAD') || +id.slice(3) <= 10;
+function addedOn(id){
+  const i = people.findIndex(p => p.id === id);
+  if (isThisWeek(id)) return ['Oct 5', 'Oct 6', 'Oct 7', 'Oct 8', 'Oct 9'][i % 5];
+  return ['Sep 8', 'Sep 12', 'Sep 15', 'Sep 19', 'Sep 22', 'Sep 26', 'Sep 29', 'Oct 2'][i % 8];
+}
+const inGroup = p => S.group === 'all' || (S.group === 'week') === isThisWeek(p.id);
 const RV = () => (R.results_by_version || {})[S.ver] || (S.ver === '1.0.0' ? R.results : null);
 const verOf = id => VERSIONS.find(v => v.id === id);
 function useVersion(id){
@@ -316,19 +330,23 @@ function rowStatus(id){
 }
 function visible(){
   const q = $('search').value.trim().toLowerCase();
-  return people.filter(p => (!q || p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q)) &&
+  return people.filter(p => inGroup(p) && (!q || p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q)) &&
     (S.filter==='all' || (S.filter==='none' ? !S.results[p.id] : S.results[p.id]?.category===S.filter)));
 }
 function renderTabs(){
-  const n = c => c==='all' ? people.length : c==='none' ? people.filter(p=>!S.results[p.id]).length : people.filter(p=>S.results[p.id]?.category===c).length;
+  const g = people.filter(inGroup);
+  const n = c => c==='all' ? g.length : c==='none' ? g.filter(p=>!S.results[p.id]).length : g.filter(p=>S.results[p.id]?.category===c).length;
   $('tabs').innerHTML = [['all','All'],['none','Not screened'],...ORDER.map(c=>[c,CAT_SHORT[c]])]
     .map(([k,l]) => `<button class="tab" data-f="${k}" aria-pressed="${S.filter===k}">${l} ${n(k)}</button>`).join('');
 }
 function renderList(){
-  renderTabs(); $('ptotal').textContent = `(${people.length})`;
+  renderTabs();
+  const counts = {week: people.filter(p => isThisWeek(p.id)).length, previous: people.filter(p => !isThisWeek(p.id)).length, all: people.length};
+  for (const o of $('group').options) o.textContent = {week:"This week's patients", previous:'Previous patients', all:'All patients'}[o.value] + ` (${counts[o.value]})`;
+  $('group').value = S.group;
   $('list').innerHTML = visible().map(p => `<div class="row ${S.current===p.id?'sel':''}" data-id="${p.id}">
       <input type="checkbox" data-c="${p.id}" ${S.sel.has(p.id)?'checked':''} aria-label="select ${esc(p.name)}">
-      <div><div class="nm">${esc(p.name)}</div><div class="sub">${p.id} · ${p.age} ${p.sex==='female'?'F':'M'}</div></div>
+      <div><div class="nm">${esc(p.name)}${S.group==='all' && isThisWeek(p.id) ? '<span class="new">NEW</span>' : ''}</div><div class="sub">${p.id} · ${p.age} ${p.sex==='female'?'F':'M'} · added ${addedOn(p.id)}</div></div>
       <div>${rowStatus(p.id)}</div></div>`).join('');
   const n = S.sel.size;
   $('run').disabled = !n || (S.run && !S.run.done);
@@ -340,11 +358,12 @@ $('list').addEventListener('click', e => {
 });
 $('tabs').addEventListener('click', e => { const t = e.target.closest('[data-f]'); if (t) { S.filter = t.dataset.f; renderList(); } });
 $('search').addEventListener('input', renderList);
-$('demoset').onclick = () => { S.sel = new Set(DEMO); renderList(); toast('Demo set selected: 5 patients'); };
+$('group').addEventListener('change', e => { S.group = e.target.value; S.filter = 'all'; renderList(); });
+$('demoset').onclick = () => { S.sel = new Set(DEMO); if (S.group === 'previous') S.group = 'week'; renderList(); toast('Demo set selected: 5 patients'); };
 $('clearsel').onclick = () => { S.sel.clear(); renderList(); };
 $('loadall').onclick = () => { const src = RV(); if (!src) { toast('No saved run for this criteria version yet'); return; }
   for (const p of people) if (!S.results[p.id] && src[p.id]) { S.results[p.id] = src[p.id]; S.source[p.id] = 'saved'; } renderList(); render(); toast(`Loaded the last full run under criteria v${S.ver}: 58 patients`); };
-$('selall').onclick = () => { const ids = visible().map(p => p.id); ids.forEach(i => S.sel.add(i)); renderList(); toast(`${ids.length} patients selected`); };
+$('selall').onclick = () => { const ids = visible().map(p => p.id); ids.forEach(i => S.sel.add(i)); renderList(); toast(`${ids.length} ${({week:"of this week's", previous:'previous', all:''})[S.group]} patients selected`.replace('  ', ' ')); };
 $('vchip').onclick = $('critbtn').onclick = () => { S.view = 'criteria'; S.current = null; S.bucket = null; S.critSel = S.critSel || S.ver; render(); $('content').scrollTop = 0; };
 
 // ---------- main area ----------
@@ -377,7 +396,8 @@ $('content').addEventListener('click', e => {
 });
 function welcome(){
   const v = verOf(S.ver);
-  return `<div class="panel empty"><span class="pill ${v.changes.length ? 'p-pending' : 'p-none'}">Screening under criteria v${v.id} · ${esc(v.date)}${v.changes.length ? ' · amended' : ''}</span><h2>Good morning. 58 patients are scheduled this week.</h2>
+  return `<div class="panel empty"><span class="pill ${v.changes.length ? 'p-pending' : 'p-none'}">Screening under criteria v${v.id} · ${esc(v.date)}${v.changes.length ? ' · amended' : ''}</span><h2>Good morning. 18 new patients joined the list this week.</h2>
+    <p class="muted" style="margin:0">40 patients from earlier weeks are under “Previous patients” (58 in total).</p>
     <p class="muted" style="max-width:640px;margin:0">Pick the patients to pre-screen. Rules check every number and date; an AI agent reads what rules can't. Anything the AI read comes back to you to confirm.</p>
     <div class="steps3"><div><b>1</b>Select patients on the left</div><div><b>2</b>Press “Pre-screen”</div><div><b>3</b>Confirm or change each result</div></div>
     <div style="margin-top:10px"><button class="btn primary" onclick="document.getElementById('demoset').click()">Pick the demo set</button></div></div>`;

@@ -108,8 +108,8 @@ footer{color:var(--muted);font-size:14px;border-top:1px solid var(--rule);paddin
   <section>
     <h2>演示流程（约 5 分钟）</h2>
     <ol class="steps">
-      <li><span class="do">介绍场景：周一早上，这周有 58 名患者要预筛。</span>
-        <span>首页写着 "Good morning. 58 patients are scheduled this week."，左侧是患者名单，全部是 <span class="pill" style="background:var(--bg);color:var(--muted)">Not screened</span>。</span>
+      <li><span class="do">介绍场景：周一早上，这周新加入 18 名患者，之前还有 40 名。</span>
+        <span>首页写着 "Good morning. 18 new patients joined the list this week."。左侧名单上方有下拉框 <b>Patient list</b>：<b>This week's patients (18)</b>（默认）、<b>Previous patients (40)</b>、<b>All patients (58)</b>。每个人下面写着加入日期，全部是 <span class="pill" style="background:var(--bg);color:var(--muted)">Not screened</span>。</span>
         <div class="say"><b>可以这样说</b>CRC 每周要把每个患者的病历和试验的入排标准逐条对照，很费时间。我们把这件事交给 agent：规则检查所有数字和日期，AI 只读规则读不懂的内容，读出来的东西一定交回给人确认。</div></li>
       <li><span class="do">点左下角 <span class="btn">Pick demo set (5)</span>，再点 <span class="btn p">Pre-screen 5 selected patients</span>。</span>
         <span>右侧出现 5 张卡片，每张显示 "Checked 11 criteria with rules"，然后是 agent 正在做的事（读患者原话、找另一种编码下的结果、收集肝肾证据……）。一般 10–15 秒全部完成，每张卡片会显示用时。</span>
@@ -163,7 +163,7 @@ footer{color:var(--muted);font-size:14px;border-top:1px solid var(--rule);paddin
     <div class="grid2">
       <div class="card"><h3>左上角状态灯</h3><p><span class="pill live">● Live agent</span> 真实 agent 在线。<br><span class="pill rep">● Replay mode</span> 连不上 agent，用保存好的结果回放，所有操作一样。</p></div>
       <div class="card"><h3>左上角标准版本</h3><p>蓝色标签显示当前按哪个版本的入排标准筛查，点它进入标准页面，可以查看、比较和切换版本。</p></div>
-      <div class="card"><h3>左侧患者名单</h3><p>勾选框选人，标签显示每人当前状态，✓ 表示 CRC 已经做过决定。上方标签可以按类别筛选，也可以搜索姓名或 ID。<span class="btn">Select all shown</span> 会勾选当前列表里看得到的所有人（比如先点 "Not screened" 再全选）。全选 58 人实时跑大约要 1–2 分钟，演示时建议只选 5 人。</p></div>
+      <div class="card"><h3>左侧患者名单</h3><p>上方下拉框切换 <b>本周新患者 / 以往患者 / 全部患者</b>；在 "All patients" 里本周新加入的人名字旁有 <span class="pill" style="background:var(--accent-soft);color:var(--accent)">NEW</span>。勾选框选人，标签显示每人当前状态，✓ 表示 CRC 已经做过决定。上方标签可以按类别筛选，也可以搜索姓名或 ID。<span class="btn">Select all shown</span> 会勾选当前列表里看得到的所有人，只在下拉框选中的那组里生效（比如选 "Previous patients"，再点 "Not screened"，再全选）。全选 58 人实时跑大约要 1–2 分钟，演示时建议只选 5 人。</p></div>
       <div class="card"><h3>✓ Confirmed by CRC</h3><p>CRC 确认或改判过的患者都在这里，每人后面有 <span class="btn">Contact</span>：打开联系信息，并记录联系时间。</p></div>
       <div class="card"><h3>患者页：Needs your attention</h3><p>只列出没通过、无法判断或经过 AI 读取的标准。其余标准折叠在 "Other criteria" 里，点开能看数值。</p></div>
       <div class="card"><h3>标签</h3><p><span class="pill ai">AI-read · please confirm</span> 这条是 AI 从文字里读出来的。<br><span class="pill" style="background:var(--accent-soft);color:var(--accent)">Investigator</span> 需要研究者判断（肝肾功能）。<br><span class="pill rv">Review</span> 需要人复核。</p></div>
